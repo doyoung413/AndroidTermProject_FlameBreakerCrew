@@ -1,6 +1,8 @@
 package GameEngine;
 
+import android.graphics.Canvas;
 import android.provider.Settings;
+import android.view.MotionEvent;
 
 import java.util.Vector;
 
@@ -15,9 +17,9 @@ public class LevelManager {
     }
 
     public enum GameLevel{
+        PROTO,
         TITLE,
         LEVELSELECT,
-        PROTO,
         NONE
     }
     private GameState state = GameState.INIT;
@@ -45,23 +47,23 @@ public class LevelManager {
         levels = new Vector<Level>();
     }
 
-    public void run(float dt){
+    public void run(float dt, Canvas canvas){
         switch(state){
             case INIT:
-                LevelInit(currentLevel);
+                levelInit();
                 break;
             case UPDATE:
-                LevelUpdate(dt);
+                levelUpdate(dt, canvas);
                 break;
             case RESTART:
-                LevelRestart();
+                levelRestart();
                 break;
             case CHANGE:
-                LevelInit(currentLevel);
+                levelInit();
                 break;
             case END:
             {
-                LevelEnd();
+                levelEnd();
                 this.state = GameState.SHUTDOWN;
                 break;
             }
@@ -71,36 +73,47 @@ public class LevelManager {
         }
     }
 
-    private void LevelInit(GameLevel level){
-        currentLevel = level;
-        this.levels.elementAt(currentLevel.ordinal()).Init();
-        this.state = GameState.UPDATE;
-
+    private void levelInit(){
         if(levelSelected != currentLevel){
-            levelSelected = currentLevel;
+            currentLevel = levelSelected;
         }
+        this.levels.elementAt(currentLevel.ordinal()).Init();
+        this.state = GameState.UPDATE;
+
     }
 
-    private void LevelUpdate(float dt){
+    private void levelUpdate(float dt, Canvas canvas){
         this.levels.elementAt(currentLevel.ordinal()).Update(dt);
+        this.levels.elementAt(currentLevel.ordinal()).draw(canvas);
     }
 
-    private void LevelRestart(){
+    private void levelRestart(){
         this.levels.elementAt(currentLevel.ordinal()).End();
         this.levels.elementAt(currentLevel.ordinal()).Init();
         this.state = GameState.UPDATE;
     }
 
-    private void LevelEnd(){
+    private void levelEnd(){
         this.levels.elementAt(currentLevel.ordinal()).End();
     }
 
-    public void AddLevel(Level newLevel){
+    public void addLevel(Level newLevel){
         this.levels.add(newLevel);
     }
 
-    public void ChangeLevel(GameLevel level){
+    public void changeLevel(GameLevel level){
         levelSelected = level;
         this.state = GameState.CHANGE;
+    }
+
+    public Level getCurrentLevelInstance() {
+        if (currentLevel == GameLevel.NONE || currentLevel.ordinal() >= levels.size()) {
+            return null; // Return null if no level is active or out of bounds
+        }
+        return levels.get(currentLevel.ordinal());
+    }
+
+    public boolean handleTouchEvent(MotionEvent event) {
+        return levels.get(currentLevel.ordinal()).handleTouchEvent(event);
     }
 }
