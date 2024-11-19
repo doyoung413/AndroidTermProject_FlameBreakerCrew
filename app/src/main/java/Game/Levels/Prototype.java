@@ -1,7 +1,7 @@
 package Game.Levels;
 
+import Game.GameManager;
 import GameEngine.Level;
-import Game.GameManager; // 나중에 인스턴스에 통합
 import GameEngine.Instance;
 
 import Game.Button;
@@ -17,7 +17,6 @@ import android.view.MotionEvent;
 
 public class Prototype extends Level {
     private Context context;
-    private GameManager gameManager;
     private Paint paint;
     private Paint textPaint;
     private GestureDetector gestureDetector;
@@ -30,13 +29,12 @@ public class Prototype extends Level {
         textPaint.setColor(Color.BLACK);
         textPaint.setTextSize(50);
 
-        gameManager = new GameManager();
         gestureDetector = new GestureDetector(context, new GestureListener());
     }
 
     @Override
     public void Init() {
-        gameManager.init();
+        Instance.getGameManager().init();
 
         Instance.getObjectManager().addObject(new Button(context, 100, 1600, 200, 200, Color.YELLOW, "LadderButton", Button.ButtonType.LADDER));
         Instance.getObjectManager().addObject(new Button(context, 300, 1600, 200, 200, Color.BLACK, "BlockButton", Button.ButtonType.BLOCK));
@@ -54,7 +52,7 @@ public class Prototype extends Level {
 
     @Override
     public void Update(float dt) {
-        gameManager.update();
+        Instance.getGameManager().update();
     }
 
     @Override
@@ -66,14 +64,14 @@ public class Prototype extends Level {
     public void draw(Canvas canvas) {
         Instance.getObjectManager().drawObjects(canvas, paint);
 
-        long elapsedMillis = gameManager.getElapsedTime();
+        long elapsedMillis = Instance.getGameManager().getElapsedTime();
         int seconds = (int) (elapsedMillis / 1000);
         int minutes = seconds / 60;
         seconds = seconds % 60;
         String timeText = String.format("%02d:%02d", minutes, seconds);
         canvas.drawText(timeText, 50, 100, textPaint);
 
-        gameManager.draw(canvas, paint);
+        Instance.getGameManager().draw(canvas, textPaint);
     }
 
     public boolean handleTouchEvent(MotionEvent event) {
@@ -82,30 +80,30 @@ public class Prototype extends Level {
         int touchY = (int) event.getY();
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (gameManager.handleTouchEvent(touchX, touchY, context)) {
+            if (Instance.getGameManager().handleTouchEvent(touchX, touchY, context)) {
                 return true;
             }
 
-            if (gameManager.getCurrentAction() == GameManager.ActionType.MOVE_UNIT && gameManager.getSelectedUnit() != null) {
-                gameManager.setTargetX(touchX);
-            } else if (gameManager.getCurrentAction() == GameManager.ActionType.MOVE_ITEM) {
-                gameManager.handleTouchEvent(touchX, touchY, context);
+            if (Instance.getGameManager().getCurrentAction() == GameManager.ActionType.MOVE_UNIT && Instance.getGameManager().getSelectedUnit() != null) {
+                Instance.getGameManager().setTargetX(touchX);
+            } else if (Instance.getGameManager().getCurrentAction() == GameManager.ActionType.MOVE_ITEM) {
+                Instance.getGameManager().handleTouchEvent(touchX, touchY, context);
             } else {
                 for (Object obj : Instance.getObjectManager().getObjects()) {
                     if (obj instanceof Button) {
                         Button button = (Button) obj;
                         if (button.isClicked(touchX, touchY)) {
                             if (button.getButtonType() == Button.ButtonType.LADDER) {
-                                gameManager.setItemMode(GameManager.ItemMode.LADDER, context);
+                                Instance.getGameManager().setItemMode(GameManager.ItemMode.LADDER, context);
                             } else if (button.getButtonType() == Button.ButtonType.BLOCK) {
-                                gameManager.setItemMode(GameManager.ItemMode.BLOCK, context);
+                                Instance.getGameManager().setItemMode(GameManager.ItemMode.BLOCK, context);
                             }
                             break;
                         }
                     } else if (obj instanceof Unit) {
                         Unit unit = (Unit) obj;
                         if (unit.getAABB().contains(touchX, touchY)) {
-                            gameManager.setSelectedUnit(unit, context);
+                            Instance.getGameManager().setSelectedUnit(unit, context);
                             break;
                         }
                     }
@@ -118,7 +116,7 @@ public class Prototype extends Level {
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            gameManager.handleDoubleTap(context);
+            Instance.getGameManager().handleDoubleTap(context);
             return true;
         }
     }

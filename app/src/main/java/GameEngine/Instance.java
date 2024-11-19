@@ -1,15 +1,29 @@
 package GameEngine;
+import Game.GameManager;
 
 public class Instance {
-
-    // ObjectManager의 싱글턴 인스턴스
     private static ObjectManager objectManager;
+    private static LevelManager levelManager;
+    private static GameManager gameManager;
 
-    // ObjectManager 인스턴스를 반환하는 정적 메서드
     public static ObjectManager getObjectManager() {
         if (objectManager == null) {
             objectManager = new ObjectManager();
         }
         return objectManager;
+    }
+
+    public static LevelManager getLevelManager() {
+        if (levelManager == null) {
+            levelManager = new LevelManager();
+        }
+        return levelManager;
+    }
+
+    public static GameManager getGameManager() {
+        if (gameManager == null) {
+            gameManager = new GameManager();
+        }
+        return gameManager;
     }
 }
