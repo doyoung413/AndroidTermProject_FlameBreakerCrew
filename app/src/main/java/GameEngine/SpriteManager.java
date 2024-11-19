@@ -8,13 +8,10 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class SpriteManager {
-    private HashMap<String, Sprite> spriteMap;
-
-    public SpriteManager() {
-        spriteMap = new HashMap<>();
-    }
+    private Map<String, Sprite> spriteMap = new HashMap<>();
 
     public void loadSprite(Context context, String name, int resourceId) {
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId);
@@ -26,15 +23,15 @@ public class SpriteManager {
         spriteMap.put(name, new Sprite(bitmap, frameWidth, frameHeight, frameCount));
     }
 
-    public void renderSprite(Canvas canvas, String name, int x, int y, int width, int height, float angle, float dt, AnimationState animState) {
+    // Render a sprite by delegating to the Sprite's draw method
+    public void renderSprite(Canvas canvas, String name, int x, int y, int width, int height, float angle, AnimationState animationState) {
         Sprite sprite = spriteMap.get(name);
         if (sprite != null) {
-            sprite.draw(canvas, x, y, width, height, angle, dt, animState);
-        } else {
-            System.out.println("Sprite not found: " + name);
+            sprite.draw(canvas, x, y, width, height, angle, animationState);
         }
     }
 
+    // 사각형 그리기 함수 추가
     public void drawRectangle(Canvas canvas, int x, int y, int width, int height, int color) {
         Paint paint = new Paint();
         paint.setColor(color);
@@ -43,3 +40,4 @@ public class SpriteManager {
         canvas.drawRect(rect, paint);
     }
 }
+

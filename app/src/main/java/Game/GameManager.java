@@ -303,12 +303,12 @@ public class GameManager {
         return false;
     }
 
-    public void draw(Canvas canvas, Paint paint) {
+    public void draw(Canvas canvas) {
         if (cancelButton != null) {
-            cancelButton.draw(canvas, paint);
+            cancelButton.draw(canvas);
         }
         if (currentItem != null) {
-            currentItem.draw(canvas, paint);
+            currentItem.draw(canvas);
         }
     }
 }

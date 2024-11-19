@@ -28,13 +28,29 @@ public class ObjectManager {
     }
 
     // 모든 객체를 그리는 메서드
-    public void drawObjects(Canvas canvas, Paint paint) {
+    public void drawObjects(Canvas canvas) {
         for (Object obj : objects) {
-            obj.draw(canvas, paint); // 각 객체의 draw 메서드를 호출
+            obj.draw(canvas);
         }
     }
 
     public Vector<Object> getObjects() {
         return objects;
+    }
+
+    public Object findObjectByName(String name) {
+        for (Object obj : objects) {
+            if (obj.getName().equals(name)) {
+                return obj;
+            }
+        }
+        return null;
+    }
+
+    public Object getLastObject() {
+        if (!objects.isEmpty()) {
+            return objects.lastElement();
+        }
+        return null;
     }
 }

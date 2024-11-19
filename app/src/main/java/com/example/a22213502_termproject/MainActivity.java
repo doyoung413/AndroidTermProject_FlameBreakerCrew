@@ -18,6 +18,9 @@ public class MainActivity extends AppCompatActivity {
         Instance.getLevelManager().addLevel(new Prototype(this));
         Instance.getLevelManager().changeLevel(LevelManager.GameLevel.PROTO);
 
+        //Instance.getSpriteManager().loadSprite(this, "idle", R.drawable.a);
+        //Instance.getSpriteManager().loadAnimatedSprite(this, "walk", R.drawable.b, 32, 32, 4);
+
         GameView gameView = new GameView(this);
         setContentView(gameView);
     }

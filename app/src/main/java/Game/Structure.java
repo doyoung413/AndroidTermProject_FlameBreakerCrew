@@ -41,9 +41,8 @@ public class Structure extends Object {
     }
 
     @Override
-    public void draw(Canvas canvas, Paint paint) {
-        paint.setAlpha(isPlaced ? 255 : 128); // 배치되면 불투명, 아니면 반투명
-        super.draw(canvas, paint);
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
     }
 }
 

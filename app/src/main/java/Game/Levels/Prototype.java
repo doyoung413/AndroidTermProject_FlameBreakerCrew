@@ -1,12 +1,14 @@
 package Game.Levels;
 
 import Game.GameManager;
+import GameEngine.AnimationState;
 import GameEngine.Level;
 import GameEngine.Instance;
 
 import Game.Button;
 import Game.Unit;
 import Game.Structure;
+import GameEngine.Object;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -17,14 +19,12 @@ import android.view.MotionEvent;
 
 public class Prototype extends Level {
     private Context context;
-    private Paint paint;
     private Paint textPaint;
     private GestureDetector gestureDetector;
 
     public Prototype(Context context) {
         this.context = context;
 
-        paint = new Paint();
         textPaint = new Paint();
         textPaint.setColor(Color.BLACK);
         textPaint.setTextSize(50);
@@ -37,7 +37,12 @@ public class Prototype extends Level {
         Instance.getGameManager().init();
 
         Instance.getObjectManager().addObject(new Button(context, 100, 1600, 200, 200, Color.YELLOW, "LadderButton", Button.ButtonType.LADDER));
+        Instance.getObjectManager().getLastObject().setSpriteName("idle");
+        Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.SPRITE);
         Instance.getObjectManager().addObject(new Button(context, 300, 1600, 200, 200, Color.BLACK, "BlockButton", Button.ButtonType.BLOCK));
+        Instance.getObjectManager().getLastObject().setSpriteName("walk");
+        Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.ANIMATION);
+        Instance.getObjectManager().getLastObject().setAnimationState(new AnimationState(60));
 
         // Example 2D map array
         int[][] mapArray = {
@@ -62,7 +67,7 @@ public class Prototype extends Level {
 
     @Override
     public void draw(Canvas canvas) {
-        Instance.getObjectManager().drawObjects(canvas, paint);
+        Instance.getObjectManager().drawObjects(canvas);
 
         long elapsedMillis = Instance.getGameManager().getElapsedTime();
         int seconds = (int) (elapsedMillis / 1000);
@@ -71,7 +76,7 @@ public class Prototype extends Level {
         String timeText = String.format("%02d:%02d", minutes, seconds);
         canvas.drawText(timeText, 50, 100, textPaint);
 
-        Instance.getGameManager().draw(canvas, textPaint);
+        Instance.getGameManager().draw(canvas);
     }
 
     public boolean handleTouchEvent(MotionEvent event) {

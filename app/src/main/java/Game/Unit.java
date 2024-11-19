@@ -48,8 +48,8 @@ public class Unit extends Object {
     }
 
     @Override
-    public void draw(Canvas canvas, Paint paint) {
-        super.draw(canvas, paint);
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
     }
 
     public void takeDamage(int damage) {

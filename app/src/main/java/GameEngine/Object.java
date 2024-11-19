@@ -4,6 +4,12 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 
 public class Object {
+    public enum DrawType {
+        RECTANGLE,
+        SPRITE,
+        ANIMATION
+    }
+
     private int width;
     private int height;
     private int x;
@@ -12,6 +18,11 @@ public class Object {
     private int color;
     private String name;
 
+    private String spriteName; // Name of the sprite in SpriteManager
+    private AnimationState animationState; // Animation information
+    private DrawType drawType; // Type of rendering
+    private float angle; // Angle for rotation
+
     public Object(int x, int y, int width, int height, int color, String name) {
         this.x = x;
         this.y = y;
@@ -19,18 +30,35 @@ public class Object {
         this.height = height;
         this.color = color;
         this.name = name;
+        this.angle = 0; // Default angle
+        this.drawType = DrawType.RECTANGLE; // Default draw type
         updateAABB();
-        Init();
     }
 
     protected void Init() {}
     protected void Update() {}
     protected void End() {}
 
-    // Draw 메서드 추가
-    public void draw(Canvas canvas, Paint paint) {
-        paint.setColor(color);
-        canvas.drawRect(aabb, paint); // AABB로 사각형을 그림
+    public void draw(Canvas canvas) {
+        SpriteManager spriteManager = Instance.getSpriteManager();
+
+        switch (drawType) {
+            case RECTANGLE:
+                spriteManager.drawRectangle(canvas, x, y, width, height, color);
+                break;
+
+            case SPRITE:
+                if (spriteName != null) {
+                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, null);
+                }
+                break;
+
+            case ANIMATION:
+                if (spriteName != null && animationState != null) {
+                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, animationState);
+                }
+                break;
+        }
     }
 
     public void setPosition(int x, int y) {
@@ -39,6 +67,37 @@ public class Object {
         updateAABB();
     }
 
+    public String getSpriteName() {
+        return spriteName;
+    }
+
+    public void setSpriteName(String spriteName) {
+        this.spriteName = spriteName;
+    }
+
+    public AnimationState getAnimationState() {
+        return animationState;
+    }
+
+    public void setAnimationState(AnimationState animationState) {
+        this.animationState = animationState;
+    }
+
+    public DrawType getDrawType() {
+        return drawType;
+    }
+
+    public void setDrawType(DrawType drawType) {
+        this.drawType = drawType;
+    }
+
+    public float getAngle() {
+        return angle;
+    }
+
+    public void setAngle(float angle) {
+        this.angle = angle;
+    }
     protected void updateAABB() {
         this.aabb = new Rect(x, y, x + width, y + height);
     }
