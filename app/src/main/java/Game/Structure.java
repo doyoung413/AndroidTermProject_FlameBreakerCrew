@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import GameEngine.Object;
 
 public class Structure extends Object {
+
+
     public enum StructureType {
         BLOCK,
         LADDER

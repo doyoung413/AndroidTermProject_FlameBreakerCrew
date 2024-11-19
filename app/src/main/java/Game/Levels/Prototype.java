@@ -39,15 +39,15 @@ public class Prototype extends Level {
         Instance.getObjectManager().addObject(new Button(context, 100, 1600, 200, 200, Color.YELLOW, "LadderButton", Button.ButtonType.LADDER));
         Instance.getObjectManager().addObject(new Button(context, 300, 1600, 200, 200, Color.BLACK, "BlockButton", Button.ButtonType.BLOCK));
 
-        Instance.getObjectManager().addObject(new Unit(100, 800, 100, 100, Color.BLUE, "TestUnit", 5, Unit.UnitType.RESCUE));
-        Instance.getObjectManager().addObject(new Unit(800, 800, 100, 100, Color.RED, "TestUnit", 5, Unit.UnitType.TARGET));
+        // Example 2D map array
+        int[][] mapArray = {
+                {0, 0, 0, 0, 0},
+                {0, 3, 0, 0, 0},
+                {1, 1, 1, 1, 1},
+        };
 
-        Instance.getObjectManager().addObject(new Structure(800, 900, 100, 100, Color.BLACK, "Block", Structure.StructureType.BLOCK, true));
-        Instance.getObjectManager().addObject(new Structure(100, 900, 100, 100, Color.BLACK, "Block", Structure.StructureType.BLOCK, true));
-        Instance.getObjectManager().addObject(new Structure(200, 900, 100, 100, Color.BLACK, "Block", Structure.StructureType.BLOCK, true));
-        Instance.getObjectManager().addObject(new Structure(300, 900, 100, 100, Color.BLACK, "Block", Structure.StructureType.BLOCK, true));
-        Instance.getObjectManager().addObject(new Structure(400, 900, 100, 100, Color.BLACK, "Block", Structure.StructureType.BLOCK, true));
-        Instance.getObjectManager().addObject(new Structure(500, 900, 100, 100, Color.BLACK, "Block", Structure.StructureType.BLOCK, true));
+        // Pass the map array to GameManager
+        Instance.getGameManager().initializeMap(mapArray);
     }
 
     @Override

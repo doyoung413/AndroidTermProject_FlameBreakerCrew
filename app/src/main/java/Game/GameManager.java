@@ -28,6 +28,11 @@ public class GameManager {
     private boolean isTimerRunning = true; // 타이머가 실행 중인지 여부
     private int targetX;
 
+    private boolean isMoving = false;
+    private boolean isReadyToMove = false;
+    private float interpolationX = 0;
+    private int gridStartX, gridStartY, gridTargetX, gridTargetY;
+
     private Structure currentItem;  // 현재 배치 중인 아이템
     private ItemMode currentItemMode;
     private Button cancelButton;
@@ -57,6 +62,7 @@ public class GameManager {
         checkCollision();
         if (currentAction == ActionType.MOVE_UNIT && selectedUnit instanceof Unit) {
             moveSelectedUnit(); // 유닛 이동
+            updateMovement(1.0f / 60.0f);
         } else if (currentAction == ActionType.MOVE_ITEM && currentItem != null && !currentItem.isPlaced()) {
             alignCurrentItemToGrid(); // 아이템 배치 중 그리드에 맞추어 이동
         }
@@ -86,6 +92,39 @@ public class GameManager {
         }
     }
 
+    private int[][] mapArray;
+
+    public void initializeMap(int[][] mapArray) {
+        this.mapArray = mapArray;
+        //Instance.getObjectManager().clearObjects();
+
+        for (int y = 0; y < mapArray.length; y++) {
+            for (int x = 0; x < mapArray[y].length; x++) {
+                switch (mapArray[y][x]) {
+                    case 1:
+                        Instance.getObjectManager().addObject(
+                                new Structure(x * 100, y * 100, 100, 100, Color.BLACK, "Block", Structure.StructureType.BLOCK, true)
+                        );
+                        break;
+                    case 2:
+                        Instance.getObjectManager().addObject(
+                                new Structure(x * 100, y * 100, 100, 100, Color.GRAY, "Ladder", Structure.StructureType.LADDER, true)
+                        );
+                        break;
+                    case 3:
+                        Instance.getObjectManager().addObject(
+                                new Unit(x * 100, y * 100, 100, 100, Color.BLUE, "Rescue", 5,Unit.UnitType.RESCUE)
+                        );
+                        break;
+                    case 4:
+                        Instance.getObjectManager().addObject(
+                                new Unit(x * 100, y * 100, 100, 100, Color.RED, "Target",5, Unit.UnitType.TARGET)
+                        );
+                        break;
+                }
+            }
+        }
+    }
     public ActionType getCurrentAction() {
         return currentAction;
     }
@@ -97,6 +136,8 @@ public class GameManager {
     public void setSelectedUnit(Object unit, Context context) {
         this.selectedUnit = unit;
         this.currentAction = ActionType.MOVE_UNIT;
+        isMoving = false; // Reset movement state
+        isReadyToMove = false;
 
         // 취소 버튼이 없으면 생성
         if (cancelButton == null) {
@@ -115,118 +156,66 @@ public class GameManager {
         }
     }
 
-
-    private void moveSelectedUnit() {
-        if (selectedUnit instanceof Unit && currentAction == ActionType.MOVE_UNIT) {
+    public void moveSelectedUnit() {
+        if (selectedUnit instanceof Unit && currentAction == ActionType.MOVE_UNIT && !isMoving && isReadyToMove) {
             Unit unit = (Unit) selectedUnit;
-            int currentX = unit.getX();
-            int currentY = unit.getY();
-            int nextX = (int) (currentX + 0.1 * (targetX - currentX)); // 이동할 다음 X 좌표
 
-            // 유닛이 이동하려는 방향에 구조물이 있는지 확인
-            if (isStructureBelow(unit) && isFullySupportedAtPosition(unit, currentX, nextX) && !checkSideCollision(unit, nextX)) {
-                // 이동할 위치에 지지 구조물이 있고, 옆에 구조물이 없을 때만 이동
-                unit.setPosition(nextX, currentY);
+            gridStartX = unit.getX() / 100;
+            gridStartY = unit.getY() / 100;
+            gridTargetX = targetX / 100;
+
+            if (gridTargetX < 0) {
+                gridTargetX = 0;
+            } else if (gridTargetX >= mapArray[0].length) {
+                gridTargetX = mapArray[0].length - 1;
+            }
+
+            // Clear the starting position in the array
+            mapArray[gridStartY][gridStartX] = 0;
+
+            // Start movement
+            isMoving = true;
+            interpolationX = unit.getX();
+        }
+    }
+
+    public void updateMovement(float deltaTime) {
+        if (isMoving && isReadyToMove && selectedUnit instanceof Unit) {
+            Unit unit = (Unit) selectedUnit;
+
+            float speed = 200;
+            float movement = speed * deltaTime;
+            float targetPixelX = gridTargetX * 100;
+
+            // Determine movement direction
+            if (interpolationX < targetPixelX) {
+                interpolationX = Math.min(interpolationX + movement, targetPixelX);
             } else {
-                // 충돌로 인해 이동 중지
-                System.out.println("Side collision or no support below! Unit cannot move.");
+                interpolationX = Math.max(interpolationX - movement, targetPixelX);
             }
-        }
-    }
 
-    // 유닛의 이동 방향에서 옆쪽에 구조물이 있는지 확인
-    private boolean checkSideCollision(Unit unit, int nextX) {
-        int tolerance = 5; // 오차 허용 범위
-        int unitTopY = unit.getY();
-        int unitBottomY = unit.getY() + unit.getHeight();
-        int unitLeftX = nextX;
-        int unitRightX = nextX + unit.getWidth();
+            unit.setPosition((int) interpolationX, unit.getY());
 
-        for (Object obj : Instance.getObjectManager().getObjects()) {
-            if (obj instanceof Structure && ((Structure) obj).isPlaced()) {
-                Structure structure = (Structure) obj;
-                int structureTopY = structure.getY();
-                int structureBottomY = structure.getY() + structure.getHeight();
-                int structureLeftX = structure.getX();
-                int structureRightX = structure.getX() + structure.getWidth();
+            if ((interpolationX == targetPixelX)) {
+                unit.setPosition((int) targetPixelX, unit.getY());
+                gridStartX = gridTargetX;
 
-                // 오른쪽 방향에서의 충돌 확인
-                if (nextX > unit.getX()) {
-                    if (Math.abs(unitRightX - structureLeftX) <= tolerance && // 유닛의 오른쪽과 구조물의 왼쪽이 가까움
-                            unitBottomY > structureTopY && unitTopY < structureBottomY) { // 수직으로 겹침
-                        return true;
-                    }
+                // Check for cliffs or obstacles
+                if (mapArray[gridStartY][gridStartX] != 0 ||
+                        (gridStartY + 1 < mapArray.length && mapArray[gridStartY + 1][gridStartX] == 0)) {
+                    System.out.println("Movement stopped: cliff or obstacle detected.");
+                    isMoving = false; // Stop movement
+                    mapArray[gridStartY][gridStartX] = 3;
+                    return;
                 }
-                // 왼쪽 방향에서의 충돌 확인
-                else if (nextX < unit.getX()) {
-                    if (Math.abs(unitLeftX - structureRightX) <= tolerance && // 유닛의 왼쪽과 구조물의 오른쪽이 가까움
-                            unitBottomY > structureTopY && unitTopY < structureBottomY) { // 수직으로 겹침
-                        return true;
-                    }
+
+                if (gridStartX == gridTargetX) {
+                    isMoving = false;
+                    mapArray[gridStartY][gridStartX] = 3;
+                    System.out.println("Unit successfully moved to (" + gridStartX + ", " + gridStartY + ")");
                 }
             }
         }
-        return false;
-    }
-
-
-    // 특정 X 위치와 이동 방향에 따른 지지 여부를 확인
-    private boolean isFullySupportedAtPosition(Unit unit, int currentX, int nextX) {
-        int stepX = unit.getWidth() / 2; // 유닛 너비의 절반만큼 이동 후 위치 확인
-
-        // 이동 방향에 따른 위치 확인
-        if (nextX > currentX) {
-            // 오른쪽으로 이동 중일 경우: 현재 위치와 다음 위치의 오른쪽에 구조물 확인
-            return isStructureBelowAtPosition(unit, currentX) &&
-                    isStructureBelowAtPosition(unit, nextX) &&
-                    isStructureBelowAtPosition(unit, nextX + stepX);
-        } else {
-            // 왼쪽으로 이동 중일 경우: 현재 위치와 다음 위치의 왼쪽에 구조물 확인
-            return isStructureBelowAtPosition(unit, currentX) &&
-                    isStructureBelowAtPosition(unit, nextX) &&
-                    isStructureBelowAtPosition(unit, nextX - stepX);
-        }
-    }
-
-    // 특정 X 위치의 아래에 구조물이 있는지 확인
-    private boolean isStructureBelowAtPosition(Unit unit, int xPosition) {
-        int tolerance = 5; // 오차 허용 범위
-        int unitBottomY = unit.getY() + unit.getHeight(); // 유닛의 아래쪽 Y 좌표
-        int unitLeftX = xPosition;
-        int unitRightX = xPosition + unit.getWidth();
-
-        for (Object obj : Instance.getObjectManager().getObjects()) {
-            if (obj instanceof Structure && ((Structure) obj).isPlaced()) {
-                Structure structure = (Structure) obj;
-                int structureTopY = structure.getY();
-                int structureLeftX = structure.getX();
-                int structureRightX = structure.getX() + structure.getWidth();
-
-                // Y 좌표와 X 좌표의 겹침 여부를 확인
-                if ((unitBottomY >= structureTopY - tolerance) && // 유닛 하단이 구조물 상단보다 같거나 아래에 있음
-                        (unitBottomY <= structureTopY + tolerance) && // 오차 범위 내
-                        (unitRightX > structureLeftX) && // 수평으로 겹침
-                        (unitLeftX < structureRightX)) { // 수평으로 겹침
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    // 유닛이 현재 위치의 아래에 구조물이 있는지 확인
-    private boolean isStructureBelow(Unit unit) {
-        return isStructureBelowAtPosition(unit, unit.getX());
-    }
-
-    // 특정 X 위치와 그 앞 위치까지 완전히 지지되는지 확인
-    private boolean isFullySupportedAtPosition(Unit unit, int xPosition) {
-        // 현재 위치와 유닛 너비의 1/2 이동 후 위치에서 모두 구조물이 있는지 확인
-        int stepX = unit.getWidth() / 2;
-
-        // 현재 위치 및 한 칸 앞으로 구조물 지지가 있는지 확인
-        return isStructureBelowAtPosition(unit, xPosition) &&
-                isStructureBelowAtPosition(unit, xPosition + stepX);
     }
 
 
@@ -266,6 +255,9 @@ public class GameManager {
 
     public void setTargetX(int x) {
         this.targetX = x;
+        if(isReadyToMove == false){
+            isReadyToMove = true;
+        }
     }
 
     public boolean handleTouchEvent(int touchX, int touchY, Context context) {
@@ -285,24 +277,27 @@ public class GameManager {
 
     public boolean handleDoubleTap(Context context) {
         if (currentAction == ActionType.MOVE_ITEM && currentItem != null) {
-            boolean canPlace = true;
+            // 현재 아이템의 그리드 위치 계산
+            int gridX = currentItem.getX() / 100; // 가로 위치
+            int gridY = currentItem.getY() / 100; // 세로 위치
 
-            // 현재 위치에 다른 구조물이 있는지 확인
-            for (Object obj : Instance.getObjectManager().getObjects()) {
-                if (obj instanceof Structure && obj != currentItem && obj.getAABB().intersect(currentItem.getAABB())) {
-                    canPlace = false;
-                    break;
-                }
+            if (gridY < 0 || gridY >= mapArray.length || gridX < 0 || gridX >= mapArray[0].length) {
+                Toast.makeText(context, "Cannot place outside the grid!", Toast.LENGTH_SHORT).show();
+                return false;
             }
 
-            if (canPlace) {
-                currentItem.setPlaced(true);
-                Instance.getObjectManager().addObject(currentItem);
-                clearCurrentItem();
-                currentAction = ActionType.DO_NOTHING;
-            } else {
-                Toast.makeText(context, "Cannot place here!", Toast.LENGTH_SHORT).show();
+            if (mapArray[gridY][gridX] != 0) {
+                Toast.makeText(context, "Cannot place here! Cell is occupied.", Toast.LENGTH_SHORT).show();
+                return false;
             }
+
+            mapArray[gridY][gridX] = (currentItem.getStructureType() == Structure.StructureType.BLOCK) ? 1 : 2; // 1 = Block, 2 = Ladder
+            currentItem.setPlaced(true);
+            Instance.getObjectManager().addObject(currentItem);
+            clearCurrentItem(); // 아이템 초기화
+            currentAction = ActionType.DO_NOTHING;
+
+            Toast.makeText(context, "Item placed successfully!", Toast.LENGTH_SHORT).show();
             return true;
         }
         return false;
