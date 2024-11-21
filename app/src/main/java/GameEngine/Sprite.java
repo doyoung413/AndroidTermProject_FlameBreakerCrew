@@ -13,13 +13,11 @@ public class Sprite {
     private int frameHeight;        // Frame height for animations
     private int frameCount;         // Total number of frames (for animation)
 
-    // Constructor for static sprites
     public Sprite(Bitmap spriteSheet) {
         this.spriteSheet = spriteSheet;
         this.isAnimated = false;
     }
 
-    // Constructor for animated sprites
     public Sprite(Bitmap spriteSheet, int frameWidth, int frameHeight, int frameCount) {
         this.spriteSheet = spriteSheet;
         this.isAnimated = true;
@@ -28,29 +26,33 @@ public class Sprite {
         this.frameCount = frameCount;
     }
 
-    // Draw method for rendering sprites
-    public void draw(Canvas canvas, int x, int y, int width, int height, float angle, AnimationState animationState) {
+    public void draw(Canvas canvas, int x, int y, int width, int height, float angle, AnimationState animationState, float dt) {
         if (isAnimated) {
-            drawAnimated(canvas, x, y, width, height, angle, animationState);
+            drawAnimated(canvas, x, y, width, height, angle, animationState, dt);
         } else {
             drawStatic(canvas, x, y, width, height, angle);
         }
     }
 
-    // Draw static sprite
     private void drawStatic(Canvas canvas, int x, int y, int width, int height, float angle) {
         if (spriteSheet == null) return;
 
         Matrix matrix = new Matrix();
-        matrix.postTranslate(-spriteSheet.getWidth() / 2f, -spriteSheet.getHeight() / 2f);
-        matrix.postRotate(angle);
-        matrix.postScale((float) width / spriteSheet.getWidth(), (float) height / spriteSheet.getHeight());
-        matrix.postTranslate(x + width / 2f, y + height / 2f);
-        canvas.drawBitmap(spriteSheet, matrix, null);
+        matrix.set(Instance.getCameraManager().getCombinedMatrix());
+
+        float spriteCenterX = x + width / 2f;
+        float spriteCenterY = y + height / 2f;
+
+        matrix.postTranslate(-spriteSheet.getWidth() / 2f, -spriteSheet.getHeight() / 2f); // 원점 이동
+        matrix.postRotate(angle); // 회전 적용
+        matrix.postScale((float) width / spriteSheet.getWidth(), (float) height / spriteSheet.getHeight()); // 크기 조정
+        matrix.postTranslate(spriteCenterX, spriteCenterY); // 화면 좌표로 이동
+
+        canvas.setMatrix(matrix);
+        canvas.drawBitmap(spriteSheet, 0, 0, null);
     }
 
-    // Draw animated sprite
-    private void drawAnimated(Canvas canvas, int x, int y, int width, int height, float angle, AnimationState animationState) {
+    private void drawAnimated(Canvas canvas, int x, int y, int width, int height, float angle, AnimationState animationState, float dt) {
         if (spriteSheet == null || animationState == null) return;
 
         int frameWidth = spriteSheet.getWidth() / frameCount;
@@ -59,17 +61,29 @@ public class Sprite {
         Rect dst = new Rect(x, y, x + width, y + height);
 
         Matrix matrix = new Matrix();
-        matrix.postRotate(angle, dst.centerX(), dst.centerY());
-        canvas.save();
-        canvas.concat(matrix);
-        canvas.drawBitmap(spriteSheet, src, dst, null);
-        canvas.restore();
+        matrix.set(Instance.getCameraManager().getCombinedMatrix());
 
-        // Update animation frame
-        animationState.frameTimer += 1.0f / 60.0f * 1000; // Assuming 60 FPS
+        float spriteCenterX = x + width / 2f;
+        float spriteCenterY = y + height / 2f;
+
+        matrix.postTranslate(-frameWidth / 2f, -spriteSheet.getHeight() / 2f); // 원점 이동
+        matrix.postRotate(angle); // 회전 적용
+        matrix.postScale((float) width / frameWidth, (float) height / spriteSheet.getHeight()); // 크기 조정
+        matrix.postTranslate(spriteCenterX, spriteCenterY); // 화면 좌표로 이동
+
+        canvas.setMatrix(matrix);
+        canvas.drawBitmap(spriteSheet, src, new Rect(0, 0, width, height), null);
+
+        animationState.frameTimer += dt * 1000;
         if (animationState.frameTimer >= animationState.frameDuration) {
             animationState.index = (animationState.index + 1) % frameCount;
             animationState.frameTimer -= animationState.frameDuration;
+            if(animationState.isAnimatedEnd == true && animationState.index != frameCount - 1){
+                animationState.isAnimatedEnd = false;
+            }
+            else if(animationState.isAnimatedEnd == false && animationState.index == frameCount - 1){
+                animationState.isAnimatedEnd = true;
+            }
         }
     }
 }

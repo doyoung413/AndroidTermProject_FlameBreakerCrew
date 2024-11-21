@@ -4,22 +4,14 @@
     <selectionStates>
       <SelectionState runConfigName="Unnamed">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-11-18T07:26:35.604963300Z">
+        <DropdownSelection timestamp="2024-11-21T01:27:57.149923500Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Doyeong\.android\avd\Pixel_2.ini" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Doyeong\.android\avd\Pixel_2_API_35.ini" />
             </handle>
           </Target>
         </DropdownSelection>
-        <DialogSelection>
-          <targets>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Doyeong\.android\avd\Pixel_2.ini" />
-              </handle>
-            </Target>
-          </targets>
-        </DialogSelection>
+        <DialogSelection />
       </SelectionState>
     </selectionStates>
   </component>

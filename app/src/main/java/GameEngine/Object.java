@@ -30,32 +30,32 @@ public class Object {
         this.height = height;
         this.color = color;
         this.name = name;
-        this.angle = 0; // Default angle
-        this.drawType = DrawType.RECTANGLE; // Default draw type
+        this.angle = 0;
+        this.drawType = DrawType.RECTANGLE;
         updateAABB();
     }
 
     protected void Init() {}
-    protected void Update() {}
+    protected void Update(float dt) {}
     protected void End() {}
 
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas, float dt) {
         SpriteManager spriteManager = Instance.getSpriteManager();
 
         switch (drawType) {
             case RECTANGLE:
-                spriteManager.drawRectangle(canvas, x, y, width, height, color);
+                spriteManager.drawRectangle(canvas, x, y, width, height, 0, color);
                 break;
 
             case SPRITE:
                 if (spriteName != null) {
-                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, null);
+                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, null, dt);
                 }
                 break;
 
             case ANIMATION:
                 if (spriteName != null && animationState != null) {
-                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, animationState);
+                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, animationState, dt);
                 }
                 break;
         }

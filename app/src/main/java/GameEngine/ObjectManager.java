@@ -21,16 +21,15 @@ public class ObjectManager {
         objects.remove(obj);
     }
 
-    public void updateObjects() {
+    public void updateObjects(float dt) {
         for (Object obj : objects) {
-            obj.Update();
+            obj.Update(dt);
         }
     }
 
-    // 모든 객체를 그리는 메서드
-    public void drawObjects(Canvas canvas) {
+    public void drawObjects(Canvas canvas, float dt) {
         for (Object obj : objects) {
-            obj.draw(canvas);
+            obj.draw(canvas, dt);
         }
     }
 

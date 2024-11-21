@@ -26,8 +26,7 @@ public class Button extends Object {
     }
 
     @Override
-    public void Update() {
-            Toast.makeText(context, getName() + " 버튼이 클릭되었습니다!", Toast.LENGTH_SHORT).show();
+    public void Update(float dt) {
     }
 
     public boolean isClicked(int touchX, int touchY) {

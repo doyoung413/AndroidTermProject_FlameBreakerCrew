@@ -1,5 +1,6 @@
 package Game;
 
+import GameEngine.AnimationState;
 import GameEngine.Object;
 import GameEngine.Instance;
 
@@ -55,14 +56,14 @@ public class GameManager {
         System.out.println("Timer stopped!");
     }
 
-    public void update() {
+    public void update(float dt) {
         if (isTimerRunning) {
             elapsedTime = System.currentTimeMillis() - startTime;
         }
         checkCollision();
         if (currentAction == ActionType.MOVE_UNIT && selectedUnit instanceof Unit) {
             moveSelectedUnit(); // 유닛 이동
-            updateMovement(1.0f / 60.0f);
+            updateMovement(dt);
         } else if (currentAction == ActionType.MOVE_ITEM && currentItem != null && !currentItem.isPlaced()) {
             alignCurrentItemToGrid(); // 아이템 배치 중 그리드에 맞추어 이동
         }
@@ -115,11 +116,15 @@ public class GameManager {
                         Instance.getObjectManager().addObject(
                                 new Unit(x * 100, y * 100, 100, 100, Color.BLUE, "Rescue", 5,Unit.UnitType.RESCUE)
                         );
+                        Instance.getObjectManager().getLastObject().setSpriteName("walk");
+                        Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.ANIMATION);
+                        Instance.getObjectManager().getLastObject().setAnimationState(new AnimationState(60, true));
                         break;
                     case 4:
                         Instance.getObjectManager().addObject(
-                                new Unit(x * 100, y * 100, 100, 100, Color.RED, "Target",5, Unit.UnitType.TARGET)
-                        );
+                                new Unit(x * 100, y * 100, 100, 100, Color.RED, "Target",5, Unit.UnitType.TARGET));
+                                Instance.getObjectManager().getLastObject().setSpriteName("idle");
+                        Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.SPRITE);
                         break;
                 }
             }
@@ -136,10 +141,9 @@ public class GameManager {
     public void setSelectedUnit(Object unit, Context context) {
         this.selectedUnit = unit;
         this.currentAction = ActionType.MOVE_UNIT;
-        isMoving = false; // Reset movement state
+        isMoving = false;
         isReadyToMove = false;
 
-        // 취소 버튼이 없으면 생성
         if (cancelButton == null) {
             cancelButton = new Button(context, 750, 1600, 200, 100, Color.GRAY, "Cancel", Button.ButtonType.BLOCK);
             Instance.getObjectManager().addObject(cancelButton);
@@ -170,10 +174,8 @@ public class GameManager {
                 gridTargetX = mapArray[0].length - 1;
             }
 
-            // Clear the starting position in the array
             mapArray[gridStartY][gridStartX] = 0;
 
-            // Start movement
             isMoving = true;
             interpolationX = unit.getX();
         }
@@ -187,7 +189,6 @@ public class GameManager {
             float movement = speed * deltaTime;
             float targetPixelX = gridTargetX * 100;
 
-            // Determine movement direction
             if (interpolationX < targetPixelX) {
                 interpolationX = Math.min(interpolationX + movement, targetPixelX);
             } else {
@@ -200,7 +201,6 @@ public class GameManager {
                 unit.setPosition((int) targetPixelX, unit.getY());
                 gridStartX = gridTargetX;
 
-                // Check for cliffs or obstacles
                 if (mapArray[gridStartY][gridStartX] != 0 ||
                         (gridStartY + 1 < mapArray.length && mapArray[gridStartY + 1][gridStartX] == 0)) {
                     System.out.println("Movement stopped: cliff or obstacle detected.");
@@ -230,7 +230,6 @@ public class GameManager {
         }
         Instance.getObjectManager().addObject(currentItem);
 
-        // 기존 취소 버튼 재사용
         if (cancelButton == null) {
             cancelButton = new Button(context, 750, 1600, 200, 100, Color.GRAY, "Cancel", Button.ButtonType.BLOCK);
             Instance.getObjectManager().addObject(cancelButton);
@@ -242,7 +241,7 @@ public class GameManager {
             Instance.getObjectManager().removeObject(currentItem);
             currentItem = null;
         }
-        clearSelectedUnit(); // 취소 버튼 제거
+        clearSelectedUnit();
     }
 
     private void alignCurrentItemToGrid() {
@@ -261,7 +260,6 @@ public class GameManager {
     }
 
     public boolean handleTouchEvent(int touchX, int touchY, Context context) {
-        // 취소 버튼 클릭 시
         if (cancelButton != null && cancelButton.isClicked(touchX, touchY)) {
             clearCurrentItem();
             return true;
@@ -277,9 +275,8 @@ public class GameManager {
 
     public boolean handleDoubleTap(Context context) {
         if (currentAction == ActionType.MOVE_ITEM && currentItem != null) {
-            // 현재 아이템의 그리드 위치 계산
-            int gridX = currentItem.getX() / 100; // 가로 위치
-            int gridY = currentItem.getY() / 100; // 세로 위치
+            int gridX = currentItem.getX() / 100;
+            int gridY = currentItem.getY() / 100;
 
             if (gridY < 0 || gridY >= mapArray.length || gridX < 0 || gridX >= mapArray[0].length) {
                 Toast.makeText(context, "Cannot place outside the grid!", Toast.LENGTH_SHORT).show();
@@ -294,7 +291,7 @@ public class GameManager {
             mapArray[gridY][gridX] = (currentItem.getStructureType() == Structure.StructureType.BLOCK) ? 1 : 2; // 1 = Block, 2 = Ladder
             currentItem.setPlaced(true);
             Instance.getObjectManager().addObject(currentItem);
-            clearCurrentItem(); // 아이템 초기화
+            clearCurrentItem();
             currentAction = ActionType.DO_NOTHING;
 
             Toast.makeText(context, "Item placed successfully!", Toast.LENGTH_SHORT).show();
@@ -303,12 +300,12 @@ public class GameManager {
         return false;
     }
 
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas, float dt) {
         if (cancelButton != null) {
-            cancelButton.draw(canvas);
+            cancelButton.draw(canvas, dt);
         }
         if (currentItem != null) {
-            currentItem.draw(canvas);
+            currentItem.draw(canvas, dt);
         }
     }
 }

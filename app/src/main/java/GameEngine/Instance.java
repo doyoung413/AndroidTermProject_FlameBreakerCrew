@@ -5,7 +5,8 @@ public class Instance {
     private static ObjectManager objectManager;
     private static LevelManager levelManager;
     private static GameManager gameManager;
-    private static SpriteManager spriteManager; // Added SpriteManager
+    private static SpriteManager spriteManager;
+    private static CameraManager cameraManager;
 
     public static ObjectManager getObjectManager() {
         if (objectManager == null) {
@@ -28,10 +29,17 @@ public class Instance {
         return gameManager;
     }
 
-    public static SpriteManager getSpriteManager() { // Singleton for SpriteManager
+    public static SpriteManager getSpriteManager() {
         if (spriteManager == null) {
             spriteManager = new SpriteManager();
         }
         return spriteManager;
+    }
+
+    public static CameraManager getCameraManager() {
+        if (cameraManager == null) {
+            cameraManager = new CameraManager();
+        }
+        return cameraManager;
     }
 }

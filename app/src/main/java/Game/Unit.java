@@ -18,13 +18,13 @@ public class Unit extends Object {
     }
 
     private int speed;
-    private int health;
+    private int actLeft;
     private UnitType unitType;
 
-    public Unit(int x, int y, int width, int height, int color, String name, int speed, int health) {
+    public Unit(int x, int y, int width, int height, int color, String name, int speed, int actLeft) {
         super(x, y, width, height, color, name);
         this.speed = speed;
-        this.health = health;
+        this.actLeft = actLeft;
     }
 
     public Unit(int x, int y, int width, int height, int color, String name, int speed, UnitType unitType) {
@@ -39,32 +39,20 @@ public class Unit extends Object {
     }
 
     @Override
-    protected void Update() {
-        // 예를 들어, 체력 검사 또는 특정 행동을 여기에 정의
-        if (health <= 0) {
-            System.out.println(getName() + " is destroyed!");
-            // 필요 시 ObjectManager에서 제거할 수도 있음
-        }
+    protected void Update(float dt) {
     }
 
     @Override
-    public void draw(Canvas canvas) {
-        super.draw(canvas);
-    }
-
-    public void takeDamage(int damage) {
-        health -= damage;
-        if (health < 0) {
-            health = 0;
-        }
+    public void draw(Canvas canvas, float dt) {
+        super.draw(canvas, dt);
     }
 
     public int getSpeed() {
         return speed;
     }
 
-    public int getHealth() {
-        return health;
+    public int getActLeft() {
+        return actLeft;
     }
 
     public void setSpeed(int speed) {

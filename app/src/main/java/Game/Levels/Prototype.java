@@ -37,17 +37,12 @@ public class Prototype extends Level {
         Instance.getGameManager().init();
 
         Instance.getObjectManager().addObject(new Button(context, 100, 1600, 200, 200, Color.YELLOW, "LadderButton", Button.ButtonType.LADDER));
-        Instance.getObjectManager().getLastObject().setSpriteName("idle");
-        Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.SPRITE);
         Instance.getObjectManager().addObject(new Button(context, 300, 1600, 200, 200, Color.BLACK, "BlockButton", Button.ButtonType.BLOCK));
-        Instance.getObjectManager().getLastObject().setSpriteName("walk");
-        Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.ANIMATION);
-        Instance.getObjectManager().getLastObject().setAnimationState(new AnimationState(60));
 
         // Example 2D map array
         int[][] mapArray = {
                 {0, 0, 0, 0, 0},
-                {0, 3, 0, 0, 0},
+                {0, 3, 0, 0, 4},
                 {1, 1, 1, 1, 1},
         };
 
@@ -57,7 +52,7 @@ public class Prototype extends Level {
 
     @Override
     public void Update(float dt) {
-        Instance.getGameManager().update();
+        Instance.getGameManager().update(dt);
     }
 
     @Override
@@ -66,17 +61,8 @@ public class Prototype extends Level {
     }
 
     @Override
-    public void draw(Canvas canvas) {
-        Instance.getObjectManager().drawObjects(canvas);
-
-        long elapsedMillis = Instance.getGameManager().getElapsedTime();
-        int seconds = (int) (elapsedMillis / 1000);
-        int minutes = seconds / 60;
-        seconds = seconds % 60;
-        String timeText = String.format("%02d:%02d", minutes, seconds);
-        canvas.drawText(timeText, 50, 100, textPaint);
-
-        Instance.getGameManager().draw(canvas);
+    public void draw(Canvas canvas, float dt) {
+        Instance.getGameManager().draw(canvas, dt);
     }
 
     public boolean handleTouchEvent(MotionEvent event) {

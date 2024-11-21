@@ -83,8 +83,12 @@ public class LevelManager {
     }
 
     private void levelUpdate(float dt, Canvas canvas){
+        //Instance.getSpriteManager().drawStart(canvas);
+        Instance.getObjectManager().updateObjects(dt);
         this.levels.elementAt(currentLevel.ordinal()).Update(dt);
-        this.levels.elementAt(currentLevel.ordinal()).draw(canvas);
+
+        Instance.getObjectManager().drawObjects(canvas, dt);
+        this.levels.elementAt(currentLevel.ordinal()).draw(canvas, dt);
     }
 
     private void levelRestart(){

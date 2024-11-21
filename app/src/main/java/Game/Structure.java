@@ -41,8 +41,8 @@ public class Structure extends Object {
     }
 
     @Override
-    public void draw(Canvas canvas) {
-        super.draw(canvas);
+    public void draw(Canvas canvas, float dt) {
+        super.draw(canvas, dt);
     }
 }
 
