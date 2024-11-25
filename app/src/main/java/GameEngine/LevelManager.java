@@ -1,7 +1,6 @@
 package GameEngine;
 
 import android.graphics.Canvas;
-import android.provider.Settings;
 import android.view.MotionEvent;
 
 import java.util.Vector;

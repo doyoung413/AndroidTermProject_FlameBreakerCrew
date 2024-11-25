@@ -7,7 +7,6 @@ public class AnimationState {
     public boolean isAnimatedOnce = false;
     public boolean isAnimatedEnd = false;
 
-
     public AnimationState(int frameDuration, boolean isAnimatedOnce) {
         this.frameDuration = frameDuration;
         this.frameTimer = 0;

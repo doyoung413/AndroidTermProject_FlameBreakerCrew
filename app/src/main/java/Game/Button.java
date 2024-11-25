@@ -3,7 +3,6 @@ package Game;
 import GameEngine.Object;
 import android.content.Context;
 import android.graphics.Rect;
-import android.widget.Toast;
 
 public class Button extends Object {
     public enum ButtonType {

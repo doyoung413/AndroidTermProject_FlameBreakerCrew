@@ -49,17 +49,35 @@ public class SpriteManager {
         Matrix matrix = new Matrix();
         matrix.set(Instance.getCameraManager().getCombinedMatrix());
 
-
         float rectCenterX = x + width / 2f;
         float rectCenterY = y + height / 2f;
 
-        matrix.postTranslate(-width / 2f, -height / 2f); // 원점 이동
-        matrix.postRotate(angle, 0, 0); // 중심점에서 회전
-        matrix.postTranslate(rectCenterX, rectCenterY); // 화면 좌표로 이동
+        matrix.postTranslate(-width / 2f, -height / 2f);
+        matrix.postRotate(angle, 0, 0);
+        matrix.postTranslate(rectCenterX, rectCenterY);
 
         canvas.setMatrix(matrix);
-
         canvas.drawRect(0, 0, width, height, paint);
+    }
+
+    public void renderText(Canvas canvas, String text, int x, int y, int fontSize, int color, Paint.Align alignment) {
+        Paint paint = new Paint();
+        paint.setColor(color);
+        paint.setTextSize(fontSize);
+        paint.setTextAlign(alignment);
+
+        Matrix matrix = new Matrix();
+        matrix.set(Instance.getCameraManager().getCombinedMatrix());
+
+        float transformedX = x;
+        float transformedY = y;
+
+        float[] points = new float[]{transformedX, transformedY};
+        matrix.mapPoints(points);
+        transformedX = points[0];
+        transformedY = points[1];
+
+        canvas.drawText(text, transformedX, transformedY, paint);
     }
 }
 

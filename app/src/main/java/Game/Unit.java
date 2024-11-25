@@ -2,7 +2,6 @@ package Game;
 
 import GameEngine.Object;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 
 public class Unit extends Object {
 

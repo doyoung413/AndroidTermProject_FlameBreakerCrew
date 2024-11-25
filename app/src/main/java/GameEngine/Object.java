@@ -18,10 +18,10 @@ public class Object {
     private int color;
     private String name;
 
-    private String spriteName; // Name of the sprite in SpriteManager
-    private AnimationState animationState; // Animation information
-    private DrawType drawType; // Type of rendering
-    private float angle; // Angle for rotation
+    private String spriteName;
+    private AnimationState animationState;
+    private DrawType drawType;
+    private float angle;
 
     public Object(int x, int y, int width, int height, int color, String name) {
         this.x = x;
@@ -64,6 +64,16 @@ public class Object {
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
+        updateAABB();
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+        updateAABB();
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
         updateAABB();
     }
 

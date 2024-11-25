@@ -1,13 +1,11 @@
 package Game.Levels;
 
 import Game.GameManager;
-import GameEngine.AnimationState;
 import GameEngine.Level;
 import GameEngine.Instance;
 
 import Game.Button;
 import Game.Unit;
-import Game.Structure;
 import GameEngine.Object;
 
 import android.content.Context;
@@ -41,12 +39,15 @@ public class Prototype extends Level {
 
         // Example 2D map array
         int[][] mapArray = {
-                {0, 0, 0, 0, 0},
-                {0, 3, 0, 0, 4},
-                {1, 1, 1, 1, 1},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 3, 0, 0, 4, 0, 0, 0, 0, 0},
+                {1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 1, 1, 1, 1, 1},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
 
-        // Pass the map array to GameManager
         Instance.getGameManager().initializeMap(mapArray);
     }
 

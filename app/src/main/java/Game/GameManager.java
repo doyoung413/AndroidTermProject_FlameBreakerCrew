@@ -7,7 +7,6 @@ import GameEngine.Instance;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.widget.Toast;
 
 public class GameManager {
@@ -21,6 +20,8 @@ public class GameManager {
         LADDER,
         BLOCK
     }
+
+    public static final int GRID_SIZE = 100;
 
     private Object selectedUnit;
     private ActionType currentAction;
@@ -104,17 +105,17 @@ public class GameManager {
                 switch (mapArray[y][x]) {
                     case 1:
                         Instance.getObjectManager().addObject(
-                                new Structure(x * 100, y * 100, 100, 100, Color.BLACK, "Block", Structure.StructureType.BLOCK, true)
+                                new Structure(x * GRID_SIZE, y * GRID_SIZE, 1, 1, Color.BLACK, "Block", Structure.StructureType.BLOCK, true)
                         );
                         break;
                     case 2:
                         Instance.getObjectManager().addObject(
-                                new Structure(x * 100, y * 100, 100, 100, Color.GRAY, "Ladder", Structure.StructureType.LADDER, true)
+                                new Structure(x * GRID_SIZE, y * GRID_SIZE, 1, 3, Color.GRAY, "Ladder", Structure.StructureType.LADDER, true)
                         );
                         break;
                     case 3:
                         Instance.getObjectManager().addObject(
-                                new Unit(x * 100, y * 100, 100, 100, Color.BLUE, "Rescue", 5,Unit.UnitType.RESCUE)
+                                new Unit(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE, Color.BLUE, "Rescue", 5,Unit.UnitType.RESCUE)
                         );
                         Instance.getObjectManager().getLastObject().setSpriteName("walk");
                         Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.ANIMATION);
@@ -122,7 +123,7 @@ public class GameManager {
                         break;
                     case 4:
                         Instance.getObjectManager().addObject(
-                                new Unit(x * 100, y * 100, 100, 100, Color.RED, "Target",5, Unit.UnitType.TARGET));
+                                new Unit(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE, Color.RED, "Target",5, Unit.UnitType.TARGET));
                                 Instance.getObjectManager().getLastObject().setSpriteName("idle");
                         Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.SPRITE);
                         break;
@@ -145,7 +146,7 @@ public class GameManager {
         isReadyToMove = false;
 
         if (cancelButton == null) {
-            cancelButton = new Button(context, 750, 1600, 200, 100, Color.GRAY, "Cancel", Button.ButtonType.BLOCK);
+            cancelButton = new Button(context, 750, 1600, 2 * GRID_SIZE, GRID_SIZE, Color.GRAY, "Cancel", Button.ButtonType.BLOCK);
             Instance.getObjectManager().addObject(cancelButton);
         }
     }
@@ -164,9 +165,9 @@ public class GameManager {
         if (selectedUnit instanceof Unit && currentAction == ActionType.MOVE_UNIT && !isMoving && isReadyToMove) {
             Unit unit = (Unit) selectedUnit;
 
-            gridStartX = unit.getX() / 100;
-            gridStartY = unit.getY() / 100;
-            gridTargetX = targetX / 100;
+            gridStartX = unit.getX() / GRID_SIZE;
+            gridStartY = unit.getY() / GRID_SIZE;
+            gridTargetX = targetX / GRID_SIZE;
 
             if (gridTargetX < 0) {
                 gridTargetX = 0;
@@ -187,7 +188,7 @@ public class GameManager {
 
             float speed = 200;
             float movement = speed * deltaTime;
-            float targetPixelX = gridTargetX * 100;
+            float targetPixelX = gridTargetX * GRID_SIZE;
 
             if (interpolationX < targetPixelX) {
                 interpolationX = Math.min(interpolationX + movement, targetPixelX);
@@ -218,20 +219,19 @@ public class GameManager {
         }
     }
 
-
     public void setItemMode(ItemMode itemMode, Context context) {
         this.currentItemMode = itemMode;
         this.currentAction = ActionType.MOVE_ITEM;
 
         if (currentItemMode == ItemMode.LADDER) {
-            currentItem = new Structure(0, 0, 100, 300, Color.YELLOW, "Ladder", Structure.StructureType.LADDER);
+            currentItem = new Structure(0, 0, 1, 3 , Color.YELLOW, "Ladder", Structure.StructureType.LADDER, false);
         } else if (currentItemMode == ItemMode.BLOCK) {
-            currentItem = new Structure(0, 0, 100, 100, Color.BLACK, "Block", Structure.StructureType.BLOCK);
+            currentItem = new Structure(0, 0, 1, 1, Color.BLACK, "Block", Structure.StructureType.BLOCK, false);
         }
         Instance.getObjectManager().addObject(currentItem);
 
         if (cancelButton == null) {
-            cancelButton = new Button(context, 750, 1600, 200, 100, Color.GRAY, "Cancel", Button.ButtonType.BLOCK);
+            cancelButton = new Button(context, 750, 1600, 2 * GRID_SIZE, GRID_SIZE, Color.GRAY, "Cancel", Button.ButtonType.BLOCK);
             Instance.getObjectManager().addObject(cancelButton);
         }
     }
@@ -246,8 +246,8 @@ public class GameManager {
 
     private void alignCurrentItemToGrid() {
         if (currentItem != null) {
-            int alignedX = Math.round(currentItem.getX() / 100f) * 100;
-            int alignedY = Math.round(currentItem.getY() / 100f) * 100;
+            int alignedX = Math.round(currentItem.getX() / (float)GRID_SIZE) * GRID_SIZE;
+            int alignedY = Math.round(currentItem.getY() / (float)GRID_SIZE) * GRID_SIZE;
             currentItem.setPosition(alignedX, alignedY);
         }
     }
@@ -275,30 +275,90 @@ public class GameManager {
 
     public boolean handleDoubleTap(Context context) {
         if (currentAction == ActionType.MOVE_ITEM && currentItem != null) {
-            int gridX = currentItem.getX() / 100;
-            int gridY = currentItem.getY() / 100;
+            int gridX = currentItem.getX() / GRID_SIZE;
+            int gridY = currentItem.getY() / GRID_SIZE;
 
-            if (gridY < 0 || gridY >= mapArray.length || gridX < 0 || gridX >= mapArray[0].length) {
+            if (gridY < 0 || gridY + currentItem.getGridHeight() > mapArray.length ||
+                    gridX < 0 || gridX + currentItem.getGridWidth() > mapArray[0].length) {
                 Toast.makeText(context, "Cannot place outside the grid!", Toast.LENGTH_SHORT).show();
                 return false;
             }
 
-            if (mapArray[gridY][gridX] != 0) {
-                Toast.makeText(context, "Cannot place here! Cell is occupied.", Toast.LENGTH_SHORT).show();
-                return false;
+            if (currentItem.getStructureType() == Structure.StructureType.LADDER) {
+                for (int x = gridX; x < gridX + currentItem.getGridWidth(); x++) {
+                    if (gridY - 1 >= 0 && mapArray[gridY - 1][x] != 0) {
+                        Toast.makeText(context, "Ladder top must be empty!", Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                }
+
+                boolean hasSideBlock = false;
+                if (gridX - 1 >= 0 && mapArray[gridY][gridX - 1] == 1) { // 왼쪽
+                    hasSideBlock = true;
+                }
+                if (gridX + currentItem.getGridWidth() < mapArray[0].length && mapArray[gridY][gridX + currentItem.getGridWidth()] == 1) { // 오른쪽
+                    hasSideBlock = true;
+                }
+                if (!hasSideBlock) {
+                    Toast.makeText(context, "Ladder must be adjacent to a block on the left or right!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+
+                boolean hasBottomBlock = false;
+                if (gridY + currentItem.getGridHeight() < mapArray.length) {
+                    for (int x = gridX; x < gridX + currentItem.getGridWidth(); x++) {
+                        if (mapArray[gridY + currentItem.getGridHeight()][x] == 1) {
+                            hasBottomBlock = true;
+                            break;
+                        }
+                    }
+                }
+                if (!hasBottomBlock) {
+                    Toast.makeText(context, "Ladder base must be supported by a block!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+
+                boolean hasDiagonalBlock = false;
+                if (gridY + currentItem.getGridHeight() < mapArray.length) {
+                    if (gridX - 1 >= 0 && mapArray[gridY + currentItem.getGridHeight()][gridX - 1] == 1) { // 밑왼쪽
+                        hasDiagonalBlock = true;
+                    }
+                    if (gridX + currentItem.getGridWidth() < mapArray[0].length && mapArray[gridY + currentItem.getGridHeight()][gridX + currentItem.getGridWidth()] == 1) { // 밑오른쪽
+                        hasDiagonalBlock = true;
+                    }
+                }
+                if (!hasDiagonalBlock) {
+                    Toast.makeText(context, "Ladder base must have a block diagonally!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
             }
 
-            mapArray[gridY][gridX] = (currentItem.getStructureType() == Structure.StructureType.BLOCK) ? 1 : 2; // 1 = Block, 2 = Ladder
+            for (int y = gridY; y < gridY + currentItem.getGridHeight(); y++) {
+                for (int x = gridX; x < gridX + currentItem.getGridWidth(); x++) {
+                    if (mapArray[y][x] != 0) {
+                        Toast.makeText(context, "Cannot place here! Area is occupied.", Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                }
+            }
+
+            for (int y = gridY; y < gridY + currentItem.getGridHeight(); y++) {
+                for (int x = gridX; x < gridX + currentItem.getGridWidth(); x++) {
+                    mapArray[y][x] = 2; // 2 = Ladder
+                }
+            }
+
             currentItem.setPlaced(true);
             Instance.getObjectManager().addObject(currentItem);
             clearCurrentItem();
             currentAction = ActionType.DO_NOTHING;
 
-            Toast.makeText(context, "Item placed successfully!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Ladder placed successfully!", Toast.LENGTH_SHORT).show();
             return true;
         }
         return false;
     }
+
 
     public void draw(Canvas canvas, float dt) {
         if (cancelButton != null) {

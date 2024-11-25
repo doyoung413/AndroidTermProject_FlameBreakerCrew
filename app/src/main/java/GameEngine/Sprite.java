@@ -43,10 +43,10 @@ public class Sprite {
         float spriteCenterX = x + width / 2f;
         float spriteCenterY = y + height / 2f;
 
-        matrix.postTranslate(-spriteSheet.getWidth() / 2f, -spriteSheet.getHeight() / 2f); // 원점 이동
-        matrix.postRotate(angle); // 회전 적용
-        matrix.postScale((float) width / spriteSheet.getWidth(), (float) height / spriteSheet.getHeight()); // 크기 조정
-        matrix.postTranslate(spriteCenterX, spriteCenterY); // 화면 좌표로 이동
+        matrix.postTranslate(-spriteSheet.getWidth() / 2f, -spriteSheet.getHeight() / 2f);
+        matrix.postRotate(angle);
+        matrix.postScale((float) width / spriteSheet.getWidth(), (float) height / spriteSheet.getHeight());
+        matrix.postTranslate(spriteCenterX, spriteCenterY);
 
         canvas.setMatrix(matrix);
         canvas.drawBitmap(spriteSheet, 0, 0, null);
@@ -66,10 +66,10 @@ public class Sprite {
         float spriteCenterX = x + width / 2f;
         float spriteCenterY = y + height / 2f;
 
-        matrix.postTranslate(-frameWidth / 2f, -spriteSheet.getHeight() / 2f); // 원점 이동
-        matrix.postRotate(angle); // 회전 적용
-        matrix.postScale((float) width / frameWidth, (float) height / spriteSheet.getHeight()); // 크기 조정
-        matrix.postTranslate(spriteCenterX, spriteCenterY); // 화면 좌표로 이동
+        matrix.postTranslate(-frameWidth / 2f, -spriteSheet.getHeight() / 2f);
+        matrix.postRotate(angle);
+        matrix.postScale((float) width / frameWidth, (float) height / spriteSheet.getHeight());
+        matrix.postTranslate(spriteCenterX, spriteCenterY);
 
         canvas.setMatrix(matrix);
         canvas.drawBitmap(spriteSheet, src, new Rect(0, 0, width, height), null);
