@@ -1,5 +1,6 @@
 package GameEngine;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
@@ -59,6 +60,7 @@ public class Object {
                 }
                 break;
         }
+        Instance.getSpriteManager().renderText(canvas, x + ", " + y, x, y - 20, 20, Color.RED, Paint.Align.LEFT );
     }
 
     public void setPosition(int x, int y) {

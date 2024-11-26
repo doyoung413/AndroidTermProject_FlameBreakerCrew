@@ -3,6 +3,8 @@ package Game;
 import GameEngine.AnimationState;
 import GameEngine.Object;
 import GameEngine.Instance;
+import GameEngine.SpriteManager;
+import android.graphics.Paint;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -23,13 +25,15 @@ public class GameManager {
 
     public static final int GRID_SIZE = 100;
 
+    private int[][] mapArray;
     private Object selectedUnit;
     private ActionType currentAction;
     private long startTime;
     private long elapsedTime;
-    private boolean isTimerRunning = true; // 타이머가 실행 중인지 여부
     private int targetX;
 
+    private boolean isTimerRunning = true;
+    private boolean isCancelButtonEnabled = true;
     private boolean isMoving = false;
     private boolean isReadyToMove = false;
     private float interpolationX = 0;
@@ -46,12 +50,10 @@ public class GameManager {
         cancelButton = null;
     }
 
-    // 경과 시간을 반환하는 메서드
     public long getElapsedTime() {
         return elapsedTime;
     }
 
-    // 타이머 정지 메서드
     private void stopTimer() {
         isTimerRunning = false;
         System.out.println("Timer stopped!");
@@ -63,10 +65,11 @@ public class GameManager {
         }
         checkCollision();
         if (currentAction == ActionType.MOVE_UNIT && selectedUnit instanceof Unit) {
-            moveSelectedUnit(); // 유닛 이동
+            moveSelectedUnit();
             updateMovement(dt);
+            setCancelButtonEnabled(!isMoving);
         } else if (currentAction == ActionType.MOVE_ITEM && currentItem != null && !currentItem.isPlaced()) {
-            alignCurrentItemToGrid(); // 아이템 배치 중 그리드에 맞추어 이동
+            alignCurrentItemToGrid();
         }
     }
 
@@ -77,7 +80,6 @@ public class GameManager {
         cancelButton = null;
     }
 
-    // 충돌 감지 메서드
     private void checkCollision() {
         for (Object obj1 : Instance.getObjectManager().getObjects()) {
             if (obj1 instanceof Unit && ((Unit) obj1).getType() == Unit.UnitType.RESCUE) {
@@ -94,7 +96,6 @@ public class GameManager {
         }
     }
 
-    private int[][] mapArray;
 
     public void initializeMap(int[][] mapArray) {
         this.mapArray = mapArray;
@@ -175,46 +176,57 @@ public class GameManager {
                 gridTargetX = mapArray[0].length - 1;
             }
 
-            mapArray[gridStartY][gridStartX] = 0;
-
             isMoving = true;
             interpolationX = unit.getX();
         }
     }
 
-    public void updateMovement(float deltaTime) {
-        if (isMoving && isReadyToMove && selectedUnit instanceof Unit) {
-            Unit unit = (Unit) selectedUnit;
+    int calculateStopPoint(int currentGridX, int targetGridX, int gridY) {
+        int step = (targetGridX > currentGridX) ? 1 : -1;
+        for (int x = currentGridX + step; x != targetGridX + step; x += step) {
+            if (x < 0 || x >= mapArray[0].length) {
+                return x - step;
+            }
+            if (mapArray[gridY][x] != 0) {
+                return x - step;
+            }
+            if (gridY + 1 < mapArray.length && mapArray[gridY + 1][x] == 0) {
+                return x - step;
+            }
+        }
+        return targetGridX;
+    }
 
+    public void updateMovement(float deltaTime) {
+        if (isMoving && selectedUnit instanceof Unit) {
+            Unit unit = (Unit) selectedUnit;
             float speed = 200;
             float movement = speed * deltaTime;
-            float targetPixelX = gridTargetX * GRID_SIZE;
+            int currentGridX = Math.round(interpolationX / GRID_SIZE);
+            int stopPointGridX = calculateStopPoint(currentGridX, gridTargetX, gridStartY);
+            float stopPointPixelX = stopPointGridX * GRID_SIZE;
 
-            if (interpolationX < targetPixelX) {
-                interpolationX = Math.min(interpolationX + movement, targetPixelX);
+            if (interpolationX < stopPointPixelX) {
+                interpolationX = Math.min(interpolationX + movement, stopPointPixelX);
             } else {
-                interpolationX = Math.max(interpolationX - movement, targetPixelX);
+                interpolationX = Math.max(interpolationX - movement, stopPointPixelX);
             }
 
             unit.setPosition((int) interpolationX, unit.getY());
+            boolean reachedStopPoint = (Math.round(interpolationX) == stopPointPixelX);
 
-            if ((interpolationX == targetPixelX)) {
-                unit.setPosition((int) targetPixelX, unit.getY());
-                gridStartX = gridTargetX;
+            if (reachedStopPoint) {
+                isMoving = false;
+                mapArray[gridStartY][gridStartX] = 0;
+                mapArray[gridStartY][stopPointGridX] = 3;
+                gridTargetX = stopPointGridX;
+            }
 
-                if (mapArray[gridStartY][gridStartX] != 0 ||
-                        (gridStartY + 1 < mapArray.length && mapArray[gridStartY + 1][gridStartX] == 0)) {
-                    System.out.println("Movement stopped: cliff or obstacle detected.");
-                    isMoving = false; // Stop movement
-                    mapArray[gridStartY][gridStartX] = 3;
-                    return;
-                }
+            boolean reachedTarget = (Math.round(interpolationX) == gridTargetX * GRID_SIZE);
 
-                if (gridStartX == gridTargetX) {
-                    isMoving = false;
-                    mapArray[gridStartY][gridStartX] = 3;
-                    System.out.println("Unit successfully moved to (" + gridStartX + ", " + gridStartY + ")");
-                }
+            if (reachedTarget && !isMoving) {
+                mapArray[gridStartY][gridStartX] = 0;
+                mapArray[gridStartY][gridTargetX] = 3;
             }
         }
     }
@@ -259,10 +271,20 @@ public class GameManager {
         }
     }
 
+    private void setCancelButtonEnabled(boolean enabled) {
+        if (cancelButton != null) {
+            isCancelButtonEnabled = enabled;
+        }
+    }
+
     public boolean handleTouchEvent(int touchX, int touchY, Context context) {
         if (cancelButton != null && cancelButton.isClicked(touchX, touchY)) {
-            clearCurrentItem();
-            return true;
+            if (isCancelButtonEnabled) {
+                clearCurrentItem();
+                return true;
+            } else {
+                return false;
+            }
         }
 
         if (currentAction == ActionType.MOVE_ITEM && currentItem != null) {
@@ -367,5 +389,37 @@ public class GameManager {
         if (currentItem != null) {
             currentItem.draw(canvas, dt);
         }
+
+        renderMapArray(canvas);
     }
+
+    private void renderMapArray(Canvas canvas) {
+        if (mapArray == null) {
+            return;
+        }
+
+        SpriteManager spriteManager = Instance.getSpriteManager();
+
+        int startX = 700;
+        int startY = 50;
+        int lineHeight = 40;
+
+        for (int y = 0; y < mapArray.length; y++) {
+            StringBuilder row = new StringBuilder();
+            for (int x = 0; x < mapArray[y].length; x++) {
+                row.append(mapArray[y][x]).append(" ");
+            }
+
+            spriteManager.renderText(
+                    canvas,
+                    row.toString(),
+                    startX,
+                    startY + (y * lineHeight),
+                    30,
+                    Color.BLACK,
+                    Paint.Align.LEFT
+            );
+        }
+    }
+
 }

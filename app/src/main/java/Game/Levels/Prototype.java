@@ -66,25 +66,31 @@ public class Prototype extends Level {
         Instance.getGameManager().draw(canvas, dt);
     }
 
+    @Override
     public boolean handleTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
-        int touchX = (int) event.getX();
-        int touchY = (int) event.getY();
+        int screenX = (int) event.getX();
+        int screenY = (int) event.getY();
+
+        float[] worldCoords = Instance.getCameraManager().screenToWorld(screenX, screenY);
+        float worldX = worldCoords[0];
+        float worldY = worldCoords[1];
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (Instance.getGameManager().handleTouchEvent(touchX, touchY, context)) {
+            if (Instance.getGameManager().handleTouchEvent((int) worldX, (int) worldY, context)) {
                 return true;
             }
 
-            if (Instance.getGameManager().getCurrentAction() == GameManager.ActionType.MOVE_UNIT && Instance.getGameManager().getSelectedUnit() != null) {
-                Instance.getGameManager().setTargetX(touchX);
+            if (Instance.getGameManager().getCurrentAction() == GameManager.ActionType.MOVE_UNIT
+                    && Instance.getGameManager().getSelectedUnit() != null) {
+                Instance.getGameManager().setTargetX((int) worldX);
             } else if (Instance.getGameManager().getCurrentAction() == GameManager.ActionType.MOVE_ITEM) {
-                Instance.getGameManager().handleTouchEvent(touchX, touchY, context);
+                Instance.getGameManager().handleTouchEvent((int) worldX, (int) worldY, context);
             } else {
                 for (Object obj : Instance.getObjectManager().getObjects()) {
                     if (obj instanceof Button) {
                         Button button = (Button) obj;
-                        if (button.isClicked(touchX, touchY)) {
+                        if (button.isClicked((int) worldX, (int) worldY)) {
                             if (button.getButtonType() == Button.ButtonType.LADDER) {
                                 Instance.getGameManager().setItemMode(GameManager.ItemMode.LADDER, context);
                             } else if (button.getButtonType() == Button.ButtonType.BLOCK) {
@@ -94,7 +100,7 @@ public class Prototype extends Level {
                         }
                     } else if (obj instanceof Unit) {
                         Unit unit = (Unit) obj;
-                        if (unit.getAABB().contains(touchX, touchY)) {
+                        if (unit.getAABB().contains((int) worldX, (int) worldY)) {
                             Instance.getGameManager().setSelectedUnit(unit, context);
                             break;
                         }
@@ -104,6 +110,7 @@ public class Prototype extends Level {
         }
         return true;
     }
+
 
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override

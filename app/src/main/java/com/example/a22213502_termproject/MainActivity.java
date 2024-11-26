@@ -76,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
             Instance.getLevelManager().run((float) deltaTime, canvas);
 
             //FPS
-            Instance.getSpriteManager().renderText(canvas,"DeltaTime: " + deltaTime, 0, -60, 50, Color.BLACK, Paint.Align.RIGHT );
-            Instance.getSpriteManager().renderText(canvas,"FPS: " + fps, 0, 0,50, Color.BLACK, Paint.Align.RIGHT );
+            Instance.getSpriteManager().renderText(canvas,"DeltaTime: " + deltaTime, 60, 60, 50, Color.BLACK, Paint.Align.LEFT );
+            Instance.getSpriteManager().renderText(canvas,"FPS: " + fps, 60, 120,50, Color.BLACK, Paint.Align.LEFT );
             //FPS
 
             invalidate();

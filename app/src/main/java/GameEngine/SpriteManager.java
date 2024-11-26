@@ -37,11 +37,14 @@ public class SpriteManager {
     public void renderSprite(Canvas canvas, String name, int x, int y, int width, int height, float angle, AnimationState animationState, float dt) {
         Sprite sprite = spriteMap.get(name);
         if (sprite != null) {
+            canvas.save();
             sprite.draw(canvas, x, y, width, height, angle, animationState, dt);
+            canvas.restore();
         }
     }
 
     public void drawRectangle(Canvas canvas, int x, int y, int width, int height, float angle, int color) {
+        canvas.save();
         Paint paint = new Paint();
         paint.setColor(color);
         paint.setStyle(Paint.Style.FILL);
@@ -58,9 +61,11 @@ public class SpriteManager {
 
         canvas.setMatrix(matrix);
         canvas.drawRect(0, 0, width, height, paint);
+        canvas.restore();
     }
 
     public void renderText(Canvas canvas, String text, int x, int y, int fontSize, int color, Paint.Align alignment) {
+        canvas.save();
         Paint paint = new Paint();
         paint.setColor(color);
         paint.setTextSize(fontSize);
@@ -78,6 +83,7 @@ public class SpriteManager {
         transformedY = points[1];
 
         canvas.drawText(text, transformedX, transformedY, paint);
+        canvas.restore();
     }
 }
 

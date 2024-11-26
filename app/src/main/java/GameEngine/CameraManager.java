@@ -68,4 +68,16 @@ public class CameraManager {
 
         return combinedMatrix;
     }
+
+    public float[] screenToWorld(float screenX, float screenY) {
+        Matrix combinedMatrix = getCombinedMatrix();
+        Matrix inverseMatrix = new Matrix();
+        combinedMatrix.invert(inverseMatrix);
+
+        float[] screenCoords = {screenX, screenY};
+        float[] worldCoords = new float[2];
+        inverseMatrix.mapPoints(worldCoords, screenCoords);
+
+        return worldCoords;
+    }
 }
