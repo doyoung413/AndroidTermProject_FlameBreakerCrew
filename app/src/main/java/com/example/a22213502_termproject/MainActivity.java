@@ -51,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
         Instance.getCameraManager().init(screenWidth, screenHeight, 1080, 1920);
         Instance.getCameraManager().setZoom(1.f);
         Instance.getCameraManager().setPosition(0, 0);
+
+        //Instance.getSoundManager().init(this);
+        //Instance.getSoundManager().loadSound("test", R.raw.test);
     }
 
     private class GameView extends View {

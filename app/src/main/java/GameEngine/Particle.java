@@ -25,11 +25,11 @@ public class Particle {
 
     private String spriteName;
     private AnimationState animationState;
-    private Particle.ParticleType particleType;
+    private final Particle.ParticleType particleType;
     private boolean isFade = false;
     private float fadeOutAmount = 0.1f;
 
-    public Particle(int width, int height, int x, float angle, Color4i color, int y, float lifeTime) {
+    public Particle(int width, int height, int x, int y, float angle, Color4i color, float lifeTime) {
         this.width = width;
         this.height = height;
         this.x = x;

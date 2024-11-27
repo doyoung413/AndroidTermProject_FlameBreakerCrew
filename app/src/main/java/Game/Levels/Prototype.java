@@ -81,8 +81,11 @@ public class Prototype extends Level {
             if (Instance.getGameManager().handleTouchEvent((int) worldX, (int) worldY, context)) {
                 return true;
             }
+            //Particle Test
             Instance.getParticleManager().addRandomParticle(50,50, (int)worldX, (int)worldY,
-                    10, 10, 0, new Color4i(0,255,0,255), 1);
+                    10, 10, 0, 1);
+            //Particle Test
+
             if (Instance.getGameManager().getCurrentAction() == GameManager.ActionType.MOVE_UNIT
                     && Instance.getGameManager().getSelectedUnit() != null) {
                 Instance.getGameManager().setTargetX((int) worldX);

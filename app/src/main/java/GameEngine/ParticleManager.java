@@ -1,7 +1,6 @@
 package GameEngine;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 
 import java.util.Random;
 import java.util.Vector;
@@ -33,7 +32,7 @@ public class ParticleManager {
     }
 
     //TEST
-    public void addRandomParticle(int width, int height,int x, int y, int speedX, int speedY, float angle, Color4i color, float lifeTime) {
+    public void addRandomParticle(int width, int height,int x, int y, int speedX, int speedY, float angle, float lifeTime) {
         Random random = new Random();
         int particleAmount = random.nextInt(20);
         for (int i = 0; i < particleAmount; i++) {
@@ -45,8 +44,9 @@ public class ParticleManager {
             int randomHeight = (int) (height + randomSizeAdjustment);
 
             float randomAngle = angle + random.nextFloat() * 360 - random.nextFloat() * 360;
-            float newLifeTime = lifeTime + random.nextFloat() * 20 - random.nextFloat() * 10;
-            addSingleRectParticle(randomWidth, randomHeight, x, y, randomSpeedX, randomSpeedY, randomAngle, color, newLifeTime);
+            float newLifeTime = lifeTime + random.nextFloat() * 5 - random.nextFloat() * 2;
+
+            addSingleRectParticle(randomWidth, randomHeight, x, y, randomSpeedX, randomSpeedY, randomAngle, new Color4i( random.nextInt(255),random.nextInt(255),random.nextInt(255),255), newLifeTime);
             getLastParticle().setFade(true, 1.f + random.nextFloat() * 20.f - random.nextFloat() * 10.f);
         }
     }

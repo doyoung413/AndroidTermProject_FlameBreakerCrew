@@ -8,6 +8,8 @@ public class Instance {
     private static SpriteManager spriteManager;
     private static CameraManager cameraManager;
     private static ParticleManager particleManager;
+    private static SoundManager soundManager;
+
 
     public static ObjectManager getObjectManager() {
         if (objectManager == null) {
@@ -49,5 +51,12 @@ public class Instance {
             particleManager = new ParticleManager();
         }
         return particleManager;
+    }
+
+    public static SoundManager getSoundManager() {
+        if (soundManager == null) {
+            soundManager = new SoundManager();
+        }
+        return soundManager;
     }
 }
