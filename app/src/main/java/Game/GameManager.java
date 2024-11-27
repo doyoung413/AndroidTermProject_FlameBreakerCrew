@@ -28,6 +28,7 @@ public class GameManager {
 
     private int[][] mapArray;
     private Object selectedUnit;
+    private Object targetObject  = null;
     private ActionType currentAction;
     private long startTime;
     private long elapsedTime;
@@ -100,45 +101,120 @@ public class GameManager {
 
     public void initializeMap(int[][] mapArray) {
         this.mapArray = mapArray;
-        //Instance.getObjectManager().clearObjects();
 
         for (int y = 0; y < mapArray.length; y++) {
             for (int x = 0; x < mapArray[y].length; x++) {
                 switch (mapArray[y][x]) {
                     case 1:
                         Instance.getObjectManager().addObject(
-                                new Structure(x * GRID_SIZE, y * GRID_SIZE, 1, 1, new Color4i(0,0,0,255), "Block", Structure.StructureType.BLOCK, true)
+                                new Structure(x * GRID_SIZE, y * GRID_SIZE, 1, 1,
+                                        new Color4i(0, 0, 0, 255), "Block",
+                                        Structure.StructureType.BLOCK, true)
                         );
                         break;
+
                     case 2:
                         Instance.getObjectManager().addObject(
-                                new Structure(x * GRID_SIZE, y * GRID_SIZE, 1, 3, new Color4i(125,125,125,255), "Ladder", Structure.StructureType.LADDER, true)
+                                new Structure(x * GRID_SIZE, y * GRID_SIZE, 1, 3,
+                                        new Color4i(125, 125, 125, 255), "Ladder",
+                                        Structure.StructureType.LADDER, true)
                         );
                         break;
+
                     case 3:
                         Instance.getObjectManager().addObject(
-                                new Unit(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE, new Color4i(0,0,255,255), "Rescue", 5,Unit.UnitType.RESCUE)
+                                new Unit(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE,
+                                        new Color4i(0, 0, 255, 255), "Rescue", 5,
+                                        Unit.UnitType.RESCUE)
                         );
                         Instance.getObjectManager().getLastObject().setSpriteName("walk");
                         Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.ANIMATION);
                         Instance.getObjectManager().getLastObject().setAnimationState(new AnimationState(60, true));
                         break;
+
                     case 4:
                         Instance.getObjectManager().addObject(
-                                new Unit(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE, new Color4i(255,0,0,255), "Target",5, Unit.UnitType.TARGET));
-                                Instance.getObjectManager().getLastObject().setSpriteName("idle");
+                                new Unit(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE,
+                                        new Color4i(255, 0, 0, 255), "Target", 5,
+                                        Unit.UnitType.TARGET)
+                        );
+                        Instance.getObjectManager().getLastObject().setSpriteName("idle");
                         Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.SPRITE);
+                        break;
+
+                    case 5:
+                        Instance.getObjectManager().addObject(
+                                new Obstacle(x * GRID_SIZE, y * GRID_SIZE, 1, 1,
+                                        new Color4i(255, 255, 0, 255), "Breakable",
+                                        Obstacle.ObstacleType.BREAKABLE)
+                        );
+                        break;
+
+                    case 6:
+                        Instance.getObjectManager().addObject(
+                                new Obstacle(x * GRID_SIZE, y * GRID_SIZE, 1, 1,
+                                        new Color4i(255, 69, 0, 255), "Fire",
+                                        Obstacle.ObstacleType.FIRE)
+                        );
+                        break;
+
+                    case 7:
+                        Instance.getObjectManager().addObject(
+                                new Unit(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE,
+                                        new Color4i(0, 255, 0, 255), "Hammer", 5,
+                                        Unit.UnitType.HAMMER)
+                        );
+                        break;
+
+                    case 8:
+                        Instance.getObjectManager().addObject(
+                                new Unit(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE,
+                                        new Color4i(0, 191, 255, 255), "Water", 5,
+                                        Unit.UnitType.WATER)
+                        );
+                        break;
+
+                    default:
                         break;
                 }
             }
         }
     }
+
+
     public ActionType getCurrentAction() {
         return currentAction;
     }
 
     public Object getSelectedUnit() {
         return selectedUnit;
+    }
+
+    private void processInteraction(Unit unit, Obstacle obstacle, int gridX, int gridY) {
+        if (unit.getActLeft() > 0)
+        {
+            if (unit.getType() == Unit.UnitType.WATER && obstacle.getSObstacleType() == Obstacle.ObstacleType.FIRE) {
+                mapArray[gridY][gridX] = 0;
+                Instance.getObjectManager().removeObject(obstacle);
+                unit.setActLeft(unit.getActLeft() - 1);
+                Instance.getParticleManager().addRandomParticle(25,25, obstacle.getX(), obstacle.getY(),
+                        20, 20, 0, 1);
+            } else if (unit.getType() == Unit.UnitType.HAMMER && obstacle.getSObstacleType() == Obstacle.ObstacleType.BREAKABLE) {
+                mapArray[gridY][gridX] = 0;
+                Instance.getObjectManager().removeObject(obstacle);
+                unit.setActLeft(unit.getActLeft() - 1);
+                Instance.getParticleManager().addRandomParticle(25,25, obstacle.getX(), obstacle.getY(),
+                        20, 20, 0, 1);
+            }
+            isMoving = false;
+            isReadyToMove = false;
+            selectedUnit = null;
+            currentAction = ActionType.DO_NOTHING;
+            if (cancelButton != null) {
+                Instance.getObjectManager().removeObject(cancelButton);
+                cancelButton = null;
+            }
+        }
     }
 
     public void setSelectedUnit(Object unit, Context context) {
@@ -218,16 +294,29 @@ public class GameManager {
 
             if (reachedStopPoint) {
                 isMoving = false;
+
                 mapArray[gridStartY][gridStartX] = 0;
                 mapArray[gridStartY][stopPointGridX] = 3;
                 gridTargetX = stopPointGridX;
-            }
 
-            boolean reachedTarget = (Math.round(interpolationX) == gridTargetX * GRID_SIZE);
+                if (targetObject != null) {
+                    int targetGridX = targetObject.getX() / GRID_SIZE;
+                    int targetGridY = targetObject.getY() / GRID_SIZE;
 
-            if (reachedTarget && !isMoving) {
-                mapArray[gridStartY][gridStartX] = 0;
-                mapArray[gridStartY][gridTargetX] = 3;
+                    if (gridStartY == targetGridY) {
+                        if (gridTargetX < targetGridX && stopPointGridX + 1 == targetGridX) {
+                            if (unit.getX() < targetObject.getX()) {
+                                processInteraction(unit, (Obstacle) targetObject, targetGridX, targetGridY);
+                            }
+                        } else if (gridTargetX > targetGridX && stopPointGridX - 1 == targetGridX) {
+                            if (unit.getX() > targetObject.getX()) {
+                                processInteraction(unit, (Obstacle) targetObject, targetGridX, targetGridY);
+
+                            }
+                        }
+                    }
+                }
+                targetObject = null;
             }
         }
     }
@@ -279,6 +368,19 @@ public class GameManager {
     }
 
     public boolean handleTouchEvent(int touchX, int touchY, Context context) {
+        if (currentAction == ActionType.MOVE_UNIT) {
+
+        int gridX = touchX / GRID_SIZE;
+        int gridY = touchY / GRID_SIZE;
+
+        for (Object obj : Instance.getObjectManager().getObjects()) {
+            if (obj instanceof Obstacle && obj.getAABB().contains(touchX, touchY)) {
+                    targetObject = obj;
+                    System.out.println("Object selected: " + targetObject.getName());
+                }
+            }
+        }
+
         if (cancelButton != null && cancelButton.isClicked(touchX, touchY)) {
             if (isCancelButtonEnabled) {
                 clearCurrentItem();

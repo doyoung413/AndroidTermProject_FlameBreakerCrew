@@ -18,7 +18,7 @@ public class Unit extends Object {
     }
 
     private int speed;
-    private int actLeft;
+    private int actLeft = 1;
     private UnitType unitType;
 
     public Unit(int x, int y, int width, int height, Color4i color, String name, int speed, int actLeft) {
@@ -53,6 +53,10 @@ public class Unit extends Object {
 
     public int getActLeft() {
         return actLeft;
+    }
+
+    public void setActLeft(int actLeft) {
+        this.actLeft = actLeft;
     }
 
     public void setSpeed(int speed) {
