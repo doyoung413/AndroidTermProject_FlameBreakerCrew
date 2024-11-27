@@ -16,7 +16,7 @@ public class Object {
     private int x;
     private int y;
     private Rect aabb;
-    private int color;
+    private Color4i color;
     private String name;
 
     private String spriteName;
@@ -24,7 +24,7 @@ public class Object {
     private DrawType drawType;
     private float angle;
 
-    public Object(int x, int y, int width, int height, int color, String name) {
+    public Object(int x, int y, int width, int height, Color4i color, String name) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -45,7 +45,7 @@ public class Object {
 
         switch (drawType) {
             case RECTANGLE:
-                spriteManager.drawRectangle(canvas, x, y, width, height, 0, color);
+                spriteManager.drawRectangle(canvas, x, y, width, height, 0, Color.argb(color.a, color.r, color.g, color.b));
                 break;
 
             case SPRITE:
@@ -60,7 +60,7 @@ public class Object {
                 }
                 break;
         }
-        Instance.getSpriteManager().renderText(canvas, x + ", " + y, x, y - 20, 20, Color.RED, Paint.Align.LEFT );
+        Instance.getSpriteManager().renderText(canvas, x + ", " + y, x, y - 20, 20,  Color.argb(255, 255, 0, 0), Paint.Align.LEFT );
     }
 
     public void setPosition(int x, int y) {
@@ -110,6 +110,14 @@ public class Object {
     public void setAngle(float angle) {
         this.angle = angle;
     }
+
+    public void setColor(int r, int g, int b, int a){
+        color.a = a;
+        color.r = r;
+        color.g = g;
+        color.b = b;
+    }
+
     protected void updateAABB() {
         this.aabb = new Rect(x, y, x + width, y + height);
     }
@@ -120,4 +128,6 @@ public class Object {
     public int getWidth() { return width; }
     public int getHeight() { return height; }
     public String getName() { return name; }
+    public Color4i getColor() { return color; }
+
 }

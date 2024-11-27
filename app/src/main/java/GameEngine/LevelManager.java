@@ -88,6 +88,8 @@ public class LevelManager {
 
         Instance.getObjectManager().drawObjects(canvas, dt);
         this.levels.elementAt(currentLevel.ordinal()).draw(canvas, dt);
+
+        Instance.getParticleManager().update(canvas, dt);
     }
 
     private void levelRestart(){

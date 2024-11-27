@@ -7,6 +7,7 @@ public class Instance {
     private static GameManager gameManager;
     private static SpriteManager spriteManager;
     private static CameraManager cameraManager;
+    private static ParticleManager particleManager;
 
     public static ObjectManager getObjectManager() {
         if (objectManager == null) {
@@ -41,5 +42,12 @@ public class Instance {
             cameraManager = new CameraManager();
         }
         return cameraManager;
+    }
+
+    public static ParticleManager getParticleManager() {
+        if (particleManager == null) {
+            particleManager = new ParticleManager();
+        }
+        return particleManager;
     }
 }

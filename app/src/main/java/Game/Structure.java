@@ -1,6 +1,8 @@
 package Game;
 
 import android.graphics.Canvas;
+
+import GameEngine.Color4i;
 import GameEngine.Object;
 
 public class Structure extends Object {
@@ -16,7 +18,7 @@ public class Structure extends Object {
     private int gridHeight;
 
     // Updated constructor
-    public Structure(int x, int y, int gridWidth, int gridHeight, int color, String name, StructureType structureType, boolean isPlaced) {
+    public Structure(int x, int y, int gridWidth, int gridHeight, Color4i color, String name, StructureType structureType, boolean isPlaced) {
         super(x, y, 0, 0, color, name);
         this.structureType = structureType;
         this.gridWidth = gridWidth;

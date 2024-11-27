@@ -1,5 +1,6 @@
 package Game;
 
+import GameEngine.Color4i;
 import GameEngine.Object;
 import android.graphics.Canvas;
 
@@ -20,13 +21,13 @@ public class Unit extends Object {
     private int actLeft;
     private UnitType unitType;
 
-    public Unit(int x, int y, int width, int height, int color, String name, int speed, int actLeft) {
+    public Unit(int x, int y, int width, int height, Color4i color, String name, int speed, int actLeft) {
         super(x, y, width, height, color, name);
         this.speed = speed;
         this.actLeft = actLeft;
     }
 
-    public Unit(int x, int y, int width, int height, int color, String name, int speed, UnitType unitType) {
+    public Unit(int x, int y, int width, int height, Color4i color, String name, int speed, UnitType unitType) {
         super(x, y, width, height, color, name);
         this.speed = speed;
         this.unitType = unitType;

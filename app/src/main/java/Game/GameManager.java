@@ -1,6 +1,7 @@
 package Game;
 
 import GameEngine.AnimationState;
+import GameEngine.Color4i;
 import GameEngine.Object;
 import GameEngine.Instance;
 import GameEngine.SpriteManager;
@@ -106,17 +107,17 @@ public class GameManager {
                 switch (mapArray[y][x]) {
                     case 1:
                         Instance.getObjectManager().addObject(
-                                new Structure(x * GRID_SIZE, y * GRID_SIZE, 1, 1, Color.BLACK, "Block", Structure.StructureType.BLOCK, true)
+                                new Structure(x * GRID_SIZE, y * GRID_SIZE, 1, 1, new Color4i(0,0,0,255), "Block", Structure.StructureType.BLOCK, true)
                         );
                         break;
                     case 2:
                         Instance.getObjectManager().addObject(
-                                new Structure(x * GRID_SIZE, y * GRID_SIZE, 1, 3, Color.GRAY, "Ladder", Structure.StructureType.LADDER, true)
+                                new Structure(x * GRID_SIZE, y * GRID_SIZE, 1, 3, new Color4i(125,125,125,255), "Ladder", Structure.StructureType.LADDER, true)
                         );
                         break;
                     case 3:
                         Instance.getObjectManager().addObject(
-                                new Unit(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE, Color.BLUE, "Rescue", 5,Unit.UnitType.RESCUE)
+                                new Unit(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE, new Color4i(0,0,255,255), "Rescue", 5,Unit.UnitType.RESCUE)
                         );
                         Instance.getObjectManager().getLastObject().setSpriteName("walk");
                         Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.ANIMATION);
@@ -124,7 +125,7 @@ public class GameManager {
                         break;
                     case 4:
                         Instance.getObjectManager().addObject(
-                                new Unit(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE, Color.RED, "Target",5, Unit.UnitType.TARGET));
+                                new Unit(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE, new Color4i(255,0,0,255), "Target",5, Unit.UnitType.TARGET));
                                 Instance.getObjectManager().getLastObject().setSpriteName("idle");
                         Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.SPRITE);
                         break;
@@ -147,7 +148,7 @@ public class GameManager {
         isReadyToMove = false;
 
         if (cancelButton == null) {
-            cancelButton = new Button(context, 750, 1600, 2 * GRID_SIZE, GRID_SIZE, Color.GRAY, "Cancel", Button.ButtonType.BLOCK);
+            cancelButton = new Button(context, 750, 1600, 2 * GRID_SIZE, GRID_SIZE, new Color4i(125,125,125,255), "Cancel", Button.ButtonType.BLOCK);
             Instance.getObjectManager().addObject(cancelButton);
         }
     }
@@ -236,14 +237,14 @@ public class GameManager {
         this.currentAction = ActionType.MOVE_ITEM;
 
         if (currentItemMode == ItemMode.LADDER) {
-            currentItem = new Structure(0, 0, 1, 3 , Color.YELLOW, "Ladder", Structure.StructureType.LADDER, false);
+            currentItem = new Structure(0, 0, 1, 3 , new Color4i(255,255,0,255), "Ladder", Structure.StructureType.LADDER, false);
         } else if (currentItemMode == ItemMode.BLOCK) {
-            currentItem = new Structure(0, 0, 1, 1, Color.BLACK, "Block", Structure.StructureType.BLOCK, false);
+            currentItem = new Structure(0, 0, 1, 1, new Color4i(0,0,0,255), "Block", Structure.StructureType.BLOCK, false);
         }
         Instance.getObjectManager().addObject(currentItem);
 
         if (cancelButton == null) {
-            cancelButton = new Button(context, 750, 1600, 2 * GRID_SIZE, GRID_SIZE, Color.GRAY, "Cancel", Button.ButtonType.BLOCK);
+            cancelButton = new Button(context, 750, 1600, 2 * GRID_SIZE, GRID_SIZE, new Color4i(125,125,125,255), "Cancel", Button.ButtonType.BLOCK);
             Instance.getObjectManager().addObject(cancelButton);
         }
     }

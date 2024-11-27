@@ -5,10 +5,9 @@ import android.graphics.Paint;
 import java.util.Vector;
 
 public class ObjectManager {
-    private Vector<Object> objects;
+    private Vector<Object> objects = new Vector<>();
 
     public ObjectManager() {
-        objects = new Vector<>();
     }
 
     public void addObject(Object obj) {

@@ -1,6 +1,7 @@
 package Game.Levels;
 
 import Game.GameManager;
+import GameEngine.Color4i;
 import GameEngine.Level;
 import GameEngine.Instance;
 
@@ -34,8 +35,8 @@ public class Prototype extends Level {
     public void Init() {
         Instance.getGameManager().init();
 
-        Instance.getObjectManager().addObject(new Button(context, 100, 1600, 200, 200, Color.YELLOW, "LadderButton", Button.ButtonType.LADDER));
-        Instance.getObjectManager().addObject(new Button(context, 300, 1600, 200, 200, Color.BLACK, "BlockButton", Button.ButtonType.BLOCK));
+        Instance.getObjectManager().addObject(new Button(context, 100, 1600, 200, 200, new Color4i(255,255,0,255), "LadderButton", Button.ButtonType.LADDER));
+        Instance.getObjectManager().addObject(new Button(context, 300, 1600, 200, 200, new Color4i(0,0,0,255), "BlockButton", Button.ButtonType.BLOCK));
 
         // Example 2D map array
         int[][] mapArray = {
@@ -80,7 +81,8 @@ public class Prototype extends Level {
             if (Instance.getGameManager().handleTouchEvent((int) worldX, (int) worldY, context)) {
                 return true;
             }
-
+            Instance.getParticleManager().addRandomParticle(50,50, (int)worldX, (int)worldY,
+                    10, 10, 0, new Color4i(0,255,0,255), 1);
             if (Instance.getGameManager().getCurrentAction() == GameManager.ActionType.MOVE_UNIT
                     && Instance.getGameManager().getSelectedUnit() != null) {
                 Instance.getGameManager().setTargetX((int) worldX);

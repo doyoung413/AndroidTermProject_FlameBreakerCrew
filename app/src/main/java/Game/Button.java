@@ -1,5 +1,6 @@
 package Game;
 
+import GameEngine.Color4i;
 import GameEngine.Object;
 import android.content.Context;
 import android.graphics.Rect;
@@ -13,12 +14,12 @@ public class Button extends Object {
     private Context context;
     private ButtonType buttonType;
 
-    public Button(Context context, int x, int y, int width, int height, int color, String name) {
+    public Button(Context context, int x, int y, int width, int height, Color4i color, String name) {
         super(x, y, width, height, color, name);
         this.context = context;
     }
 
-    public Button(Context context, int x, int y, int width, int height, int color, String name, ButtonType buttonType) {
+    public Button(Context context, int x, int y, int width, int height, Color4i color, String name, ButtonType buttonType) {
         super(x, y, width, height, color, name);
         this.context = context;
         this.buttonType = buttonType;
