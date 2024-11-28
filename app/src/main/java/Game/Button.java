@@ -8,7 +8,8 @@ import android.graphics.Rect;
 public class Button extends Object {
     public enum ButtonType {
         LADDER,
-        BLOCK
+        BLOCK,
+        LEVELSELECT
     }
 
     private Context context;

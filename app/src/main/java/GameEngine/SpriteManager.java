@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -61,6 +62,28 @@ public class SpriteManager {
 
         canvas.setMatrix(matrix);
         canvas.drawRect(0, 0, width, height, paint);
+        canvas.restore();
+    }
+
+    public void renderText(Canvas canvas, String text, int x, int y, int fontSize, Color4i color, Paint.Align alignment) {
+        canvas.save();
+        Paint paint = new Paint();
+        paint.setColor(Color.argb(color.a, color.r, color.g, color.b));
+        paint.setTextSize(fontSize);
+        paint.setTextAlign(alignment);
+
+        Matrix matrix = new Matrix();
+        matrix.set(Instance.getCameraManager().getCombinedMatrix());
+
+        float transformedX = x;
+        float transformedY = y;
+
+        float[] points = new float[]{transformedX, transformedY};
+        matrix.mapPoints(points);
+        transformedX = points[0];
+        transformedY = points[1];
+
+        canvas.drawText(text, transformedX, transformedY, paint);
         canvas.restore();
     }
 

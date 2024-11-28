@@ -38,8 +38,12 @@ public class CameraManager {
         return (float) screenHeight / baseHeight;
     }
 
-    public float getScale() {
-        return Math.min(getScaleX(), getScaleY());
+    public int getX() {
+        return (int) x;
+    }
+
+    public int getY() {
+        return (int) y;
     }
 
     public Matrix getViewMatrix() {

@@ -11,18 +11,18 @@ public class Object {
         ANIMATION
     }
 
-    private int width;
-    private int height;
-    private int x;
-    private int y;
-    private Rect aabb;
-    private Color4i color;
-    private String name;
+    protected int width;
+    protected int height;
+    protected int x;
+    protected int y;
+    protected Rect aabb;
+    protected Color4i color;
+    protected String name;
 
-    private String spriteName;
-    private AnimationState animationState;
-    private DrawType drawType;
-    private float angle;
+    protected String spriteName;
+    protected AnimationState animationState;
+    protected DrawType drawType;
+    protected float angle;
 
     public Object(int x, int y, int width, int height, Color4i color, String name) {
         this.x = x;
@@ -60,7 +60,7 @@ public class Object {
                 }
                 break;
         }
-        Instance.getSpriteManager().renderText(canvas, x + ", " + y, x, y - 20, 20,  Color.argb(255, 255, 0, 0), Paint.Align.LEFT );
+        //Instance.getSpriteManager().renderText(canvas, x + ", " + y, x, y - 20, 20,  Color.argb(255, 255, 0, 0), Paint.Align.LEFT );
     }
 
     public void setPosition(int x, int y) {

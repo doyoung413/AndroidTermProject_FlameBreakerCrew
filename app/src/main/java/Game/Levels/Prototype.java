@@ -35,21 +35,22 @@ public class Prototype extends Level {
     public void Init() {
         Instance.getGameManager().init();
 
-        Instance.getObjectManager().addObject(new Button(context, 100, 1600, 200, 200, new Color4i(255,255,0,255), "LadderButton", Button.ButtonType.LADDER));
-        Instance.getObjectManager().addObject(new Button(context, 300, 1600, 200, 200, new Color4i(0,0,0,255), "BlockButton", Button.ButtonType.BLOCK));
-
         // Example 2D map array
         int[][] mapArray = {
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 3, 0, 0, 4, 0, 0, 0, 0, 0},
+                {0, 3, 0, 0, 7, 0, 0, 0, 0, 0},
                 {1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 7, 0, 5, 5, 0},
+                {0, 0, 0, 0, 0, 0, 0, 5, 4, 5},
                 {0, 0, 0, 0, 0, 1, 1, 1, 1, 1},
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
-
         Instance.getGameManager().initializeMap(mapArray);
+
+        Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 100, Instance.getCameraManager().getY() + 1600, 200, 200, new Color4i(255,255,0,255), "LadderButton", Button.ButtonType.LADDER));
+        Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 300, Instance.getCameraManager().getY() +1600, 200, 200, new Color4i(0,0,0,255), "BlockButton", Button.ButtonType.BLOCK));
+
+        //Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 500, Instance.getCameraManager().getY() + 800, 200, 200, new Color4i(0,0,0,255), "Select", Button.ButtonType.LEVELSELECT));
     }
 
     @Override
@@ -88,7 +89,7 @@ public class Prototype extends Level {
 
             if (Instance.getGameManager().getCurrentAction() == GameManager.ActionType.MOVE_UNIT
                     && Instance.getGameManager().getSelectedUnit() != null) {
-                Instance.getGameManager().setTargetX((int) worldX);
+                Instance.getGameManager().setTargetPosition((int) worldX, (int) worldY);
             } else if (Instance.getGameManager().getCurrentAction() == GameManager.ActionType.MOVE_ITEM) {
                 Instance.getGameManager().handleTouchEvent((int) worldX, (int) worldY, context);
             } else {
