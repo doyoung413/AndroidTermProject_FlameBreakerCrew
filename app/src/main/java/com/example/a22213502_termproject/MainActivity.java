@@ -1,5 +1,6 @@
 package com.example.a22213502_termproject;
 
+import Game.Levels.Option;
 import Game.Levels.Prototype;
 import GameEngine.Instance;
 import GameEngine.LevelManager;
@@ -29,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         Instance.getLevelManager().addLevel(new Prototype(this));
-        Instance.getLevelManager().changeLevel(LevelManager.GameLevel.PROTO);
+        Instance.getLevelManager().addLevel(new Option(this));
+        Instance.getLevelManager().changeLevel(LevelManager.GameLevel.OPTION);
 
         Instance.getSpriteManager().loadSprite(this, "idle", R.drawable.a);
         Instance.getSpriteManager().loadAnimatedSprite(this, "walk", R.drawable.b, 24, 24, 4);
@@ -81,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
             //FPS
             Instance.getSpriteManager().renderText(canvas,"DeltaTime: " + deltaTime, 60, 60, 50, Color.BLACK, Paint.Align.LEFT );
             Instance.getSpriteManager().renderText(canvas,"FPS: " + fps, 60, 120,50, Color.BLACK, Paint.Align.LEFT );
+            Instance.getSpriteManager().renderText(canvas, "Objs: " + Instance.getObjectManager().getObjects().size(), 60, 180,50, Color.BLACK, Paint.Align.LEFT );
             //FPS
 
             invalidate();

@@ -1,7 +1,6 @@
 package GameEngine;
 
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import java.util.Vector;
 
 public class ObjectManager {
@@ -50,5 +49,22 @@ public class ObjectManager {
             return objects.lastElement();
         }
         return null;
+    }
+
+    public Object findObjectWithName(String name) {
+        for (Object obj: objects) {
+            if(name.equals(obj.getName()))
+            {
+                return obj;
+            }
+        }
+        return null;
+    }
+
+    public void ClearObjects(){
+        for (int i = 0; i < objects.size(); i++) {
+            objects.remove(i);
+        }
+        objects.clear();
     }
 }

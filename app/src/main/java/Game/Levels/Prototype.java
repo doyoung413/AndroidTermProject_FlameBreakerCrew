@@ -60,7 +60,7 @@ public class Prototype extends Level {
 
     @Override
     public void End() {
-        System.out.println("ProtoType Level Ended!");
+        Instance.getObjectManager().ClearObjects();
     }
 
     @Override

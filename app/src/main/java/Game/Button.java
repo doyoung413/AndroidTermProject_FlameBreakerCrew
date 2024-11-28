@@ -9,7 +9,8 @@ public class Button extends Object {
     public enum ButtonType {
         LADDER,
         BLOCK,
-        LEVELSELECT
+        LEVELSELECT,
+        OPTIONBUTTON
     }
 
     private Context context;

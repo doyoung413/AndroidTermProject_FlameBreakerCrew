@@ -17,6 +17,7 @@ public class LevelManager {
 
     public enum GameLevel{
         PROTO,
+        OPTION,
         TITLE,
         LEVELSELECT,
         NONE
@@ -75,6 +76,7 @@ public class LevelManager {
     private void levelInit(){
         if(levelSelected != currentLevel){
             currentLevel = levelSelected;
+            levelEnd();
         }
         this.levels.elementAt(currentLevel.ordinal()).Init();
         this.state = GameState.UPDATE;
