@@ -1,5 +1,6 @@
 package GameEngine;
 import Game.GameManager;
+import Game.StageClearStateManager;
 
 public class Instance {
     private static ObjectManager objectManager;
@@ -9,6 +10,8 @@ public class Instance {
     private static CameraManager cameraManager;
     private static ParticleManager particleManager;
     private static SoundManager soundManager;
+    private static StageClearStateManager stageClearStateManager ;
+
 
 
     public static ObjectManager getObjectManager() {
@@ -58,5 +61,12 @@ public class Instance {
             soundManager = new SoundManager();
         }
         return soundManager;
+    }
+
+    public static StageClearStateManager getStageClearStateManager() {
+        if (stageClearStateManager == null) {
+            stageClearStateManager = new StageClearStateManager();
+        }
+        return stageClearStateManager;
     }
 }

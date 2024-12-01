@@ -19,7 +19,9 @@ import GameEngine.Object;
 public class Option extends Level {
     private Context context;
     private GestureDetector gestureDetector;
-    Button volumeUp, volumeDown, exit;
+    private float sliderX, sliderStartX, sliderEndX;
+    Button volumeUp, volumeDown, sliderButton, exit;
+
     public Option(Context context) {
         this.context = context;
         gestureDetector = new GestureDetector(context, new GestureListener());
@@ -27,10 +29,17 @@ public class Option extends Level {
 
     @Override
     public void Init() {
+        sliderStartX = Instance.getCameraManager().getX() + 250;
+        sliderEndX = Instance.getCameraManager().getX() + 750;
+        sliderX = (sliderStartX + sliderEndX) / 2;
+        Instance.getSoundManager().setVolume((sliderX - sliderStartX) / (sliderEndX - sliderStartX));
+
         Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 250, Instance.getCameraManager().getY() + 600, 200, 200, new Color4i(255,255,0,255), "VolumeUp", Button.ButtonType.OPTIONBUTTON));
         volumeUp = (Button) (Instance.getObjectManager().getLastObject());
         Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 750, Instance.getCameraManager().getY() + 600, 200, 200, new Color4i(0,0,0,255), "VolumeDown", Button.ButtonType.OPTIONBUTTON));
         volumeDown = (Button) (Instance.getObjectManager().getLastObject());
+        Instance.getObjectManager().addObject(new Button(context, (int) sliderX, Instance.getCameraManager().getY() + 600, 150, 100, new Color4i(128, 128, 128, 255), "Slider", Button.ButtonType.OPTIONBUTTON));
+        sliderButton = (Button) (Instance.getObjectManager().getLastObject());
         Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 500 - 175, Instance.getCameraManager().getY() + 1400, 400, 200, new Color4i(0,0,0,255), "Exit", Button.ButtonType.OPTIONBUTTON));
         exit = (Button) (Instance.getObjectManager().getLastObject());
     }
@@ -51,6 +60,12 @@ public class Option extends Level {
     @Override
     public void draw(Canvas canvas, float dt) {
         Instance.getGameManager().draw(canvas, dt);
+        float currentVolume = Instance.getSoundManager().getVolume();
+        String volumeText = String.format("Volume: %.1f%%", currentVolume);
+
+        Instance.getSpriteManager().renderText(canvas, volumeText, (int) sliderX, sliderButton.getY() - 60,
+                40, new Color4i(0, 0, 0, 255), Paint.Align.CENTER
+        );
     }
 
     @Override
@@ -71,6 +86,14 @@ public class Option extends Level {
 
             if(exit.isClicked((int)worldX, (int)worldY)){
                 Instance.getLevelManager().changeLevel(LevelManager.GameLevel.PROTO);
+            }
+        }
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            if (worldX >= sliderStartX && worldX <= sliderEndX) {
+                sliderX = Math.max(sliderStartX, Math.min(worldX, sliderEndX));
+                sliderButton.setPosition((int) sliderX, sliderButton.getY());
+
+                Instance.getSoundManager().setVolume((sliderX - sliderStartX) / (sliderEndX - sliderStartX));
             }
         }
         return true;

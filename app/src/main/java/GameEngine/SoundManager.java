@@ -4,7 +4,6 @@ import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class SoundManager {
     private SoundPool soundPool;
@@ -87,8 +86,13 @@ public class SoundManager {
 
     public void setVolume(float volume) {
         globalVolume = volume;
-        for (int streamId : streamMap.values()) {
-            soundPool.setVolume(streamId, globalVolume, globalVolume);
+        if (streamMap != null) {
+            for (int userStreamId : streamMap.keySet()) {
+                int streamId = streamMap.get(userStreamId);
+                if (soundPool != null) {
+                    soundPool.setVolume(streamId, globalVolume, globalVolume);
+                }
+            }
         }
     }
 
@@ -96,5 +100,9 @@ public class SoundManager {
         soundPool.release();
         soundMap.clear();
         streamMap.clear();
+    }
+
+    public float getVolume() {
+        return globalVolume;
     }
 }

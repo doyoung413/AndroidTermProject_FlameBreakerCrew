@@ -2,6 +2,7 @@ package com.example.a22213502_termproject;
 
 import Game.Levels.Option;
 import Game.Levels.Prototype;
+import Game.StageClearState;
 import GameEngine.Instance;
 import GameEngine.LevelManager;
 
@@ -28,6 +29,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Instance.getStageClearStateManager().loadStatesFromRaw(this, R.raw.clearstate);
+
+        for(StageClearState s : Instance.getStageClearStateManager().getStates()){
+            System.out.println(s.toString());
+        }
 
         Instance.getLevelManager().addLevel(new Prototype(this));
         Instance.getLevelManager().addLevel(new Option(this));
@@ -87,12 +93,12 @@ public class MainActivity extends AppCompatActivity {
             //FPS
 
             invalidate();
-            //long sleepTime = FRAME_TIME_MS - (System.currentTimeMillis() - currentTime);
-//            try {
-//                Thread.sleep(16);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+            long sleepTime = FRAME_TIME_MS - (System.currentTimeMillis() - currentTime);
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         } //Update
 
         @Override
