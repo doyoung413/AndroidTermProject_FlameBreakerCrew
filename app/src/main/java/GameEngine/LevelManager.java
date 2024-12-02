@@ -18,8 +18,8 @@ public class LevelManager {
     public enum GameLevel{
         PROTO,
         OPTION,
-        TITLE,
         LEVELSELECT,
+        TITLE,
         NONE
     }
     private GameState state = GameState.INIT;

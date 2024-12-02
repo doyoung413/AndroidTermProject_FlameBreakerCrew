@@ -61,7 +61,7 @@ public class ObjectManager {
         return null;
     }
 
-    public void ClearObjects(){
+    public void clearObjects(){
         for (int i = 0; i < objects.size(); i++) {
             objects.remove(i);
         }

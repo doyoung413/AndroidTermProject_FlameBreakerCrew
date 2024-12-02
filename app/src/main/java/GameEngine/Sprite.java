@@ -66,10 +66,10 @@ public class Sprite {
         float spriteCenterX = x + width / 2f;
         float spriteCenterY = y + height / 2f;
 
-        matrix.postTranslate(-frameWidth / 2f, -spriteSheet.getHeight() / 2f);
+        //matrix.postTranslate(-frameWidth / 2f, -spriteSheet.getHeight() / 2f);
         matrix.postRotate(angle);
         matrix.postScale((float) width / frameWidth, (float) height / spriteSheet.getHeight());
-        matrix.postTranslate(spriteCenterX, spriteCenterY);
+        //matrix.postTranslate(spriteCenterX, spriteCenterY);
 
         canvas.setMatrix(matrix);
         canvas.drawBitmap(spriteSheet, src, new Rect(0, 0, width, height), null);

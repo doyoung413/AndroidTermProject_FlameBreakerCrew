@@ -1,5 +1,6 @@
 package com.example.a22213502_termproject;
 
+import Game.Levels.LevelSelect;
 import Game.Levels.Option;
 import Game.Levels.Prototype;
 import Game.StageClearState;
@@ -37,7 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
         Instance.getLevelManager().addLevel(new Prototype(this));
         Instance.getLevelManager().addLevel(new Option(this));
-        Instance.getLevelManager().changeLevel(LevelManager.GameLevel.OPTION);
+        Instance.getLevelManager().addLevel(new LevelSelect(this));
+        Instance.getLevelManager().changeLevel(LevelManager.GameLevel.LEVELSELECT);
 
         Instance.getSpriteManager().loadSprite(this, "idle", R.drawable.a);
         Instance.getSpriteManager().loadAnimatedSprite(this, "walk", R.drawable.b, 24, 24, 4);
@@ -94,11 +96,11 @@ public class MainActivity extends AppCompatActivity {
 
             invalidate();
             long sleepTime = FRAME_TIME_MS - (System.currentTimeMillis() - currentTime);
-            try {
-                Thread.sleep(sleepTime);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                Thread.sleep(sleepTime);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
         } //Update
 
         @Override

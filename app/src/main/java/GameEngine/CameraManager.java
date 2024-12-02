@@ -1,9 +1,11 @@
 package GameEngine;
 
 import android.graphics.Matrix;
+import android.view.MotionEvent;
 
 public class CameraManager {
     private float x, y;
+    private float lastTouchX, lastTouchY;
     private float zoom;
     private int screenWidth, screenHeight;
     private int baseWidth, baseHeight;
@@ -36,6 +38,14 @@ public class CameraManager {
 
     public float getScaleY() {
         return (float) screenHeight / baseHeight;
+    }
+
+    public int getBaseHeight() {
+        return baseHeight;
+    }
+
+    public int getBaseWidth() {
+        return baseWidth;
     }
 
     public int getX() {
@@ -83,5 +93,25 @@ public class CameraManager {
         inverseMatrix.mapPoints(worldCoords, screenCoords);
 
         return worldCoords;
+    }
+
+    public boolean handleTouchEvent(MotionEvent event) {
+        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+            float[] worldCoords = screenToWorld(event.getX(), event.getY());
+            lastTouchX = worldCoords[0];
+            lastTouchY = worldCoords[1];
+        }
+        if(event.getAction() == MotionEvent.ACTION_MOVE){
+            float[] worldCoords = screenToWorld(event.getX(), event.getY());
+            float dx = worldCoords[0] - lastTouchX;
+            float dy = worldCoords[1] - lastTouchY;
+
+            x -= dx;
+            y -= dy;
+
+            lastTouchX = worldCoords[0];
+            lastTouchY = worldCoords[1];
+        }
+        return true;
     }
 }

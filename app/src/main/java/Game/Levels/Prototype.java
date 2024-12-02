@@ -7,6 +7,7 @@ import GameEngine.Instance;
 
 import Game.Button;
 import Game.Unit;
+import GameEngine.LevelManager;
 import GameEngine.Object;
 
 import android.content.Context;
@@ -49,8 +50,6 @@ public class Prototype extends Level {
 
         Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 100, Instance.getCameraManager().getY() + 1600, 200, 200, new Color4i(255,255,0,255), "LadderButton", Button.ButtonType.LADDER));
         Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 300, Instance.getCameraManager().getY() +1600, 200, 200, new Color4i(0,0,0,255), "BlockButton", Button.ButtonType.BLOCK));
-
-        //Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 500, Instance.getCameraManager().getY() + 800, 200, 200, new Color4i(0,0,0,255), "Select", Button.ButtonType.LEVELSELECT));
     }
 
     @Override
@@ -60,7 +59,8 @@ public class Prototype extends Level {
 
     @Override
     public void End() {
-        Instance.getObjectManager().ClearObjects();
+        Instance.getObjectManager().clearObjects();
+        Instance.getParticleManager().clear();
     }
 
     @Override
@@ -71,6 +71,10 @@ public class Prototype extends Level {
     @Override
     public boolean handleTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
+        if(Instance.getGameManager().getCurrentAction() == GameManager.ActionType.DO_NOTHING) {
+            Instance.getCameraManager().handleTouchEvent(event);
+        }
+
         int screenX = (int) event.getX();
         int screenY = (int) event.getY();
 

@@ -382,24 +382,29 @@ public class GameManager {
 
     private void processInteraction(Unit unit, Obstacle obstacle, int gridX, int gridY) {
         if (unit.getActLeft() > 0) {
+            boolean isAct = false;
             if (unit.getType() == Unit.UnitType.WATER && obstacle.getSObstacleType() == Obstacle.ObstacleType.FIRE) {
+                isAct = true;
                 mapArray[gridY][gridX] = 0;
                 Instance.getObjectManager().removeObject(obstacle);
                 unit.setActLeft(unit.getActLeft() - 1);
                 Instance.getParticleManager().addRandomParticle(25, 25, obstacle.getX(), obstacle.getY(),
                         20, 20, 0, 1);
             } else if (unit.getType() == Unit.UnitType.HAMMER && obstacle.getSObstacleType() == Obstacle.ObstacleType.BREAKABLE) {
+                isAct = true;
                 mapArray[gridY][gridX] = 0;
                 Instance.getObjectManager().removeObject(obstacle);
                 unit.setActLeft(unit.getActLeft() - 1);
                 Instance.getParticleManager().addRandomParticle(25, 25, obstacle.getX(), obstacle.getY(),
                         20, 20, 0, 1);
             }
-            selectedUnit = null;
-            currentAction = ActionType.DO_NOTHING;
-            if (cancelButton != null) {
-                Instance.getObjectManager().removeObject(cancelButton);
-                cancelButton = null;
+            if(isAct) {
+                selectedUnit = null;
+                currentAction = ActionType.DO_NOTHING;
+                if (cancelButton != null) {
+                    Instance.getObjectManager().removeObject(cancelButton);
+                    cancelButton = null;
+                }
             }
         }
     }
@@ -431,9 +436,13 @@ public class GameManager {
         this.currentAction = ActionType.MOVE_ITEM;
 
         if (currentItemMode == ItemMode.LADDER) {
-            currentItem = new Structure(0, 0, 1, 3, new Color4i(255, 255, 0, 255), "Ladder", Structure.StructureType.LADDER, false);
+            int camX = Instance.getCameraManager().getX() + Instance.getCameraManager().getBaseWidth() / 2;
+            int camY = Instance.getCameraManager().getY() + Instance.getCameraManager().getBaseHeight() / 2;
+            currentItem = new Structure(camX, camY, 1, 3, new Color4i(255, 255, 0, 255), "Ladder", Structure.StructureType.LADDER, false);
         } else if (currentItemMode == ItemMode.BLOCK) {
-            currentItem = new Structure(0, 0, 1, 1, new Color4i(0, 0, 0, 255), "Block", Structure.StructureType.BLOCK, false);
+            int camX = Instance.getCameraManager().getX() + Instance.getCameraManager().getBaseWidth() / 2;
+            int camY = Instance.getCameraManager().getY() + Instance.getCameraManager().getBaseHeight() / 2;
+            currentItem = new Structure(camX, camY, 1, 1, new Color4i(0, 0, 0, 255), "Block", Structure.StructureType.BLOCK, false);
         }
         Instance.getObjectManager().addObject(currentItem);
 
