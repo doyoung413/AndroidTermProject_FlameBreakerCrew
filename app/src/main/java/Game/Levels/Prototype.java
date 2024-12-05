@@ -19,16 +19,11 @@ import android.view.MotionEvent;
 
 public class Prototype extends Level {
     private Context context;
-    private Paint textPaint;
     private GestureDetector gestureDetector;
+    Button pause;
 
     public Prototype(Context context) {
         this.context = context;
-
-        textPaint = new Paint();
-        textPaint.setColor(Color.BLACK);
-        textPaint.setTextSize(50);
-
         gestureDetector = new GestureDetector(context, new GestureListener());
     }
 
@@ -50,6 +45,9 @@ public class Prototype extends Level {
 
         Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 100, Instance.getCameraManager().getY() + 1600, 200, 200, new Color4i(255,255,0,255), "LadderButton", Button.ButtonType.LADDER));
         Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 300, Instance.getCameraManager().getY() +1600, 200, 200, new Color4i(0,0,0,255), "BlockButton", Button.ButtonType.BLOCK));
+
+        Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 800, Instance.getCameraManager().getY(), 100, 100, new Color4i(0,0,0,255), "PAUSE", Button.ButtonType.OPTIONBUTTON));
+        pause = (Button) (Instance.getObjectManager().getLastObject());
     }
 
     @Override
@@ -71,56 +69,49 @@ public class Prototype extends Level {
     @Override
     public boolean handleTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
-        if(Instance.getGameManager().getCurrentAction() == GameManager.ActionType.DO_NOTHING) {
-            Instance.getCameraManager().handleTouchEvent(event);
+//        if(Instance.getGameManager().getCurrentAction() == GameManager.ActionType.DO_NOTHING) {
+//            Instance.getCameraManager().handleTouchEvent(event);
+//        }
+        if(Instance.getLevelManager().getGameState() == LevelManager.GameState.UPDATE) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                float[] worldCoords = Instance.getCameraManager().screenToWorld((int) event.getX(), (int) event.getY());
+                //Particle Test
+                Instance.getParticleManager().addRandomParticle(50, 50, (int) worldCoords[0], (int) worldCoords[1],
+                        10, 10, 0, 1);
+                //Particle Test
+                if (Instance.getGameManager().handleTouchEvent((int) worldCoords[0], (int) worldCoords[1], event, context)) {
+                    return true;
+                }
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+            }
         }
 
-        int screenX = (int) event.getX();
-        int screenY = (int) event.getY();
-
-        float[] worldCoords = Instance.getCameraManager().screenToWorld(screenX, screenY);
-        float worldX = worldCoords[0];
-        float worldY = worldCoords[1];
-
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (Instance.getGameManager().handleTouchEvent((int) worldX, (int) worldY, context)) {
-                return true;
-            }
+            float[] worldCoords = Instance.getCameraManager().screenToWorld((int) event.getX(), (int) event.getY());
             //Particle Test
-            Instance.getParticleManager().addRandomParticle(50,50, (int)worldX, (int)worldY,
+            Instance.getParticleManager().addRandomParticle(50, 50, (int) worldCoords[0], (int) worldCoords[1],
                     10, 10, 0, 1);
             //Particle Test
-
-            if (Instance.getGameManager().getCurrentAction() == GameManager.ActionType.MOVE_UNIT
-                    && Instance.getGameManager().getSelectedUnit() != null) {
-                Instance.getGameManager().setTargetPosition((int) worldX, (int) worldY);
-            } else if (Instance.getGameManager().getCurrentAction() == GameManager.ActionType.MOVE_ITEM) {
-                Instance.getGameManager().handleTouchEvent((int) worldX, (int) worldY, context);
-            } else {
-                for (Object obj : Instance.getObjectManager().getObjects()) {
-                    if (obj instanceof Button) {
-                        Button button = (Button) obj;
-                        if (button.isClicked((int) worldX, (int) worldY)) {
-                            if (button.getButtonType() == Button.ButtonType.LADDER) {
-                                Instance.getGameManager().setItemMode(GameManager.ItemMode.LADDER, context);
-                            } else if (button.getButtonType() == Button.ButtonType.BLOCK) {
-                                Instance.getGameManager().setItemMode(GameManager.ItemMode.BLOCK, context);
-                            }
-                            break;
-                        }
-                    } else if (obj instanceof Unit) {
-                        Unit unit = (Unit) obj;
-                        if (unit.getAABB().contains((int) worldX, (int) worldY)) {
-                            Instance.getGameManager().setSelectedUnit(unit, context);
-                            break;
-                        }
-                    }
+            if (pause.isClicked((int) worldCoords[0], (int) worldCoords[1])) {
+                pause.setIsTouch(true);
+                return true;
+            }
+        }
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            float[] worldCoords = Instance.getCameraManager().screenToWorld((int) event.getX(), (int) event.getY());
+            if (pause.isClicked((int) worldCoords[0], (int) worldCoords[1]) && pause.getIsTouch()) {
+                if (Instance.getLevelManager().getGameState() == LevelManager.GameState.UPDATE) {
+                    Instance.getLevelManager().setGameState(LevelManager.GameState.PAUSE);
+                } else if (Instance.getLevelManager().getGameState() == LevelManager.GameState.PAUSE) {
+                    Instance.getLevelManager().setGameState(LevelManager.GameState.UPDATE);
                 }
+            } else {
+                pause.setIsTouch(false);
             }
         }
         return true;
     }
-
 
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override

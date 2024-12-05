@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.view.MotionEvent;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -508,32 +509,60 @@ public class GameManager {
         return currentPath;
     }
 
-    public boolean handleTouchEvent(int touchX, int touchY, Context context) {
-        if (currentAction == ActionType.MOVE_UNIT) {
+    public boolean handleTouchEvent(int touchX, int touchY, MotionEvent event, Context context) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (cancelButton != null && cancelButton.isClicked(touchX, touchY)) {
+                if (isCancelButtonEnabled) {
+                    clearCurrentItem();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
 
-            int gridX = touchX / GRID_SIZE;
-            int gridY = touchY / GRID_SIZE;
-
-        for (Object obj : Instance.getObjectManager().getObjects()) {
-            if (obj instanceof Obstacle && obj.getAABB().contains(touchX, touchY)) {
-                    targetObject = obj;
+            if (getCurrentAction() == GameManager.ActionType.MOVE_UNIT
+                    && getSelectedUnit() != null) {
+                setTargetPosition(touchX, touchY);
+                if(targetObject == null){
+                    for (Object obj : Instance.getObjectManager().getObjects()) {
+                        if (obj instanceof Obstacle) {
+                            if (obj.getAABB().contains(touchX, touchY)) {
+                                targetObject = obj;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            else if (getCurrentAction() == GameManager.ActionType.MOVE_ITEM) {
+                if (currentAction == ActionType.MOVE_ITEM && currentItem != null) {
+                    currentItem.setPosition(touchX, touchY);
+                    return true;
+                }
+            }
+            else{
+                for (Object obj : Instance.getObjectManager().getObjects()) {
+                    if (obj instanceof Button) {
+                        Button button = (Button) obj;
+                        if (button.isClicked(touchX, touchY)) {
+                            if (button.getButtonType() == Button.ButtonType.LADDER) {
+                                setItemMode(GameManager.ItemMode.LADDER, context);
+                            } else if (button.getButtonType() == Button.ButtonType.BLOCK) {
+                                setItemMode(GameManager.ItemMode.BLOCK, context);
+                            }
+                            break;
+                        }
+                    }
+                    else if (obj instanceof Unit) {
+                        Unit unit = (Unit) obj;
+                        if (unit.getAABB().contains(touchX, touchY)) {
+                            setSelectedUnit(unit, context);
+                            break;
+                        }
+                    }
                 }
             }
         }
-        if (cancelButton != null && cancelButton.isClicked(touchX, touchY)) {
-            if (isCancelButtonEnabled) {
-                clearCurrentItem();
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        if (currentAction == ActionType.MOVE_ITEM && currentItem != null) {
-            currentItem.setPosition(touchX, touchY);
-            return true;
-        }
-
         return false;
     }
 

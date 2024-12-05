@@ -38,18 +38,17 @@ public class Sprite {
         if (spriteSheet == null) return;
 
         Matrix matrix = new Matrix();
-        matrix.set(Instance.getCameraManager().getCombinedMatrix());
-
         float spriteCenterX = x + width / 2f;
         float spriteCenterY = y + height / 2f;
+        matrix.set(Instance.getCameraManager().getCombinedMatrix());
 
-        matrix.postTranslate(-spriteSheet.getWidth() / 2f, -spriteSheet.getHeight() / 2f);
-        matrix.postRotate(angle);
+        matrix.postTranslate(-width / 2f, -height / 2f);
+        matrix.postRotate(angle, 0, 0);
         matrix.postScale((float) width / spriteSheet.getWidth(), (float) height / spriteSheet.getHeight());
         matrix.postTranslate(spriteCenterX, spriteCenterY);
 
         canvas.setMatrix(matrix);
-        canvas.drawBitmap(spriteSheet, 0, 0, null);
+        canvas.drawBitmap(spriteSheet, null, new Rect(0, 0, width, height), null);
     }
 
     private void drawAnimated(Canvas canvas, int x, int y, int width, int height, float angle, AnimationState animationState, float dt) {
@@ -66,10 +65,10 @@ public class Sprite {
         float spriteCenterX = x + width / 2f;
         float spriteCenterY = y + height / 2f;
 
-        //matrix.postTranslate(-frameWidth / 2f, -spriteSheet.getHeight() / 2f);
+        matrix.postTranslate(-frameWidth / 2f, -spriteSheet.getHeight() / 2f);
         matrix.postRotate(angle);
         matrix.postScale((float) width / frameWidth, (float) height / spriteSheet.getHeight());
-        //matrix.postTranslate(spriteCenterX, spriteCenterY);
+        matrix.postTranslate(spriteCenterX, spriteCenterY);
 
         canvas.setMatrix(matrix);
         canvas.drawBitmap(spriteSheet, src, new Rect(0, 0, width, height), null);

@@ -10,6 +10,7 @@ public class LevelManager {
         INIT,
         UPDATE,
         RESTART,
+        PAUSE,
         CHANGE,
         END,
         SHUTDOWN,
@@ -55,6 +56,9 @@ public class LevelManager {
             case UPDATE:
                 levelUpdate(dt, canvas);
                 break;
+            case PAUSE:
+                levelPause(dt, canvas);
+                break;
             case RESTART:
                 levelRestart();
                 break;
@@ -90,6 +94,17 @@ public class LevelManager {
 
         Instance.getObjectManager().drawObjects(canvas, dt);
         this.levels.elementAt(currentLevel.ordinal()).draw(canvas, dt);
+
+        Instance.getParticleManager().update(canvas, dt);
+    }
+
+    private void levelPause(float dt, Canvas canvas){
+        //Instance.getSpriteManager().drawStart(canvas);
+        Instance.getObjectManager().updateObjects(0);
+        this.levels.elementAt(currentLevel.ordinal()).Update(0);
+
+        Instance.getObjectManager().drawObjects(canvas, 0);
+        this.levels.elementAt(currentLevel.ordinal()).draw(canvas, 0);
 
         Instance.getParticleManager().update(canvas, dt);
     }
