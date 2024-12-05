@@ -17,6 +17,55 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameManager {
+    private class StructureButton {
+        private String buttonName;
+        private Structure.StructureType structureType;
+        private int count;
+        private int gridWidth;
+        private int gridHeight;
+        private Button strBtn = null;
+
+        public StructureButton(String buttonName, Structure.StructureType structureType, int count, int gridWidth, int gridHeight) {
+            this.buttonName = buttonName;
+            this.structureType = structureType;
+            this.count = count;
+            this.gridWidth = gridWidth;
+            this.gridHeight = gridHeight;
+        }
+
+        public String getButtonName() {
+            return buttonName;
+        }
+
+        public Structure.StructureType getStructureType() {
+            return structureType;
+        }
+
+        public void setCount(int count) {
+            this.count = count;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public int getGridWidth() {
+            return gridWidth;
+        }
+
+        public int getGridHeight() {
+            return gridHeight;
+        }
+
+        public Button getStrBtn() {
+            return strBtn;
+        }
+
+        public void setStrBtn(Button strBtn) {
+            this.strBtn = strBtn;
+        }
+    }
+
     public enum ActionType {
         MOVE_UNIT,
         MOVE_ITEM,
@@ -27,11 +76,6 @@ public class GameManager {
         NORMAL,
         LADDER_UP,
         LADDER_DOWN
-    }
-
-    public enum ItemMode {
-        LADDER,
-        BLOCK
     }
 
     public static final int GRID_SIZE = 100;
@@ -55,7 +99,9 @@ public class GameManager {
     private int gridStartX, gridStartY, gridTargetX, gridTargetY;
 
     private Structure currentItem;
-    private ItemMode currentItemMode;
+    private Structure.StructureType currentItemMode;
+    private StructureButton currentChosenStrBtn = null;
+    private List<StructureButton> structureButtons = new ArrayList<>();
     private Button cancelButton;
 
     public void init() {
@@ -205,7 +251,6 @@ public class GameManager {
 
         unit.setPosition((int) newX, (int) newY);
     }
-
 
     private List<int[]> findPath(int startX, int startY, int targetX, int targetY) {
         List<int[]> path = new ArrayList<>();
@@ -410,6 +455,31 @@ public class GameManager {
         }
     }
 
+    public void addStructureButton(String buttonName, Structure.StructureType structureType, int maxCount, int gridWidth, int gridHeight) {
+        StructureButton newButton = new StructureButton(buttonName, structureType, maxCount, gridWidth, gridHeight);
+        structureButtons.add(newButton);
+    }
+    public void initStructureButtons(Context context) {
+        int startX = 50;
+        int startY = 1500;
+        int buttonSize = 200;
+        int gap = 50;
+
+        currentChosenStrBtn = null;
+        for (int i = 0; i < structureButtons.size(); i++) {
+            int x = startX + i * (buttonSize + gap);
+            int y = startY;
+            StructureButton button = structureButtons.get(i);
+            Instance.getObjectManager().addObject(
+                    new Button(context, x, y, buttonSize, buttonSize,
+                            new Color4i(200, 200, 200, 255),
+                            button.getButtonName(),
+                            Button.ButtonType.valueOf(button.getButtonName().toUpperCase()))
+            );
+            button.setStrBtn((Button)Instance.getObjectManager().getLastObject());
+        }
+    }
+
     public void setSelectedUnit(Object unit, Context context) {
         this.selectedUnit = unit;
         this.currentAction = ActionType.MOVE_UNIT;
@@ -432,18 +502,18 @@ public class GameManager {
         }
     }
 
-    public void setItemMode(ItemMode itemMode, Context context) {
-        this.currentItemMode = itemMode;
+    public void setItemMode(Structure.StructureType type, Context context, int width, int height) {
+        this.currentItemMode = type;
         this.currentAction = ActionType.MOVE_ITEM;
 
-        if (currentItemMode == ItemMode.LADDER) {
+        if (currentItemMode == Structure.StructureType.LADDER) {
             int camX = Instance.getCameraManager().getX() + Instance.getCameraManager().getBaseWidth() / 2;
             int camY = Instance.getCameraManager().getY() + Instance.getCameraManager().getBaseHeight() / 2;
-            currentItem = new Structure(camX, camY, 1, 3, new Color4i(255, 255, 0, 255), "Ladder", Structure.StructureType.LADDER, false);
-        } else if (currentItemMode == ItemMode.BLOCK) {
+            currentItem = new Structure(camX, camY, width, height, new Color4i(255, 255, 0, 255), "Ladder", Structure.StructureType.LADDER, false);
+        } else if (currentItemMode == Structure.StructureType.BLOCK) {
             int camX = Instance.getCameraManager().getX() + Instance.getCameraManager().getBaseWidth() / 2;
             int camY = Instance.getCameraManager().getY() + Instance.getCameraManager().getBaseHeight() / 2;
-            currentItem = new Structure(camX, camY, 1, 1, new Color4i(0, 0, 0, 255), "Block", Structure.StructureType.BLOCK, false);
+            currentItem = new Structure(camX, camY, width, height, new Color4i(0, 0, 0, 255), "Block", Structure.StructureType.BLOCK, false);
         }
         Instance.getObjectManager().addObject(currentItem);
 
@@ -541,25 +611,32 @@ public class GameManager {
                 }
             }
             else{
-                for (Object obj : Instance.getObjectManager().getObjects()) {
-                    if (obj instanceof Button) {
-                        Button button = (Button) obj;
-                        if (button.isClicked(touchX, touchY)) {
-                            if (button.getButtonType() == Button.ButtonType.LADDER) {
-                                setItemMode(GameManager.ItemMode.LADDER, context);
-                            } else if (button.getButtonType() == Button.ButtonType.BLOCK) {
-                                setItemMode(GameManager.ItemMode.BLOCK, context);
-                            }
-                            break;
-                        }
+                for (StructureButton button : structureButtons) {
+                    if (button.strBtn.isClicked(touchX, touchY)) {
+                        button.strBtn.isTouch = true;
+                        break;
                     }
-                    else if (obj instanceof Unit) {
+                }
+                for (Object obj : Instance.getObjectManager().getObjects()) {
+                   if (obj instanceof Unit) {
                         Unit unit = (Unit) obj;
                         if (unit.getAABB().contains(touchX, touchY)) {
                             setSelectedUnit(unit, context);
                             break;
                         }
                     }
+                }
+            }
+        }
+
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            for (StructureButton button : structureButtons) {
+                if (button.count > 0 && button.strBtn.isClicked(touchX, touchY) && button.strBtn.isTouch) {
+                    setItemMode(button.getStructureType(), context, button.getGridWidth(), button.getGridHeight());
+                    currentChosenStrBtn = button;
+                    return true;
+                } else {
+                    button.strBtn.isTouch = false;
                 }
             }
         }
@@ -586,7 +663,7 @@ public class GameManager {
                 }
 
                 boolean hasSideBlock = false;
-                if (gridX - 1 >= 0 && mapArray[gridY][gridX - 1] == 1) { // 왼쪽
+                if (gridX - 1 >= 0 && mapArray[gridY][gridX - 1] == 1) {
                     hasSideBlock = true;
                 }
                 if (gridX + currentItem.getGridWidth() < mapArray[0].length && mapArray[gridY][gridX + currentItem.getGridWidth()] == 1) { // 오른쪽
@@ -613,7 +690,7 @@ public class GameManager {
 
                 boolean hasDiagonalBlock = false;
                 if (gridY + currentItem.getGridHeight() < mapArray.length) {
-                    if (gridX - 1 >= 0 && mapArray[gridY + currentItem.getGridHeight()][gridX - 1] == 1) { // 밑왼쪽
+                    if (gridX - 1 >= 0 && mapArray[gridY + currentItem.getGridHeight()][gridX - 1] == 1) {
                         hasDiagonalBlock = true;
                     }
                     if (gridX + currentItem.getGridWidth() < mapArray[0].length && mapArray[gridY + currentItem.getGridHeight()][gridX + currentItem.getGridWidth()] == 1) { // 밑오른쪽
@@ -646,7 +723,10 @@ public class GameManager {
             clearCurrentItem();
             currentAction = ActionType.DO_NOTHING;
 
-            Toast.makeText(context, "Ladder placed successfully!", Toast.LENGTH_SHORT).show();
+            if(currentChosenStrBtn.count > 0) {
+                currentChosenStrBtn.count -= 1;
+            }
+            Toast.makeText(context, "Ladder placed successfully! Count remain : " + currentChosenStrBtn.count, Toast.LENGTH_SHORT).show();
             return true;
         }
         return false;

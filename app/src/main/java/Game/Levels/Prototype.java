@@ -43,8 +43,10 @@ public class Prototype extends Level {
         };
         Instance.getGameManager().initializeMap(mapArray);
 
-        Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 100, Instance.getCameraManager().getY() + 1600, 200, 200, new Color4i(255,255,0,255), "LadderButton", Button.ButtonType.LADDER));
-        Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 300, Instance.getCameraManager().getY() +1600, 200, 200, new Color4i(0,0,0,255), "BlockButton", Button.ButtonType.BLOCK));
+        Instance.getGameManager().addStructureButton("Ladder", Game.Structure.StructureType.LADDER, 1, 1, 3);
+        Instance.getGameManager().addStructureButton("Block", Game.Structure.StructureType.BLOCK, 1, 1, 1);
+
+        Instance.getGameManager().initStructureButtons(context);
 
         Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 800, Instance.getCameraManager().getY(), 100, 100, new Color4i(0,0,0,255), "PAUSE", Button.ButtonType.OPTIONBUTTON));
         pause = (Button) (Instance.getObjectManager().getLastObject());
@@ -84,6 +86,10 @@ public class Prototype extends Level {
                 }
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
+                float[] worldCoords = Instance.getCameraManager().screenToWorld((int) event.getX(), (int) event.getY());
+                if (Instance.getGameManager().handleTouchEvent((int) worldCoords[0], (int) worldCoords[1], event, context)) {
+                    return true;
+                }
             }
         }
 
