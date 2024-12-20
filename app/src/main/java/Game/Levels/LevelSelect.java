@@ -17,7 +17,6 @@ import GameEngine.Level;
 import GameEngine.LevelManager;
 
 public class LevelSelect extends Level {
-    private final int STAGE_AMOUNTS = 5;
     private Context context;
     private GestureDetector gestureDetector;
     Vector<Button> stageButtons = new Vector<>();
@@ -31,7 +30,7 @@ public class LevelSelect extends Level {
 
     @Override
     public void Init() {
-        for(int i = 0 ; i < STAGE_AMOUNTS; i++) {
+        for(int i = 0 ; i < states.size(); i++) {
             Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + (i * 200) + 40, Instance.getCameraManager().getY() + 600,
                     100, 100, new Color4i(125, 125, 125, 255), states.get(i).getStageName(), Button.ButtonType.LEVELSELECT));
             stageButtons.add( (Button) Instance.getObjectManager().getLastObject());

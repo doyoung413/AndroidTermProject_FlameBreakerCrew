@@ -37,7 +37,7 @@ public class Prototype extends Level {
                 {0, 3, 0, 0, 7, 0, 0, 0, 0, 0},
                 {1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 5, 4, 5},
+                {0, 0, 0, 0, 0, 0, 0, 5, 4, 3},
                 {0, 0, 0, 0, 0, 1, 1, 1, 1, 1},
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
@@ -47,6 +47,8 @@ public class Prototype extends Level {
         Instance.getGameManager().addStructureButton("Block", Game.Structure.StructureType.BLOCK, 1, 1, 1);
 
         Instance.getGameManager().initStructureButtons(context);
+        Instance.getGameManager().setCountdownTime(120);
+        Instance.getGameManager().setTimerRunning(true);
 
         Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 800, Instance.getCameraManager().getY(), 100, 100, new Color4i(0,0,0,255), "PAUSE", Button.ButtonType.OPTIONBUTTON));
         pause = (Button) (Instance.getObjectManager().getLastObject());

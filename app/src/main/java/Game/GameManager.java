@@ -84,6 +84,7 @@ public class GameManager {
 
     private int[][] mapArray;
 
+    private int rescueTargetCount = 0;
     private Object selectedUnit;
     private Object targetObject = null;
     private ActionType currentAction;
@@ -92,6 +93,7 @@ public class GameManager {
     private int targetX;
     private int targetY;
 
+    private int countdownTime; // 초 단위 제한 시간
     private boolean isTimerRunning = true;
     private boolean isCancelButtonEnabled = true;
     private boolean isMoving = false;
@@ -111,19 +113,19 @@ public class GameManager {
         cancelButton = null;
     }
 
-    public long getElapsedTime() {
-        return elapsedTime;
-    }
-
-    private void stopTimer() {
-        isTimerRunning = false;
-        System.out.println("Timer stopped!");
-    }
-
     public void update(float dt) {
         if (isTimerRunning) {
-            elapsedTime = System.currentTimeMillis() - startTime;
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - startTime >= 1000) {
+                countdownTime--;
+                startTime = currentTime;
+            }
+            if (countdownTime <= 0) {
+                isTimerRunning = false;
+                System.out.println("시간 종료");
+            }
         }
+
         //checkCollision();
         if (currentAction == ActionType.MOVE_UNIT && selectedUnit instanceof Unit) {
             Unit unit = (Unit) selectedUnit;
@@ -137,6 +139,43 @@ public class GameManager {
             alignCurrentItemToGrid();
         }
         setCancelButtonEnabled(!isMoving);
+    }
+
+    public void draw(Canvas canvas, float dt) {
+        if (cancelButton != null) {
+            cancelButton.draw(canvas, dt);
+        }
+        if (currentItem != null) {
+            currentItem.draw(canvas, dt);
+        }
+
+        int camX = Instance.getCameraManager().getX();
+        int camY = Instance.getCameraManager().getY();
+
+        SpriteManager spriteManager = Instance.getSpriteManager();
+        spriteManager.renderText(
+                canvas,
+                String.format("%02d:%02d", countdownTime / 60, countdownTime % 60),
+                Instance.getCameraManager().getBaseWidth() / 2 + camX,
+                60 + camY,
+                60,
+                Color.RED,
+                Paint.Align.CENTER
+        );
+
+        renderMapArray(canvas);
+        if(!currentPath.isEmpty())
+        {
+            for (int[] step : currentPath) {
+                int x = step[0];
+                int y = step[1];
+
+                float centerX = x * GRID_SIZE;
+                float centerY = y * GRID_SIZE;
+
+                Instance.getSpriteManager().renderText(canvas, x + "," + y, (int) centerX, (int) centerY, 50, Color.BLUE, Paint.Align.LEFT);
+            }
+        }
     }
 
     private void initializePathAndStartMovement() {
@@ -207,11 +246,11 @@ public class GameManager {
                 if (targetObject != null && targetY == gridTargetY) {
                     if (targetX < gridTargetX && targetX + 1 == gridTargetX) {
                         if (unit.getX() < targetObject.getX()) {
-                            processInteraction(unit, (Obstacle) targetObject, gridTargetX, gridTargetY);
+                            processInteraction(unit, targetObject, gridTargetX, gridTargetY);
                         }
                     } else if (targetX > gridTargetX && targetX - 1 == gridTargetX) {
                         if (unit.getX() > targetObject.getX()) {
-                            processInteraction(unit, (Obstacle) targetObject, gridTargetX, gridTargetY);
+                            processInteraction(unit, targetObject, gridTargetX, gridTargetY);
                         }
                     }
                     unit.setUnitState(Unit.UnitState.WAIT);
@@ -322,21 +361,6 @@ public class GameManager {
         return path;
     }
 
-    private void checkCollision() {
-        for (Object obj1 : Instance.getObjectManager().getObjects()) {
-            if (obj1 instanceof Unit && ((Unit) obj1).getType() == Unit.UnitType.RESCUE) {
-                for (Object obj2 : Instance.getObjectManager().getObjects()) {
-                    if (obj2 instanceof Unit && ((Unit) obj2).getType() == Unit.UnitType.TARGET) {
-                        if (obj1.getAABB().intersect(obj2.getAABB())) {
-                            stopTimer();
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     public void end() {
         selectedUnit = null;
         currentItem = null;
@@ -385,6 +409,7 @@ public class GameManager {
                         );
                         Instance.getObjectManager().getLastObject().setSpriteName("idle");
                         Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.SPRITE);
+                        rescueTargetCount++;
                         break;
 
                     case 5:
@@ -426,23 +451,37 @@ public class GameManager {
         }
     }
 
-    private void processInteraction(Unit unit, Obstacle obstacle, int gridX, int gridY) {
+    private void processInteraction(Unit unit, Object target, int gridX, int gridY) {
         if (unit.getActLeft() > 0) {
             boolean isAct = false;
-            if (unit.getType() == Unit.UnitType.WATER && obstacle.getSObstacleType() == Obstacle.ObstacleType.FIRE) {
-                isAct = true;
-                mapArray[gridY][gridX] = 0;
-                Instance.getObjectManager().removeObject(obstacle);
-                unit.setActLeft(unit.getActLeft() - 1);
-                Instance.getParticleManager().addRandomParticle(25, 25, obstacle.getX(), obstacle.getY(),
-                        20, 20, 0, 1);
-            } else if (unit.getType() == Unit.UnitType.HAMMER && obstacle.getSObstacleType() == Obstacle.ObstacleType.BREAKABLE) {
-                isAct = true;
-                mapArray[gridY][gridX] = 0;
-                Instance.getObjectManager().removeObject(obstacle);
-                unit.setActLeft(unit.getActLeft() - 1);
-                Instance.getParticleManager().addRandomParticle(25, 25, obstacle.getX(), obstacle.getY(),
-                        20, 20, 0, 1);
+            if(target instanceof Obstacle){
+                Obstacle obstacle = (Obstacle) target;
+                if (unit.getType() == Unit.UnitType.WATER && obstacle.getSObstacleType() == Obstacle.ObstacleType.FIRE) {
+                    isAct = true;
+                    mapArray[gridY][gridX] = 0;
+                    Instance.getObjectManager().removeObject(obstacle);
+                    unit.setActLeft(unit.getActLeft() - 1);
+                    Instance.getParticleManager().addRandomParticle(25, 25, obstacle.getX(), obstacle.getY(),
+                            20, 20, 0, 1);
+                } else if (unit.getType() == Unit.UnitType.HAMMER && obstacle.getSObstacleType() == Obstacle.ObstacleType.BREAKABLE) {
+                    isAct = true;
+                    mapArray[gridY][gridX] = 0;
+                    Instance.getObjectManager().removeObject(obstacle);
+                    unit.setActLeft(unit.getActLeft() - 1);
+                    Instance.getParticleManager().addRandomParticle(25, 25, obstacle.getX(), obstacle.getY(),
+                            20, 20, 0, 1);
+                }
+            } else if(target instanceof Unit) {
+                Unit targetUnit = (Unit) target;
+                if (unit.getType() == Unit.UnitType.RESCUE && targetUnit.getType() == Unit.UnitType.TARGET) {
+                    rescueTargetCount--; // 구조대상 감소
+                    mapArray[gridY][gridX] = 0; // 배열 업데이트
+                    Instance.getObjectManager().removeObject(target); // 대상 제거
+
+                    if (rescueTargetCount == 0) {
+                        System.out.println("모든 구조 완료!");
+                    }
+                }
             }
             if(isAct) {
                 selectedUnit = null;
@@ -459,6 +498,7 @@ public class GameManager {
         StructureButton newButton = new StructureButton(buttonName, structureType, maxCount, gridWidth, gridHeight);
         structureButtons.add(newButton);
     }
+
     public void initStructureButtons(Context context) {
         int startX = 50;
         int startY = 1500;
@@ -579,6 +619,26 @@ public class GameManager {
         return currentPath;
     }
 
+    public int getCountdownTime() {
+        return countdownTime;
+    }
+
+    public void setCountdownTime(int time) {
+        countdownTime = time;
+    }
+
+    public void setTimerRunning(boolean state){
+        isTimerRunning = state;
+    }
+
+    public int getRescueTargetCount() {
+        return rescueTargetCount;
+    }
+
+    public void setRescueTargetCount(int count) {
+        rescueTargetCount = count;
+    }
+
     public boolean handleTouchEvent(int touchX, int touchY, MotionEvent event, Context context) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if (cancelButton != null && cancelButton.isClicked(touchX, touchY)) {
@@ -595,7 +655,7 @@ public class GameManager {
                 setTargetPosition(touchX, touchY);
                 if(targetObject == null){
                     for (Object obj : Instance.getObjectManager().getObjects()) {
-                        if (obj instanceof Obstacle) {
+                        if (obj instanceof Obstacle || obj instanceof Unit) {
                             if (obj.getAABB().contains(touchX, touchY)) {
                                 targetObject = obj;
                                 break;
@@ -730,29 +790,6 @@ public class GameManager {
             return true;
         }
         return false;
-    }
-
-    public void draw(Canvas canvas, float dt) {
-        if (cancelButton != null) {
-            cancelButton.draw(canvas, dt);
-        }
-        if (currentItem != null) {
-            currentItem.draw(canvas, dt);
-        }
-
-        renderMapArray(canvas);
-        if(!currentPath.isEmpty())
-        {
-            for (int[] step : currentPath) {
-                int x = step[0];
-                int y = step[1];
-
-                float centerX = x * GRID_SIZE;
-                float centerY = y * GRID_SIZE;
-
-                Instance.getSpriteManager().renderText(canvas, x + "," + y, (int) centerX, (int) centerY, 50, Color.BLUE, Paint.Align.LEFT);
-            }
-        }
     }
 
     private void renderMapArray(Canvas canvas) {
