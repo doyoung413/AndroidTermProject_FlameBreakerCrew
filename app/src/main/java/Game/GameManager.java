@@ -2,6 +2,7 @@ package Game;
 
 import GameEngine.AnimationState;
 import GameEngine.Color4i;
+import GameEngine.LevelManager;
 import GameEngine.Object;
 import GameEngine.Instance;
 import GameEngine.SpriteManager;
@@ -66,6 +67,12 @@ public class GameManager {
         }
     }
 
+    public enum GamePlayState {
+        NORMAL,
+        PAUSE,
+        CLEAR
+    }
+
     public enum ActionType {
         MOVE_UNIT,
         MOVE_ITEM,
@@ -77,6 +84,11 @@ public class GameManager {
         LADDER_UP,
         LADDER_DOWN
     }
+
+    private Object popupBackground;
+    private Button popupButton1;
+    private Button popupButton2;
+    private GamePlayState currentState = GamePlayState.NORMAL;
 
     public static final int GRID_SIZE = 100;
     private List<int[]> currentPath = new ArrayList<>();
@@ -105,12 +117,14 @@ public class GameManager {
     private StructureButton currentChosenStrBtn = null;
     private List<StructureButton> structureButtons = new ArrayList<>();
     private Button cancelButton;
+    private Context context;
 
-    public void init() {
+    public void init(Context context) {
         selectedUnit = null;
         currentAction = ActionType.DO_NOTHING;
         startTime = System.currentTimeMillis();
         cancelButton = null;
+        this.context = context;
     }
 
     public void update(float dt) {
@@ -403,9 +417,8 @@ public class GameManager {
 
                     case 4:
                         Instance.getObjectManager().addObject(
-                                new Unit(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE,
-                                        new Color4i(255, 0, 0, 255), "Target", 5,
-                                        Unit.UnitType.TARGET)
+                                new RescueTarget(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE,
+                                        new Color4i(0, 0, 255, 255), "Rescue")
                         );
                         Instance.getObjectManager().getLastObject().setSpriteName("idle");
                         Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.SPRITE);
@@ -471,13 +484,10 @@ public class GameManager {
                     Instance.getParticleManager().addRandomParticle(25, 25, obstacle.getX(), obstacle.getY(),
                             20, 20, 0, 1);
                 }
-            } else if(target instanceof Unit) {
-                Unit targetUnit = (Unit) target;
-                if (unit.getType() == Unit.UnitType.RESCUE && targetUnit.getType() == Unit.UnitType.TARGET) {
-                    rescueTargetCount--; // 구조대상 감소
-                    mapArray[gridY][gridX] = 0; // 배열 업데이트
-                    Instance.getObjectManager().removeObject(target); // 대상 제거
-
+            } else if(target instanceof RescueTarget) {
+                RescueTarget targetUnit = (RescueTarget) target;
+                if (unit.getType() == Unit.UnitType.RESCUE) {
+                    targetUnit.rescue();
                     if (rescueTargetCount == 0) {
                         System.out.println("모든 구조 완료!");
                     }
@@ -639,64 +649,110 @@ public class GameManager {
         rescueTargetCount = count;
     }
 
+    public void setGamePlayState(GamePlayState newState) {
+        if (currentState == newState) {
+            return;
+        }
+
+        if (popupBackground != null) {
+            Instance.getObjectManager().removeObject(popupBackground);
+            popupBackground = null;
+        }
+        if (popupButton1 != null) {
+            Instance.getObjectManager().removeObject(popupButton1);
+            popupButton1 = null;
+        }
+        if (popupButton2 != null) {
+            Instance.getObjectManager().removeObject(popupButton2);
+            popupButton2 = null;
+        }
+        currentState = newState;
+
+        if (newState == GamePlayState.PAUSE || newState == GamePlayState.CLEAR) {
+            popupBackground = new Object(300, 500, 600, 400, new Color4i(0, 0, 0, 200), "PopupBackground");
+            Instance.getObjectManager().addObject(popupBackground);
+
+            popupButton1 = new Button(context, 320, 820, 120, 60,
+                    new Color4i(200, 200, 200, 255), "Resume", Button.ButtonType.OPTIONBUTTON);
+            Instance.getObjectManager().addObject(popupButton1);
+
+            popupButton2 = new Button(context, 580, 820, 120, 60,
+                    new Color4i(200, 200, 200, 255), "Quit", Button.ButtonType.OPTIONBUTTON);
+            Instance.getObjectManager().addObject(popupButton2);
+        }
+    }
+
+    public GamePlayState getGamePlayState() {
+        return currentState;
+    }
+
     public boolean handleTouchEvent(int touchX, int touchY, MotionEvent event, Context context) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (cancelButton != null && cancelButton.isClicked(touchX, touchY)) {
-                if (isCancelButtonEnabled) {
-                    clearCurrentItem();
+            if (currentState == GamePlayState.PAUSE || currentState == GamePlayState.CLEAR) {
+                if (popupButton1 != null && popupButton1.isClicked(touchX, touchY)) {
+                    Instance.getLevelManager().setGameState(LevelManager.GameState.UPDATE);
+                    setGamePlayState(GamePlayState.NORMAL);
+                } else if (popupButton2 != null && popupButton2.isClicked(touchX, touchY)) {
+                    System.exit(0);
                     return true;
-                } else {
-                    return false;
                 }
             }
 
-            if (getCurrentAction() == GameManager.ActionType.MOVE_UNIT
-                    && getSelectedUnit() != null) {
-                setTargetPosition(touchX, touchY);
-                if(targetObject == null){
+            else if (currentState == GamePlayState.NORMAL) {
+                if (cancelButton != null && cancelButton.isClicked(touchX, touchY)) {
+                    if (isCancelButtonEnabled) {
+                        clearCurrentItem();
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+                if (getCurrentAction() == GameManager.ActionType.MOVE_UNIT
+                        && getSelectedUnit() != null) {
+                    setTargetPosition(touchX, touchY);
+                    if (targetObject == null) {
+                        for (Object obj : Instance.getObjectManager().getObjects()) {
+                            if (obj instanceof Obstacle || obj instanceof RescueTarget) {
+                                if (obj.getAABB().contains(touchX, touchY)) {
+                                    targetObject = obj;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                } else if (getCurrentAction() == GameManager.ActionType.MOVE_ITEM) {
+                    if (currentAction == ActionType.MOVE_ITEM && currentItem != null) {
+                        currentItem.setPosition(touchX, touchY);
+                        return true;
+                    }
+                } else {
+                    for (StructureButton button : structureButtons) {
+                        if (button.strBtn.isClicked(touchX, touchY)) {
+                            button.strBtn.isTouch = true;
+                            break;
+                        }
+                    }
                     for (Object obj : Instance.getObjectManager().getObjects()) {
-                        if (obj instanceof Obstacle || obj instanceof Unit) {
-                            if (obj.getAABB().contains(touchX, touchY)) {
-                                targetObject = obj;
+                        if (obj instanceof Unit) {
+                            Unit unit = (Unit) obj;
+                            if (unit.getAABB().contains(touchX, touchY)) {
+                                setSelectedUnit(unit, context);
                                 break;
                             }
                         }
                     }
                 }
             }
-            else if (getCurrentAction() == GameManager.ActionType.MOVE_ITEM) {
-                if (currentAction == ActionType.MOVE_ITEM && currentItem != null) {
-                    currentItem.setPosition(touchX, touchY);
-                    return true;
-                }
-            }
-            else{
-                for (StructureButton button : structureButtons) {
-                    if (button.strBtn.isClicked(touchX, touchY)) {
-                        button.strBtn.isTouch = true;
-                        break;
-                    }
-                }
-                for (Object obj : Instance.getObjectManager().getObjects()) {
-                   if (obj instanceof Unit) {
-                        Unit unit = (Unit) obj;
-                        if (unit.getAABB().contains(touchX, touchY)) {
-                            setSelectedUnit(unit, context);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
 
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            for (StructureButton button : structureButtons) {
-                if (button.count > 0 && button.strBtn.isClicked(touchX, touchY) && button.strBtn.isTouch) {
-                    setItemMode(button.getStructureType(), context, button.getGridWidth(), button.getGridHeight());
-                    currentChosenStrBtn = button;
-                    return true;
-                } else {
-                    button.strBtn.isTouch = false;
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                for (StructureButton button : structureButtons) {
+                    if (button.count > 0 && button.strBtn.isClicked(touchX, touchY) && button.strBtn.isTouch) {
+                        setItemMode(button.getStructureType(), context, button.getGridWidth(), button.getGridHeight());
+                        currentChosenStrBtn = button;
+                        return true;
+                    } else {
+                        button.strBtn.isTouch = false;
+                    }
                 }
             }
         }

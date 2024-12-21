@@ -30,9 +30,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Instance.getStageClearStateManager().loadStatesFromRaw(this, R.raw.clearstate);
+        Instance.getStageClearStateManager().init(this);
+        Instance.getStageClearStateManager().resetDatabase(this, R.raw.clearstate);
 
-        for(StageClearState s : Instance.getStageClearStateManager().getStates()){
+        // 상태 출력 (디버그용)
+        for (StageClearState s : Instance.getStageClearStateManager().getStates()) {
             System.out.println(s.toString());
         }
 

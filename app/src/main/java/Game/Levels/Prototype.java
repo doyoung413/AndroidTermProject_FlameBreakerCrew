@@ -29,15 +29,15 @@ public class Prototype extends Level {
 
     @Override
     public void Init() {
-        Instance.getGameManager().init();
+        Instance.getGameManager().init(context);
 
         // Example 2D map array
         int[][] mapArray = {
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 3, 0, 0, 7, 0, 0, 0, 0, 0},
+                {0, 3, 5, 0, 7, 0, 0, 0, 0, 0},
                 {1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 5, 4, 3},
+                {0, 0, 0, 0, 0, 3, 0, 0, 4, 0},
                 {0, 0, 0, 0, 0, 1, 1, 1, 1, 1},
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
@@ -73,13 +73,13 @@ public class Prototype extends Level {
     @Override
     public boolean handleTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
+        float[] worldCoords = Instance.getCameraManager().screenToWorld((int) event.getX(), (int) event.getY());
 //        if(Instance.getGameManager().getCurrentAction() == GameManager.ActionType.DO_NOTHING) {
 //            Instance.getCameraManager().handleTouchEvent(event);
 //        }
-        if(Instance.getLevelManager().getGameState() == LevelManager.GameState.UPDATE) {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                float[] worldCoords = Instance.getCameraManager().screenToWorld((int) event.getX(), (int) event.getY());
-                //Particle Test
+//        if(Instance.getLevelManager().getGameState() == LevelManager.GameState.UPDATE)
+        {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {//Particle Test
                 Instance.getParticleManager().addRandomParticle(50, 50, (int) worldCoords[0], (int) worldCoords[1],
                         10, 10, 0, 1);
                 //Particle Test
@@ -88,7 +88,6 @@ public class Prototype extends Level {
                 }
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                float[] worldCoords = Instance.getCameraManager().screenToWorld((int) event.getX(), (int) event.getY());
                 if (Instance.getGameManager().handleTouchEvent((int) worldCoords[0], (int) worldCoords[1], event, context)) {
                     return true;
                 }
@@ -96,7 +95,6 @@ public class Prototype extends Level {
         }
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            float[] worldCoords = Instance.getCameraManager().screenToWorld((int) event.getX(), (int) event.getY());
             //Particle Test
             Instance.getParticleManager().addRandomParticle(50, 50, (int) worldCoords[0], (int) worldCoords[1],
                     10, 10, 0, 1);
@@ -107,10 +105,10 @@ public class Prototype extends Level {
             }
         }
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            float[] worldCoords = Instance.getCameraManager().screenToWorld((int) event.getX(), (int) event.getY());
             if (pause.isClicked((int) worldCoords[0], (int) worldCoords[1]) && pause.getIsTouch()) {
                 if (Instance.getLevelManager().getGameState() == LevelManager.GameState.UPDATE) {
                     Instance.getLevelManager().setGameState(LevelManager.GameState.PAUSE);
+                    Instance.getGameManager().setGamePlayState(GameManager.GamePlayState.PAUSE);
                 } else if (Instance.getLevelManager().getGameState() == LevelManager.GameState.PAUSE) {
                     Instance.getLevelManager().setGameState(LevelManager.GameState.UPDATE);
                 }

@@ -1,5 +1,5 @@
 Stage1 1 1 1 1
 Stage2 1 1 1 0
-Stage3 0 0 0 0
+Stage3 1 0 0 0
 Stage4 0 0 0 0
 Stage5 0 0 0 0
