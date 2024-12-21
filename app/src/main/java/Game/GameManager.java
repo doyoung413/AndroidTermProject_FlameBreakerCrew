@@ -25,13 +25,21 @@ public class GameManager {
         private int gridWidth;
         private int gridHeight;
         private Button strBtn = null;
+        private int maxUnusedCount = 0;
 
-        public StructureButton(String buttonName, Structure.StructureType structureType, int count, int gridWidth, int gridHeight) {
+        public StructureButton(String buttonName, Structure.StructureType structureType,
+                               int count, int maxUnusedCount, int gridWidth, int gridHeight) {
             this.buttonName = buttonName;
             this.structureType = structureType;
             this.count = count;
             this.gridWidth = gridWidth;
             this.gridHeight = gridHeight;
+            this.maxUnusedCount = maxUnusedCount;
+
+        }
+
+        public boolean isEligibleForBonus() {
+            return count >= maxUnusedCount;
         }
 
         public String getButtonName() {
@@ -105,7 +113,9 @@ public class GameManager {
     private int targetX;
     private int targetY;
 
-    private int countdownTime; // 초 단위 제한 시간
+    private int currentStageIndex = 0;
+    private int countdownTime;
+    private int minCountTimeForBonus;
     private boolean isTimerRunning = true;
     private boolean isCancelButtonEnabled = true;
     private boolean isMoving = false;
@@ -504,8 +514,8 @@ public class GameManager {
         }
     }
 
-    public void addStructureButton(String buttonName, Structure.StructureType structureType, int maxCount, int gridWidth, int gridHeight) {
-        StructureButton newButton = new StructureButton(buttonName, structureType, maxCount, gridWidth, gridHeight);
+    public void addStructureButton(String buttonName, Structure.StructureType structureType, int maxCount, int maxUnusedCount, int gridWidth, int gridHeight) {
+        StructureButton newButton = new StructureButton(buttonName, structureType, maxCount, maxUnusedCount, gridWidth, gridHeight);
         structureButtons.add(newButton);
     }
 
@@ -589,6 +599,10 @@ public class GameManager {
         }
     }
 
+    public void setMinCountTimeForBonus(int minCountTimeForBonus) {
+        this.minCountTimeForBonus = minCountTimeForBonus;
+    }
+
     public void setTargetX(int x) {
         this.targetX = x;
     }
@@ -649,6 +663,10 @@ public class GameManager {
         rescueTargetCount = count;
     }
 
+    public void setCurrentStageIndex(int currentStageIndex) {
+        this.currentStageIndex = currentStageIndex;
+    }
+
     public void setGamePlayState(GamePlayState newState) {
         if (currentState == newState) {
             return;
@@ -668,7 +686,7 @@ public class GameManager {
         }
         currentState = newState;
 
-        if (newState == GamePlayState.PAUSE || newState == GamePlayState.CLEAR) {
+        if (newState == GamePlayState.PAUSE) {
             popupBackground = new Object(300, 500, 600, 400, new Color4i(0, 0, 0, 200), "PopupBackground");
             Instance.getObjectManager().addObject(popupBackground);
 
@@ -680,6 +698,51 @@ public class GameManager {
                     new Color4i(200, 200, 200, 255), "Quit", Button.ButtonType.OPTIONBUTTON);
             Instance.getObjectManager().addObject(popupButton2);
         }
+        else if (newState == GamePlayState.CLEAR) {
+            boolean bonusState[] = new boolean[3];
+            StageClearStateManager manager =  Instance.getStageClearStateManager();
+            StageClearState current = manager.getStates().get(currentStageIndex);
+            StageClearState next = manager.getStates().get(currentStageIndex + 1);
+
+            bonusState[0] = true;
+            if(countdownTime > minCountTimeForBonus){
+                bonusState[1] = true;
+            }
+            else{
+                bonusState[1] = false;
+            }
+            for (StructureButton sb : structureButtons){
+                if(sb.isEligibleForBonus() == false){
+                    bonusState[2] = false;
+                    break;
+                }
+                bonusState[2] = true;
+            }
+
+            manager.updateStageState(current.getStageName(), current.isUnlocked(), current.getClearAchievements());
+            manager.getStates().get(currentStageIndex).setClearAchievements(bonusState);
+            if(next != null){
+                if(next.isUnlocked() == false){
+                    next.setUnlocked(true);
+                    manager.updateStageState(next.getStageName(), next.isUnlocked(), next.getClearAchievements());
+                }
+            }
+
+            manager = null;
+            current = null;
+            next = null;
+
+            popupBackground = new Object(300, 500, 600, 400, new Color4i(0, 0, 0, 200), "PopupBackground");
+            Instance.getObjectManager().addObject(popupBackground);
+
+            popupButton1 = new Button(context, 320, 820, 120, 60,
+                    new Color4i(200, 200, 200, 255), "NextLevel", Button.ButtonType.OPTIONBUTTON);
+            Instance.getObjectManager().addObject(popupButton1);
+
+            popupButton2 = new Button(context, 580, 820, 120, 60,
+                    new Color4i(200, 200, 200, 255), "LevelSelect", Button.ButtonType.OPTIONBUTTON);
+            Instance.getObjectManager().addObject(popupButton2);
+        }
     }
 
     public GamePlayState getGamePlayState() {
@@ -688,12 +751,24 @@ public class GameManager {
 
     public boolean handleTouchEvent(int touchX, int touchY, MotionEvent event, Context context) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (currentState == GamePlayState.PAUSE || currentState == GamePlayState.CLEAR) {
+            if (currentState == GamePlayState.PAUSE) {
                 if (popupButton1 != null && popupButton1.isClicked(touchX, touchY)) {
                     Instance.getLevelManager().setGameState(LevelManager.GameState.UPDATE);
                     setGamePlayState(GamePlayState.NORMAL);
                 } else if (popupButton2 != null && popupButton2.isClicked(touchX, touchY)) {
                     System.exit(0);
+                    return true;
+                }
+            }
+            else if (currentState == GamePlayState.CLEAR) {
+                if (popupButton1 != null && popupButton1.isClicked(touchX, touchY)) {
+//                    Instance.getLevelManager().setGameState(LevelManager.GameState.UPDATE);
+//                    Instance.getLevelManager().changeLevel(LevelManager.GameLevel.);
+//                    setGamePlayState(GamePlayState.NORMAL);
+                } else if (popupButton2 != null && popupButton2.isClicked(touchX, touchY)) {
+                    Instance.getLevelManager().setGameState(LevelManager.GameState.UPDATE);
+                    Instance.getLevelManager().changeLevel(LevelManager.GameLevel.LEVELSELECT);
+                    setGamePlayState(GamePlayState.NORMAL);
                     return true;
                 }
             }

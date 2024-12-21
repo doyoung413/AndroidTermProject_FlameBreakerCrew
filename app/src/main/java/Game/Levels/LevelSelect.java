@@ -91,15 +91,20 @@ public class LevelSelect extends Level {
             }
         }
         if (event.getAction() == MotionEvent.ACTION_UP) {
+            int stageIndex = 0;
             for (Button btn: stageButtons) {
                 if(btn.isClicked((int)worldX, (int)worldY) && btn.getIsTouch()){
                     //Instance.getLevelManager().changeLevel(LevelManager.GameLevel.PROTO);
+                    Instance.getGameManager().setCurrentStageIndex(stageIndex);
+                    break;
                 }
                 btn.setIsTouch(false);
+                stageIndex++;
             }
 
             if(exit.isClicked((int)worldX, (int)worldY) && exit.getIsTouch()){
                 Instance.getLevelManager().changeLevel(LevelManager.GameLevel.PROTO);
+                Instance.getGameManager().setCurrentStageIndex(0);
             }
             exit.setIsTouch(false);
         }
