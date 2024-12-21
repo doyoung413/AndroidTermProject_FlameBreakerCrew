@@ -44,7 +44,6 @@ public class Sprite {
 
         matrix.postTranslate(-width / 2f, -height / 2f);
         matrix.postRotate(angle, 0, 0);
-        matrix.postScale((float) width / spriteSheet.getWidth(), (float) height / spriteSheet.getHeight());
         matrix.postTranslate(spriteCenterX, spriteCenterY);
 
         canvas.setMatrix(matrix);
@@ -65,9 +64,8 @@ public class Sprite {
         float spriteCenterX = x + width / 2f;
         float spriteCenterY = y + height / 2f;
 
-        matrix.postTranslate(-frameWidth / 2f, -spriteSheet.getHeight() / 2f);
+        matrix.postTranslate(-frameWidth / 2f, -height / 2f); //애니메이션이 x축만 나누게 되어있음
         matrix.postRotate(angle);
-        matrix.postScale((float) width / frameWidth, (float) height / spriteSheet.getHeight());
         matrix.postTranslate(spriteCenterX, spriteCenterY);
 
         canvas.setMatrix(matrix);

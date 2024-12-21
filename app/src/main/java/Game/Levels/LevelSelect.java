@@ -55,6 +55,9 @@ public class LevelSelect extends Level {
     public void draw(Canvas canvas, float dt) {
         Instance.getGameManager().draw(canvas, dt);
 
+        Instance.getSpriteManager().renderTile(canvas, "map", 0, 0, 0, 100, 100, 0);
+        Instance.getSpriteManager().renderTile(canvas, "map", 1, 100, 0, 100, 100, 0);
+        Instance.getSpriteManager().renderTile(canvas, "map", 4, 200, 0, 100, 100, 0);
         int i = 0;
         for (Button b : stageButtons){
             Instance.getSpriteManager().renderText(canvas, states.get(i).toString(), b.getX(), b.getY() + 150, 20,

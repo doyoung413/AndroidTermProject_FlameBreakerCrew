@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         Instance.getSpriteManager().loadSprite(this, "idle", R.drawable.a);
         Instance.getSpriteManager().loadAnimatedSprite(this, "walk", R.drawable.b, 24, 24, 4);
+        Instance.getSpriteManager().loadTileMap(this, "map", R.drawable.tiles, 24, 24);
 
         GameView gameView = new GameView(this);
         setContentView(gameView);

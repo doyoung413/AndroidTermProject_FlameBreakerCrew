@@ -35,7 +35,7 @@ public class ParticleManager {
     public void addRandomParticle(int width, int height,int x, int y, int speedX, int speedY, float angle, float lifeTime) {
         Random random = new Random();
         int particleAmount = random.nextInt(20);
-        for (int i = 0; i < particleAmount; i++) {
+        for (int i = 0; i < 1; i++) {
             int randomSpeedX = speedX + random.nextInt(40) - random.nextInt(40);
             int randomSpeedY = speedY + random.nextInt(40) - random.nextInt(40);
 

@@ -75,9 +75,9 @@ public class Prototype extends Level {
     public boolean handleTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
         float[] worldCoords = Instance.getCameraManager().screenToWorld((int) event.getX(), (int) event.getY());
-//        if(Instance.getGameManager().getCurrentAction() == GameManager.ActionType.DO_NOTHING) {
-//            Instance.getCameraManager().handleTouchEvent(event);
-//        }
+//           if(Instance.getGameManager().getCurrentAction() == GameManager.ActionType.DO_NOTHING) {
+//               Instance.getCameraManager().handleTouchEvent(event);
+//           }
 //        if(Instance.getLevelManager().getGameState() == LevelManager.GameState.UPDATE)
         {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {//Particle Test

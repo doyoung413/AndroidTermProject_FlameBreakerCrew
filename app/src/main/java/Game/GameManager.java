@@ -84,7 +84,8 @@ public class GameManager {
     public enum ActionType {
         MOVE_UNIT,
         MOVE_ITEM,
-        DO_NOTHING
+        DO_NOTHING,
+        WAIT
     }
 
     public enum PathFindingMode {
@@ -732,7 +733,7 @@ public class GameManager {
             current = null;
             next = null;
 
-            popupBackground = new Object(300, 500, 600, 400, new Color4i(0, 0, 0, 200), "PopupBackground");
+            popupBackground = new Object(300 + Instance.getCameraManager().getX(), 500 + Instance.getCameraManager().getY(), 600, 400, new Color4i(0, 0, 0, 200), "PopupBackground");
             Instance.getObjectManager().addObject(popupBackground);
 
             popupButton1 = new Button(context, 320, 820, 120, 60,
@@ -818,16 +819,16 @@ public class GameManager {
                     }
                 }
             }
+        }
 
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                for (StructureButton button : structureButtons) {
-                    if (button.count > 0 && button.strBtn.isClicked(touchX, touchY) && button.strBtn.isTouch) {
-                        setItemMode(button.getStructureType(), context, button.getGridWidth(), button.getGridHeight());
-                        currentChosenStrBtn = button;
-                        return true;
-                    } else {
-                        button.strBtn.isTouch = false;
-                    }
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            for (StructureButton button : structureButtons) {
+                if (button.count > 0 && button.strBtn.isClicked(touchX, touchY) && button.strBtn.isTouch) {
+                    setItemMode(button.getStructureType(), context, button.getGridWidth(), button.getGridHeight());
+                    currentChosenStrBtn = button;
+                    return true;
+                } else {
+                    button.strBtn.isTouch = false;
                 }
             }
         }
