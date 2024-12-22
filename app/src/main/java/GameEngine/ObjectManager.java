@@ -4,7 +4,10 @@ import android.graphics.Canvas;
 import java.util.Vector;
 
 public class ObjectManager {
+    private int objId = 0;
+    private int currentAmount = 0;
     private Vector<Object> objects = new Vector<>();
+    private Vector<Object> objectToBeDeleted = new Vector<>();
 
     public ObjectManager() {
     }
@@ -12,17 +15,23 @@ public class ObjectManager {
     public void addObject(Object obj) {
         objects.add(obj);
         obj.Init();
+        obj.setId(objId++);
     }
 
     public void removeObject(Object obj) {
-        obj.End();
-        objects.remove(obj);
+        objectToBeDeleted.add(obj);
     }
 
     public void updateObjects(float dt) {
-        for (Object obj : objects) {
-            obj.Update(dt);
+        for (Object obj : objectToBeDeleted) {
+            objects.remove(obj);
+            currentAmount = objects.size();
         }
+        objectToBeDeleted.clear();
+        for (int i = 0; i < currentAmount; i++) {
+                objects.elementAt(i).Update(dt);
+        }
+        currentAmount = objects.size();
     }
 
     public void drawObjects(Canvas canvas, float dt) {
@@ -66,5 +75,7 @@ public class ObjectManager {
             objects.remove(i);
         }
         objects.clear();
+        objectToBeDeleted.clear();
+        objId = 0;
     }
 }

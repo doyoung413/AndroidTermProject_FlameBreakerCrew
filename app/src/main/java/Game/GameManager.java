@@ -108,7 +108,27 @@ public class GameManager {
 
     private int rescueTargetCount = 0;
     private Object selectedUnit;
+
+    public Object getTargetObject() {
+        return targetObject;
+    }
+
+    public void destroyTargetObject(){
+        int gridX = targetObject.getX() / GameManager.GRID_SIZE;
+        int gridY = targetObject.getY() / GameManager.GRID_SIZE;
+        mapArray[gridY][gridX] = 0; // Clear obstacle from map
+        Instance.getObjectManager().removeObject(targetObject);
+        Instance.getObjectManager().removeObject(cancelButton);
+        targetObject = null; // Clear target reference
+        cancelButton = null;
+    }
+
     private Object targetObject = null;
+
+    public void setCurrentAction(ActionType currentAction) {
+        this.currentAction = currentAction;
+    }
+
     private ActionType currentAction;
     private long startTime;
     private int targetX;
@@ -278,8 +298,10 @@ public class GameManager {
                             processInteraction(unit, targetObject, gridTargetX, gridTargetY);
                         }
                     }
-                    unit.setUnitState(Unit.UnitState.WAIT);
-                    targetObject = null;
+                    if(unit.getUnitState() != Unit.UnitState.ACT) {
+                        unit.setUnitState(Unit.UnitState.WAIT);
+                        targetObject = null;
+                    }
                 }
                 else
                 {
@@ -425,18 +447,13 @@ public class GameManager {
                                         new Color4i(0, 0, 255, 255), "Rescue", 5,
                                         Unit.UnitType.RESCUE)
                         );
-                        Instance.getObjectManager().getLastObject().setSpriteName("walk");
-                        Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.ANIMATION);
-                        Instance.getObjectManager().getLastObject().setAnimationState(new AnimationState(60, true));
                         break;
 
                     case 4:
                         Instance.getObjectManager().addObject(
                                 new RescueTarget(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE,
-                                        new Color4i(0, 0, 255, 255), "Rescue")
+                                        new Color4i(0, 0, 255, 255), "RescueMan", RescueTarget.TargetType.MAN)
                         );
-                        Instance.getObjectManager().getLastObject().setSpriteName("idle");
-                        Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.SPRITE);
                         rescueTargetCount++;
                         break;
 
@@ -482,24 +499,36 @@ public class GameManager {
     private void processInteraction(Unit unit, Object target, int gridX, int gridY) {
         if (unit.getActLeft() > 0) {
             boolean isAct = false;
-            if(target instanceof Obstacle){
+//            if(target instanceof Obstacle){
+//                Obstacle obstacle = (Obstacle) target;
+//                if (unit.getType() == Unit.UnitType.WATER && obstacle.getSObstacleType() == Obstacle.ObstacleType.FIRE) {
+//                    isAct = true;
+//                    mapArray[gridY][gridX] = 0;
+//                    Instance.getObjectManager().removeObject(obstacle);
+//                    unit.setActLeft(unit.getActLeft() - 1);
+//                    Instance.getParticleManager().addRandomParticle(25, 25, obstacle.getX(), obstacle.getY(),
+//                            20, 20, 0, 1);
+//                } else if (unit.getType() == Unit.UnitType.HAMMER && obstacle.getSObstacleType() == Obstacle.ObstacleType.BREAKABLE) {
+//                    isAct = true;
+//                    mapArray[gridY][gridX] = 0;
+//                    Instance.getObjectManager().removeObject(obstacle);
+//                    unit.setActLeft(unit.getActLeft() - 1);
+//                    Instance.getParticleManager().addRandomParticle(25, 25, obstacle.getX(), obstacle.getY(),
+//                            20, 20, 0, 1);
+//                }
+//            }
+            if (target instanceof Obstacle) {
                 Obstacle obstacle = (Obstacle) target;
-                if (unit.getType() == Unit.UnitType.WATER && obstacle.getSObstacleType() == Obstacle.ObstacleType.FIRE) {
-                    isAct = true;
-                    mapArray[gridY][gridX] = 0;
-                    Instance.getObjectManager().removeObject(obstacle);
-                    unit.setActLeft(unit.getActLeft() - 1);
-                    Instance.getParticleManager().addRandomParticle(25, 25, obstacle.getX(), obstacle.getY(),
-                            20, 20, 0, 1);
-                } else if (unit.getType() == Unit.UnitType.HAMMER && obstacle.getSObstacleType() == Obstacle.ObstacleType.BREAKABLE) {
-                    isAct = true;
-                    mapArray[gridY][gridX] = 0;
-                    Instance.getObjectManager().removeObject(obstacle);
-                    unit.setActLeft(unit.getActLeft() - 1);
-                    Instance.getParticleManager().addRandomParticle(25, 25, obstacle.getX(), obstacle.getY(),
-                            20, 20, 0, 1);
+                if (unit.getType() == Unit.UnitType.HAMMER && obstacle.getSObstacleType() == Obstacle.ObstacleType.BREAKABLE ||
+                        unit.getType() == Unit.UnitType.WATER && obstacle.getSObstacleType() == Obstacle.ObstacleType.FIRE) {
+                    // Set unit to ACT state and update animation
+                    unit.setUnitState(Unit.UnitState.ACT);
+                    // Save obstacle reference for removal post-animation
+                    targetObject = obstacle;
+                    return; // Exit to wait for animation completion
                 }
-            } else if(target instanceof RescueTarget) {
+            }
+              else if(target instanceof RescueTarget) {
                 RescueTarget targetUnit = (RescueTarget) target;
                 if (unit.getType() == Unit.UnitType.RESCUE) {
                     targetUnit.rescue();
@@ -704,6 +733,7 @@ public class GameManager {
 
            popupBackground = new Object(popupX, popupY, popupWidth, popupHeight,
                     new Color4i(0, 0, 0, 200), "PopupBackground");
+            popupBackground.setDrawType(Object.DrawType.RECTANGLE);
             Instance.getObjectManager().addObject(popupBackground);
 
             popupText = (new Object(popupX, popupY - popupHeight / 2 + 80, popupWidth, popupHeight,
@@ -777,6 +807,7 @@ public class GameManager {
 
             popupBackground = new Object(popupX, popupY, popupWidth, popupHeight,
                     new Color4i(0, 0, 0, 200), "PopupBackground");
+            popupBackground.setDrawType(Object.DrawType.RECTANGLE);
             Instance.getObjectManager().addObject(popupBackground);
 
             popupText = (new Object(popupX, popupY - popupHeight / 2 + 80, popupWidth, popupHeight,

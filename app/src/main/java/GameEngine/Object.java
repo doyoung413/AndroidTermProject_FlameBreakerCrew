@@ -28,6 +28,7 @@ public class Object {
     protected float angle;
     protected String text = null;
     protected int fontSize = 80;
+    protected int id = 0;
 
     public Object(int x, int y, int width, int height, Color4i color, String name) {
         this.x = x;
@@ -37,7 +38,7 @@ public class Object {
         this.color = color;
         this.name = name;
         this.angle = 0;
-        this.drawType = DrawType.RECTANGLE;
+        this.drawType = DrawType.NONE;
         updateAABB();
     }
 
@@ -159,6 +160,14 @@ public class Object {
 
     public void setFontSize(int size) {
         this.fontSize = size;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Rect getAABB() { return aabb; }
