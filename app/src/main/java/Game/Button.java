@@ -32,7 +32,7 @@ public class Button extends Object {
         super(x, y, width, height, color, name);
         this.context = context;
         this.buttonType = buttonType;
-
+        this.depth = 0.9f;
         switch(buttonType){
             case LADDER:
                 setDrawType(Object.DrawType.TILE);
@@ -67,24 +67,24 @@ public class Button extends Object {
 
         switch (drawType) {
             case RECTANGLE:
-                spriteManager.drawRectangle(canvas, x + camX, y + camY, width, height, 0, Color.argb(color.a, color.r, color.g, color.b));
+                spriteManager.drawRectangle(canvas, x + camX, y + camY, width, height, 0, Color.argb(color.a, color.r, color.g, color.b), depth);
                 break;
 
             case SPRITE:
                 if (spriteName != null) {
-                    spriteManager.renderSprite(canvas, spriteName, x + camX, y + camY, width, height, angle, null, dt, false);
+                    spriteManager.renderSprite(canvas, spriteName, x + camX, y + camY, width, height, angle, null, dt, false, depth);
                 }
                 break;
 
             case ANIMATION:
                 if (spriteName != null && animationState != null) {
-                    spriteManager.renderSprite(canvas, spriteName, x + camX, y + camY, width, height, angle, animationState, dt, false);
+                    spriteManager.renderSprite(canvas, spriteName, x + camX, y + camY, width, height, angle, animationState, dt, false, depth);
                 }
                 break;
 
             case TILE:
                 if (spriteName != null) {
-                    spriteManager.renderTile(canvas, spriteName, tileIndex, x + camX, y + camY, width, height, angle);
+                    spriteManager.renderTile(canvas, spriteName, tileIndex, x + camX, y + camY, width, height, angle, depth);
                 }
                 break;
         }
@@ -93,14 +93,7 @@ public class Button extends Object {
             int centerX = x + camX + width / 2;
             int centerY = y + camY + height / 2;
 
-            spriteManager.renderText(
-                    canvas,
-                    text,
-                    centerX,
-                    centerY,
-                    fontSize,
-                    Color.WHITE,
-                    Paint.Align.CENTER
+            spriteManager.renderText(canvas, text, centerX, centerY, fontSize, Color.WHITE, Paint.Align.CENTER, depth
             );
         }
     }

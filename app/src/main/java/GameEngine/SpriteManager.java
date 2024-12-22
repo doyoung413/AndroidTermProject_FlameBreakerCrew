@@ -135,17 +135,19 @@ public class SpriteManager {
         canvas.setMatrix(combinedMatrix);
     }
 
-    public void renderSprite(Canvas canvas, String name, int x, int y, int width, int height, float angle, AnimationState animationState, float dt, boolean flipX) {
+    public void renderSprite(Canvas canvas, String name, int x, int y, int width, int height, float angle, AnimationState animationState, float dt, boolean flipX, float depth) {
         Sprite sprite = spriteMap.get(name);
         if (sprite != null) {
             canvas.save();
+            applyDepth(canvas, depth);
             sprite.draw(canvas, x, y, width, height, angle, animationState, dt, flipX);
             canvas.restore();
         }
     }
 
-    public void drawRectangle(Canvas canvas, int x, int y, int width, int height, float angle, int color) {
+    public void drawRectangle(Canvas canvas, int x, int y, int width, int height, float angle, int color, float depth) {
         canvas.save();
+        applyDepth(canvas, depth);
         Paint paint = new Paint();
         paint.setColor(color);
         paint.setStyle(Paint.Style.FILL);
@@ -165,7 +167,7 @@ public class SpriteManager {
         canvas.restore();
     }
 
-    public void renderText(Canvas canvas, String text, int x, int y, int fontSize, Color4i color, Paint.Align alignment) {
+    public void renderText(Canvas canvas, String text, int x, int y, int fontSize, Color4i color, Paint.Align alignment, float depth) {
         canvas.save();
         Paint paint = new Paint();
         paint.setColor(Color.argb(color.a, color.r, color.g, color.b));
@@ -190,7 +192,7 @@ public class SpriteManager {
         canvas.restore();
     }
 
-    public void renderText(Canvas canvas, String text, int x, int y, int fontSize, int color, Paint.Align alignment) {
+    public void renderText(Canvas canvas, String text, int x, int y, int fontSize, int color, Paint.Align alignment, float depth) {
         canvas.save();
         Paint paint = new Paint();
         paint.setColor(color);
@@ -215,7 +217,7 @@ public class SpriteManager {
         canvas.restore();
     }
 
-    public void renderTile(Canvas canvas, String tileMapName, int tileIndex, int x, int y, int width, int height, float angle) {
+    public void renderTile(Canvas canvas, String tileMapName, int tileIndex, int x, int y, int width, int height, float angle, float depth) {
         TileMap tileMap = tileMaps.get(tileMapName);
         if (tileMap == null) return;
 
@@ -233,6 +235,7 @@ public class SpriteManager {
         matrix.postTranslate(tileCenterX, tileCenterY);
 
         canvas.save();
+        applyDepth(canvas, depth);
         canvas.setMatrix(matrix);
 
         canvas.drawBitmap(tile, null, new Rect(0, 0, width, height), null);
@@ -240,5 +243,10 @@ public class SpriteManager {
         canvas.restore();
     }
 
+    private void applyDepth(Canvas canvas, float depth) {
+        Matrix depthMatrix = new Matrix();
+        depthMatrix.setScale(1 - depth, 1 - depth); // 깊이에 따른 크기 조정
+        canvas.concat(depthMatrix);
+    }
 }
 

@@ -51,6 +51,14 @@ public class RescueTarget extends Object {
     @Override
     public void draw(Canvas canvas, float dt) {
         super.draw(canvas, dt);
+        if(isRescue == false) {
+            Instance.getSpriteManager().renderText(canvas, "HELP!",
+                x + getWidth() / 2, y - 10, 30, new Color4i(255, 0, 0 ,255), Paint.Align.CENTER, 0.6f);
+        }
+        else{
+            Instance.getSpriteManager().renderText(canvas, "THANKS!",
+                    x + getWidth() / 2, y - 10, 30, new Color4i(0, 255, 0 ,255), Paint.Align.CENTER, 0.6f);
+        }
     }
 
     public void rescue(){

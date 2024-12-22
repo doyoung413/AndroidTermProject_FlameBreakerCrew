@@ -98,8 +98,10 @@ public class LevelManager {
 
     private void levelInit(){
         if(levelSelected != currentLevel){
+            if(currentLevel != GameLevel.NONE) {
+                levelEnd();
+            }
             currentLevel = levelSelected;
-            levelEnd();
         }
         this.levels.elementAt(currentLevel.ordinal()).Init();
         this.state = GameState.UPDATE;
@@ -108,6 +110,11 @@ public class LevelManager {
 
     private void levelUpdate(float dt, Canvas canvas){
         //Instance.getSpriteManager().drawStart(canvas);
+        if(currentLevel != GameLevel.TITLE && currentLevel != GameLevel.LEVELSELECT &&
+                currentLevel != GameLevel.OPTION) {
+            Instance.getGameManager().drawTileMap(canvas);
+        }
+
         Instance.getObjectManager().updateObjects(dt);
         this.levels.elementAt(currentLevel.ordinal()).Update(dt);
 
@@ -119,6 +126,10 @@ public class LevelManager {
 
     private void levelPause(float dt, Canvas canvas){
         //Instance.getSpriteManager().drawStart(canvas);
+        if(currentLevel != GameLevel.TITLE && currentLevel != GameLevel.LEVELSELECT &&
+                currentLevel != GameLevel.OPTION) {
+            Instance.getGameManager().drawTileMap(canvas);
+        }
         Instance.getObjectManager().updateObjects(0);
         this.levels.elementAt(currentLevel.ordinal()).Update(0);
 
@@ -149,7 +160,7 @@ public class LevelManager {
 
     public Level getCurrentLevelInstance() {
         if (currentLevel == GameLevel.NONE || currentLevel.ordinal() >= levels.size()) {
-            return null; // Return null if no level is active or out of bounds
+            return null;
         }
         return levels.get(currentLevel.ordinal());
     }

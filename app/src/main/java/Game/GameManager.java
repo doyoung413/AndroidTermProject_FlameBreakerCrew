@@ -104,6 +104,11 @@ public class GameManager {
     private List<int[]> currentPath = new ArrayList<>();
     private PathFindingMode currentPathFindingMode = PathFindingMode.NORMAL;
 
+    public void setTileMapArray(int[][] tileMapArray) {
+        this.tileMapArray = tileMapArray;
+    }
+
+    private int[][] tileMapArray;
     private int[][] mapArray;
 
     private int rescueTargetCount = 0;
@@ -116,10 +121,11 @@ public class GameManager {
     public void destroyTargetObject(){
         int gridX = targetObject.getX() / GameManager.GRID_SIZE;
         int gridY = targetObject.getY() / GameManager.GRID_SIZE;
-        mapArray[gridY][gridX] = 0; // Clear obstacle from map
+        mapArray[gridY][gridX] = 0;
+
         Instance.getObjectManager().removeObject(targetObject);
         Instance.getObjectManager().removeObject(cancelButton);
-        targetObject = null; // Clear target reference
+        targetObject = null;
         cancelButton = null;
     }
 
@@ -198,15 +204,8 @@ public class GameManager {
         int camY = Instance.getCameraManager().getY();
 
         SpriteManager spriteManager = Instance.getSpriteManager();
-        spriteManager.renderText(
-                canvas,
-                String.format("%02d:%02d", countdownTime / 60, countdownTime % 60),
-                Instance.getCameraManager().getBaseWidth() / 2 + camX,
-                60 + camY,
-                60,
-                Color.RED,
-                Paint.Align.CENTER
-        );
+        spriteManager.renderText(canvas, String.format("%02d:%02d", countdownTime / 60, countdownTime % 60), Instance.getCameraManager().getBaseWidth() / 2 + camX, 60 + camY,
+                60, Color.RED, Paint.Align.CENTER, 0.9f);
 
         renderMapArray(canvas);
         if(!currentPath.isEmpty())
@@ -218,7 +217,7 @@ public class GameManager {
                 float centerX = x * GRID_SIZE;
                 float centerY = y * GRID_SIZE;
 
-                Instance.getSpriteManager().renderText(canvas, x + "," + y, (int) centerX, (int) centerY, 50, Color.BLUE, Paint.Align.LEFT);
+                Instance.getSpriteManager().renderText(canvas, x + "," + y, (int) centerX, (int) centerY, 50, Color.BLUE, Paint.Align.LEFT, 0.6f);
             }
         }
     }
@@ -426,6 +425,15 @@ public class GameManager {
         structureButtons.clear(); ;
     }
 
+    public void drawTileMap(Canvas canvas) {
+        for (int y = 0; y < tileMapArray.length; y++) {
+            for (int x = 0; x < tileMapArray[y].length; x++) {
+                Instance.getSpriteManager().renderTile(canvas, "map", tileMapArray[y][x],
+                        x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE, 0, 0.1f);
+            }
+        }
+    }
+
     public void initializeMap(int[][] mapArray) {
         this.mapArray = mapArray;
 
@@ -438,6 +446,7 @@ public class GameManager {
                                         new Color4i(0, 0, 0, 255), "Block",
                                         Structure.StructureType.BLOCK, true)
                         );
+                        Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.NONE);
                         break;
 
                     case 2:
@@ -580,13 +589,19 @@ public class GameManager {
         if (cancelButton == null) {
             cancelButton = new Button(context, 750, 1600, 2 * GRID_SIZE, GRID_SIZE, new Color4i(125, 125, 125, 255), "Cancel", Button.ButtonType.BLOCK);
             Instance.getObjectManager().addObject(cancelButton);
+            Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
+            Instance.getObjectManager().getLastObject().setSpriteName("button2x1");
+            Instance.getObjectManager().getLastObject().setText("CANCEL");
+            Instance.getObjectManager().getLastObject().setFontSize(60);
         }
     }
 
     public void clearSelectedUnit() {
-        Unit temp = (Unit)selectedUnit;
-        temp.setSelected(false);
-        temp = null;
+        if(selectedUnit != null) {
+            Unit temp = (Unit) selectedUnit;
+            temp.setSelected(false);
+            temp = null;
+        }
         this.selectedUnit = null;
         this.currentAction = ActionType.DO_NOTHING;
 
@@ -614,6 +629,10 @@ public class GameManager {
         if (cancelButton == null) {
             cancelButton = new Button(context, 750, 1600, 2 * GRID_SIZE, GRID_SIZE, new Color4i(125, 125, 125, 255), "Cancel", Button.ButtonType.BLOCK);
             Instance.getObjectManager().addObject(cancelButton);
+            Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
+            Instance.getObjectManager().getLastObject().setSpriteName("button2x1");
+            Instance.getObjectManager().getLastObject().setText("CANCEL");
+            Instance.getObjectManager().getLastObject().setFontSize(60);
         }
     }
 
@@ -1063,15 +1082,7 @@ public class GameManager {
                 row.append(mapArray[y][x]).append(" ");
             }
 
-            spriteManager.renderText(
-                    canvas,
-                    row.toString(),
-                    startX,
-                    startY + (y * lineHeight),
-                    30,
-                    Color.BLACK,
-                    Paint.Align.LEFT
-            );
+            spriteManager.renderText(canvas, row.toString(), startX, startY + (y * lineHeight), 30, Color.BLACK, Paint.Align.LEFT, 0.9f);
         }
     }
 }

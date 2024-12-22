@@ -27,6 +27,17 @@ public class Structure extends Object {
 
         setWidth(gridWidth * GameManager.GRID_SIZE);
         setHeight(gridHeight * GameManager.GRID_SIZE);
+        depth = 0.4f;
+        switch(structureType){
+            case BLOCK:
+                setSpriteName("block");
+                setDrawType(DrawType.SPRITE);
+                break;
+            case LADDER:
+                setSpriteName("ladder");
+                setDrawType(DrawType.SPRITE);
+                break;
+        }
     }
 
     public StructureType getStructureType() {

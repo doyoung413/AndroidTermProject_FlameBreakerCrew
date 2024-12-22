@@ -34,14 +34,26 @@ public class Prototype extends Level {
         // Example 2D map array
         int[][] mapArray = {
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 3, 5, 0, 7, 0, 0, 0, 0, 0},
+                {4, 3, 5, 0, 7, 0, 0, 0, 0, 0},
                 {1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 8, 0, 0, 6, 3, 0, 0, 4, 0},
+                {0, 8, 0, 0, 6, 3, 0, 0, 0, 0},
                 {0, 1, 1, 1, 1, 1, 1, 1, 1, 1},
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         };
+
+        int[][] tileMapArray = {
+                {1, 1, 1, 1, 1, 1, 8, 1, 0, 0},
+                {1, 1, 1, 1, 1, 1, 8, 1, 1, 1},
+                {4, 0, 0, 0, 0, 0, 8, 1, 1, 1},
+                {4, 1, 1, 1, 1, 0, 8, 1, 1, 1},
+                {4, 1, 1, 1, 1, 1, 8, 1, 1, 1},
+                {4, 0, 0, 0, 0, 0, 8, 1, 1, 1},
+                {4, 1, 1, 1, 1, 1, 8, 1, 1, 1},
+        };
+
         Instance.getGameManager().initializeMap(mapArray);
+        Instance.getGameManager().setTileMapArray(tileMapArray);
 
         Instance.getGameManager().addStructureButton("Ladder", Game.Structure.StructureType.LADDER, 2, 1, 1, 3);
         Instance.getGameManager().addStructureButton("Block", Game.Structure.StructureType.BLOCK, 2, 2,1, 1);

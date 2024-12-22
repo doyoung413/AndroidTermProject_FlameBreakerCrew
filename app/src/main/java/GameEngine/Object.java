@@ -29,6 +29,15 @@ public class Object {
         isFlip = flip;
     }
 
+    public float getDepth() {
+        return depth;
+    }
+
+    public void setDepth(float depth) {
+        this.depth = depth;
+    }
+
+    protected float depth = 0.5f;
     protected boolean isFlip = false;
     protected DrawType drawType;
     protected float angle;
@@ -58,24 +67,24 @@ public class Object {
 
             switch (drawType) {
                 case RECTANGLE:
-                    spriteManager.drawRectangle(canvas, x, y, width, height, 0, Color.argb(color.a, color.r, color.g, color.b));
+                    spriteManager.drawRectangle(canvas, x, y, width, height, 0, Color.argb(color.a, color.r, color.g, color.b), depth);
                     break;
 
                 case SPRITE:
                     if (spriteName != null) {
-                        spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, null, dt, false);
+                        spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, null, dt, false, depth);
                     }
                     break;
 
                 case ANIMATION:
                     if (spriteName != null && animationState != null) {
-                        spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, animationState, dt, false);
+                        spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, animationState, dt, false, depth);
                     }
                     break;
 
                 case TILE:
                     if (spriteName != null) {
-                        spriteManager.renderTile(canvas, spriteName, tileIndex, x, y, width, height, angle);
+                        spriteManager.renderTile(canvas, spriteName, tileIndex, x, y, width, height, angle, depth);
                     }
                     break;
             }
@@ -85,15 +94,7 @@ public class Object {
             int centerX = x + width / 2;
             int centerY = y + height / 2;
 
-            Instance.getSpriteManager().renderText(
-                    canvas,
-                    text,
-                    centerX,
-                    centerY,
-                    fontSize,
-                    Color.WHITE,
-                    Paint.Align.CENTER
-            );
+            Instance.getSpriteManager().renderText(canvas, text, centerX, centerY, fontSize, Color.WHITE, Paint.Align.CENTER, depth);
         }
     }
 

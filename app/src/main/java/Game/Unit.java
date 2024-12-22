@@ -86,14 +86,14 @@ public class Unit extends Object {
         super.draw(canvas, dt);
         if(isSelected == true){
             Instance.getSpriteManager().renderSprite(canvas, "select_arrow",
-                    x, y -  getHeight(), getWidth(), getHeight(), angle, animationState, dt, false);
+                    x, y -  getHeight(), getWidth(), getHeight(), angle, animationState, dt, false, 0.6f);
         }
 
 //        Instance.getSpriteManager().renderText(canvas, unitState.toString(),
 //                x, y - 20, 30, new Color4i(0, 0, 0 ,255), Paint.Align.CENTER);
 
         Instance.getSpriteManager().renderText(canvas, "" + actLeft,
-                x + getWidth() / 2, y - 10, 30, new Color4i(0, 0, 0 ,255), Paint.Align.CENTER);
+                x + getWidth() / 2, y - 10, 30, new Color4i(0, 0, 0 ,255), Paint.Align.CENTER, 0.6f);
     }
 
     public UnitType getType() {
@@ -262,12 +262,12 @@ public class Unit extends Object {
                     if(isFlip == false) {
                         setSpriteName("water_act");
                         setDrawType(DrawType.ANIMATION);
-                        setAnimationState(new AnimationState(60, true));
+                        setAnimationState(new AnimationState(120, true));
                     }
                     else{
                         setSpriteName("water_act");
                         setDrawType(DrawType.ANIMATION);
-                        setAnimationState(new AnimationState(60, true));
+                        setAnimationState(new AnimationState(120, true));
                     }
                 }
                 break;

@@ -93,9 +93,9 @@ public class MainActivity extends AppCompatActivity {
             Instance.getLevelManager().run((float) deltaTime, canvas);
 
             //FPS
-            Instance.getSpriteManager().renderText(canvas,"DeltaTime: " + deltaTime, 60, 60, 50, Color.BLACK, Paint.Align.LEFT );
-            Instance.getSpriteManager().renderText(canvas,"FPS: " + fps, 60, 120,50, Color.BLACK, Paint.Align.LEFT );
-            Instance.getSpriteManager().renderText(canvas, "Objs: " + Instance.getObjectManager().getObjects().size(), 60, 180,50, Color.BLACK, Paint.Align.LEFT );
+            Instance.getSpriteManager().renderText(canvas,"DeltaTime: " + deltaTime, 60, 60, 50, Color.BLACK, Paint.Align.LEFT, 0.9f);
+            Instance.getSpriteManager().renderText(canvas,"FPS: " + fps, 60, 120,50, Color.BLACK, Paint.Align.LEFT , 0.9f);
+            Instance.getSpriteManager().renderText(canvas, "Objs: " + Instance.getObjectManager().getObjects().size(), 60, 180,50, Color.BLACK, Paint.Align.LEFT , 0.9f);
             //FPS
 
             invalidate();
@@ -135,6 +135,8 @@ public class MainActivity extends AppCompatActivity {
         Instance.getSpriteManager().loadAnimatedSprite(context, "target_woman_idle", R.drawable.targetwomanidle, 24, 24);
         Instance.getSpriteManager().loadAnimatedSprite(context, "target_woman_save", R.drawable.targetwomansave, 24, 24);
 
+        Instance.getSpriteManager().loadSprite(context, "ladder", R.drawable.ladder);
+        Instance.getSpriteManager().loadSprite(context , "block", R.drawable.block);
         Instance.getSpriteManager().loadSprite(context, "breakable_block", R.drawable.breakableblock);
         Instance.getSpriteManager().loadAnimatedSprite(context, "fire_particle", R.drawable.fireparticle, 8, 8);
 

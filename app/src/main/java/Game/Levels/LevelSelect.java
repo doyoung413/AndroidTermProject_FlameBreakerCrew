@@ -93,6 +93,7 @@ public class LevelSelect extends Level {
         option = null;
         Instance.getObjectManager().clearObjects();
         Instance.getParticleManager().clear();
+        stageButtons.clear();
     }
 
     @Override
@@ -102,7 +103,7 @@ public class LevelSelect extends Level {
         int i = 0;
         for (Button b : stageButtons){
             Instance.getSpriteManager().renderText(canvas, states.get(i).toString(), b.getX(), b.getY() + 150, 20,
-                    new Color4i(0,0,0,255), Paint.Align.LEFT);
+                    new Color4i(0,0,0,255), Paint.Align.LEFT, 0.9f);
             i++;
         }
     }

@@ -65,8 +65,7 @@ public class Option extends Level {
         String volumeText = String.format("Volume: %.1f%%", currentVolume);
 
         Instance.getSpriteManager().renderText(canvas, volumeText, (int) sliderX, sliderButton.getY() - 60,
-                40, new Color4i(0, 0, 0, 255), Paint.Align.CENTER
-        );
+                40, new Color4i(0, 0, 0, 255), Paint.Align.CENTER, 0.9f);
     }
 
     @Override

@@ -23,12 +23,12 @@ public class ParticleManager {
         }
     }
 
-    public void addSingleParticle(int width, int height, int x, int y, int speedX, int speedY, float angle, Color4i color, float lifeTime, Particle.ParticleType particleType, String spriteName, AnimationState animationState){
-        particles.add(new Particle(width, height, x, y, speedX, speedY, angle, color, lifeTime, particleType, spriteName, animationState));
+    public void addSingleParticle(int width, int height, int x, int y, int speedX, int speedY, float angle, float depth, Color4i color, float lifeTime, Particle.ParticleType particleType, String spriteName, AnimationState animationState){
+        particles.add(new Particle(width, height, x, y, speedX, speedY, angle, depth, color, lifeTime, particleType, spriteName, animationState));
     }
 
     public void addSingleRectParticle(int width, int height, int x, int y, int speedX, int speedY, float angle, Color4i color, float lifeTime){
-        particles.add(new Particle(width, height, x, y, speedX, speedY, angle, color, lifeTime));
+        particles.add(new Particle(width, height, x, y, speedX, speedY, angle, color, lifeTime, 1.f));
     }
 
     //TEST
@@ -62,7 +62,7 @@ public class ParticleManager {
 
             float animateTime = 200 + random.nextFloat() * 200 - random.nextFloat() * 300;
 
-            addSingleParticle(width, height, x, y, randomSpeedX, randomSpeedY, 0,
+            addSingleParticle(width, height, x, y, randomSpeedX, randomSpeedY, 0, 0.5f,
                     new Color4i(random.nextInt(255), random.nextInt(128), 0, 255),
                     100000, Particle.ParticleType.ANIMATION, "fire_particle", new AnimationState((int)animateTime, true));
         }

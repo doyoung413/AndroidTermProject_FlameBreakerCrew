@@ -77,5 +77,6 @@ public class ObjectManager {
         objects.clear();
         objectToBeDeleted.clear();
         objId = 0;
+        currentAmount = 0;
     }
 }

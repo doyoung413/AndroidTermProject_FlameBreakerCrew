@@ -20,6 +20,7 @@ public class Particle {
     private int speedX = 0;
     private int speedY = 0;
     private float angle = 0;
+    private float depth = 0;
     private Color4i color;
     private float lifeTime = 0;
 
@@ -29,7 +30,7 @@ public class Particle {
     private boolean isFade = false;
     private float fadeOutAmount = 0.1f;
 
-    public Particle(int width, int height, int x, int y, float angle, Color4i color, float lifeTime) {
+    public Particle(int width, int height, int x, int y, float angle, Color4i color, float lifeTime, float depth) {
         this.width = width;
         this.height = height;
         this.x = x;
@@ -38,9 +39,10 @@ public class Particle {
         this.color = color;
         this.lifeTime = lifeTime;
         this.particleType =ParticleType.RECTANGLE;
+        this.depth = depth;
     }
 
-    public Particle(int width, int height, int x, int y, int speedX, int speedY, float angle, Color4i color, float lifeTime) {
+    public Particle(int width, int height, int x, int y, int speedX, int speedY, float angle, Color4i color, float lifeTime, float depth) {
         this.width = width;
         this.height = height;
         this.x = x;
@@ -51,9 +53,10 @@ public class Particle {
         this.color = color;
         this.lifeTime = lifeTime;
         this.particleType =ParticleType.RECTANGLE;
+        this.depth = depth;
     }
 
-    public Particle(int width, int height, int x, int y, float angle, Color4i color, float lifeTime, ParticleType particleType, String spriteName, AnimationState animationState) {
+    public Particle(int width, int height, int x, int y, float angle, float depth, Color4i color, float lifeTime, ParticleType particleType, String spriteName, AnimationState animationState) {
         this.width = width;
         this.height = height;
         this.x = x;
@@ -64,9 +67,10 @@ public class Particle {
         this.spriteName = spriteName;
         this.particleType = particleType;
         this.animationState = animationState;
+        this.depth = depth;
     }
 
-    public Particle(int width, int height, int x, int y, int speedX, int speedY, float angle, Color4i color, float lifeTime, ParticleType particleType, String spriteName, AnimationState animationState) {
+    public Particle(int width, int height, int x, int y, int speedX, int speedY, float angle, float depth, Color4i color, float lifeTime, ParticleType particleType, String spriteName, AnimationState animationState) {
         this.width = width;
         this.height = height;
         this.x = x;
@@ -79,6 +83,7 @@ public class Particle {
         this.spriteName = spriteName;
         this.particleType = particleType;
         this.animationState = animationState;
+        this.depth = depth;
     }
 
     public void update(float dt){
@@ -100,18 +105,18 @@ public class Particle {
         SpriteManager spriteManager = Instance.getSpriteManager();
         switch (particleType) {
             case RECTANGLE:
-                spriteManager.drawRectangle(canvas, x, y, width, height, angle,  Color.argb(color.a, color.r, color.g, color.b));
+                spriteManager.drawRectangle(canvas, x, y, width, height, angle,  Color.argb(color.a, color.r, color.g, color.b), depth);
                 break;
 
             case SPRITE:
                 if (spriteName != null) {
-                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, null, dt, false);
+                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, null, dt, false, depth);
                 }
                 break;
 
             case ANIMATION:
                 if (spriteName != null && animationState != null) {
-                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, animationState, dt, false);
+                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, animationState, dt, false, depth);
                 }
                 break;
         }
