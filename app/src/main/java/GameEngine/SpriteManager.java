@@ -9,7 +9,11 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -66,6 +70,27 @@ public class SpriteManager {
 
     private Map<String, Sprite> spriteMap = new HashMap<>();
     private Map<String, TileMap> tileMaps = new HashMap<>();
+    Typeface customFont;
+
+    public void loadFont(Context context, int resourceId) {
+            try {
+                File tempFile = File.createTempFile("tempfont", ".ttf");
+                tempFile.deleteOnExit();
+
+                try (InputStream is = context.getResources().openRawResource(resourceId);
+                     FileOutputStream fos = new FileOutputStream(tempFile)) {
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = is.read(buffer)) != -1) {
+                        fos.write(buffer, 0, bytesRead);
+                    }
+                }
+                customFont =  Typeface.createFromFile(tempFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+                customFont = null;
+            }
+        }
 
     public void loadSprite(Context context, String name, int resourceId) {
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -138,6 +163,9 @@ public class SpriteManager {
         paint.setColor(Color.argb(color.a, color.r, color.g, color.b));
         paint.setTextSize(fontSize);
         paint.setTextAlign(alignment);
+        if (customFont != null) {
+            paint.setTypeface(customFont);
+        }
 
         Matrix matrix = new Matrix();
         matrix.set(Instance.getCameraManager().getCombinedMatrix());
@@ -160,6 +188,9 @@ public class SpriteManager {
         paint.setColor(color);
         paint.setTextSize(fontSize);
         paint.setTextAlign(alignment);
+        if (customFont != null) {
+            paint.setTypeface(customFont);
+        }
 
         Matrix matrix = new Matrix();
         matrix.set(Instance.getCameraManager().getCombinedMatrix());

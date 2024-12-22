@@ -64,6 +64,7 @@ public class Prototype extends Level {
     public void End() {
         Instance.getObjectManager().clearObjects();
         Instance.getParticleManager().clear();
+        Instance.getGameManager().end();
     }
 
     @Override

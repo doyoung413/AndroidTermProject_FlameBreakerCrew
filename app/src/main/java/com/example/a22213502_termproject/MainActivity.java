@@ -42,11 +42,12 @@ public class MainActivity extends AppCompatActivity {
         Instance.getLevelManager().addLevel(new Prototype(this));
         Instance.getLevelManager().addLevel(new Option(this));
         Instance.getLevelManager().addLevel(new LevelSelect(this));
-        Instance.getLevelManager().changeLevel(LevelManager.GameLevel.LEVELSELECT);
+        Instance.getLevelManager().changeLevel(LevelManager.GameLevel.PROTO);
 
         Instance.getSpriteManager().loadSprite(this, "idle", R.drawable.a);
         Instance.getSpriteManager().loadAnimatedSprite(this, "walk", R.drawable.b, 24, 24, 4);
         Instance.getSpriteManager().loadTileMap(this, "map", R.drawable.tiles, 24, 24);
+        Instance.getSpriteManager().loadFont(this, R.raw.galmuri11b);
 
         GameView gameView = new GameView(this);
         setContentView(gameView);

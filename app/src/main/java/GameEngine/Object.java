@@ -8,7 +8,9 @@ public class Object {
     public enum DrawType {
         RECTANGLE,
         SPRITE,
-        ANIMATION
+        ANIMATION,
+        TILE,
+        NONE
     }
 
     protected int width;
@@ -19,6 +21,7 @@ public class Object {
     protected Color4i color;
     protected String name;
 
+    protected int tileIndex = 0;
     protected String spriteName;
     protected AnimationState animationState;
     protected DrawType drawType;
@@ -41,26 +44,34 @@ public class Object {
     protected void End() {}
 
     public void draw(Canvas canvas, float dt) {
-        SpriteManager spriteManager = Instance.getSpriteManager();
+        if(drawType != DrawType.NONE) {
+            SpriteManager spriteManager = Instance.getSpriteManager();
 
-        switch (drawType) {
-            case RECTANGLE:
-                spriteManager.drawRectangle(canvas, x, y, width, height, 0, Color.argb(color.a, color.r, color.g, color.b));
-                break;
+            switch (drawType) {
+                case RECTANGLE:
+                    spriteManager.drawRectangle(canvas, x, y, width, height, 0, Color.argb(color.a, color.r, color.g, color.b));
+                    break;
 
-            case SPRITE:
-                if (spriteName != null) {
-                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, null, dt);
-                }
-                break;
+                case SPRITE:
+                    if (spriteName != null) {
+                        spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, null, dt);
+                    }
+                    break;
 
-            case ANIMATION:
-                if (spriteName != null && animationState != null) {
-                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, animationState, dt);
-                }
-                break;
+                case ANIMATION:
+                    if (spriteName != null && animationState != null) {
+                        spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, animationState, dt);
+                    }
+                    break;
+
+                case TILE:
+                    if (spriteName != null && animationState != null) {
+                        spriteManager.renderTile(canvas, spriteName, tileIndex, x, y, width, height, angle);
+                    }
+                    break;
+            }
+            //Instance.getSpriteManager().renderText(canvas, x + ", " + y, x, y - 20, 20,  Color.argb(255, 255, 0, 0), Paint.Align.LEFT );
         }
-        //Instance.getSpriteManager().renderText(canvas, x + ", " + y, x, y - 20, 20,  Color.argb(255, 255, 0, 0), Paint.Align.LEFT );
     }
 
     public void setPosition(int x, int y) {
@@ -116,6 +127,10 @@ public class Object {
         color.r = r;
         color.g = g;
         color.b = b;
+    }
+
+    public void setTileIndex(int tileIndex) {
+        this.tileIndex = tileIndex;
     }
 
     protected void updateAABB() {

@@ -110,7 +110,6 @@ public class GameManager {
     private Object targetObject = null;
     private ActionType currentAction;
     private long startTime;
-    private long elapsedTime;
     private int targetX;
     private int targetY;
 
@@ -387,10 +386,13 @@ public class GameManager {
     }
 
     public void end() {
-        selectedUnit = null;
-        currentItem = null;
         currentAction = ActionType.DO_NOTHING;
         cancelButton = null;
+        selectedUnit  = null;
+        targetObject = null;
+        currentItem  = null;
+        currentChosenStrBtn = null;
+        structureButtons.clear(); ;
     }
 
     public void initializeMap(int[][] mapArray) {
