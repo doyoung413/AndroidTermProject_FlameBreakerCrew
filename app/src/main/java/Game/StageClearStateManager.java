@@ -15,16 +15,18 @@ import java.util.List;
 
 public class StageClearStateManager {
     private static final String DATABASE_NAME = "stage_clear.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String TABLE_NAME = "stage_clear_state";
     private static final String COLUMN_STAGE_NAME = "stage_name";
     private static final String COLUMN_IS_UNLOCKED = "is_unlocked";
     private static final String COLUMN_ACHIEVEMENT_1 = "achievement_1";
     private static final String COLUMN_ACHIEVEMENT_2 = "achievement_2";
     private static final String COLUMN_ACHIEVEMENT_3 = "achievement_3";
+    private static final String COLUMN_VOLUME = "volume";
 
     private SQLiteDatabase database;
     private List<StageClearState> states;
+    private float volume;
 
     public StageClearStateManager() {
     }
@@ -33,6 +35,37 @@ public class StageClearStateManager {
         DatabaseHelper helper = new DatabaseHelper(context);
         this.database = helper.getWritableDatabase();
         this.states = new ArrayList<>();
+        loadVolume();
+    }
+
+    private void loadVolume() {
+        Cursor cursor = database.query(TABLE_NAME, new String[]{COLUMN_VOLUME}, null, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            volume = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_VOLUME));
+            cursor.close();
+        } else {
+            volume = 0.5f;
+            saveVolume(volume);
+        }
+    }
+
+    public float getVolume() {
+        return volume;
+    }
+
+    public void updateVolume(float newVolume) {
+        volume = newVolume;
+        saveVolume(newVolume);
+    }
+
+    private void saveVolume(float volume) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_VOLUME, volume);
+
+        int rowsUpdated = database.update(TABLE_NAME, values, null, null);
+        if (rowsUpdated == 0) {
+            database.insert(TABLE_NAME, null, values);
+        }
     }
 
     public void loadStatesFromRaw(Context context, int rawResourceId) {
@@ -137,12 +170,14 @@ public class StageClearStateManager {
                     COLUMN_IS_UNLOCKED + " INTEGER, " +
                     COLUMN_ACHIEVEMENT_1 + " INTEGER, " +
                     COLUMN_ACHIEVEMENT_2 + " INTEGER, " +
-                    COLUMN_ACHIEVEMENT_3 + " INTEGER);";
+                    COLUMN_ACHIEVEMENT_3 + " INTEGER, " +
+                    COLUMN_VOLUME + " REAL DEFAULT 0.5);";
             db.execSQL(createTable);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
             onCreate(db);
         }

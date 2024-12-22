@@ -20,7 +20,11 @@ public class LevelManager {
         TITLE(0),
         OPTION(1),
         LEVELSELECT(2),
-        PROTO(3),
+        STAGE1(3),
+        STAGE2(4),
+        STAGE3(5),
+        STAGE4(6),
+        STAGE5(7),
         NONE(-1);
 
         private final int value;
@@ -109,27 +113,16 @@ public class LevelManager {
     }
 
     private void levelUpdate(float dt, Canvas canvas){
-        //Instance.getSpriteManager().drawStart(canvas);
-        if(currentLevel != GameLevel.TITLE && currentLevel != GameLevel.LEVELSELECT &&
-                currentLevel != GameLevel.OPTION) {
-            Instance.getGameManager().drawTileMap(canvas);
-        }
-
         Instance.getObjectManager().updateObjects(dt);
         this.levels.elementAt(currentLevel.ordinal()).Update(dt);
 
-        Instance.getObjectManager().drawObjects(canvas, dt);
         this.levels.elementAt(currentLevel.ordinal()).draw(canvas, dt);
+        Instance.getObjectManager().drawObjects(canvas, dt);
 
         Instance.getParticleManager().update(canvas, dt);
     }
 
     private void levelPause(float dt, Canvas canvas){
-        //Instance.getSpriteManager().drawStart(canvas);
-        if(currentLevel != GameLevel.TITLE && currentLevel != GameLevel.LEVELSELECT &&
-                currentLevel != GameLevel.OPTION) {
-            Instance.getGameManager().drawTileMap(canvas);
-        }
         Instance.getObjectManager().updateObjects(0);
         this.levels.elementAt(currentLevel.ordinal()).Update(0);
 
@@ -145,7 +138,7 @@ public class LevelManager {
         this.state = GameState.UPDATE;
     }
 
-    private void levelEnd(){
+    public void levelEnd(){
         this.levels.elementAt(currentLevel.ordinal()).End();
     }
 

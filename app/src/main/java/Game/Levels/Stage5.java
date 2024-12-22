@@ -1,28 +1,24 @@
 package Game.Levels;
 
-import Game.GameManager;
-import GameEngine.Color4i;
-import GameEngine.Level;
-import GameEngine.Instance;
-
-import Game.Button;
-import Game.Unit;
-import GameEngine.LevelManager;
-import GameEngine.Object;
-
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-public class Prototype extends Level {
+import Game.Button;
+import Game.GameManager;
+import GameEngine.Color4i;
+import GameEngine.Instance;
+import GameEngine.Level;
+import GameEngine.LevelManager;
+import GameEngine.Object;
+
+public class Stage5 extends Level {
     private Context context;
     private GestureDetector gestureDetector;
     Button pause;
 
-    public Prototype(Context context) {
+    public Stage5(Context context) {
         this.context = context;
         gestureDetector = new GestureDetector(context, new GestureListener());
     }
@@ -33,34 +29,50 @@ public class Prototype extends Level {
 
         // Example 2D map array
         int[][] mapArray = {
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {4, 3, 5, 0, 7, 0, 0, 0, 0, 0},
-                {1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 8, 0, 0, 6, 3, 0, 0, 0, 0},
-                {0, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 3, 0, 0, 0, 0, 0, 0, 1},
+                {1, 1, 1, 1, 0, 1, 0, 0, 1, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 8, 6, 0, 0, 1},
+                {1, 1, 1, 1, 0, 1, 1, 1, 1, 1},
+                {1, 0, 0, 1, 0, 1, 0, 0, 0, 1},
+                {1, 0, 4, 1, 0, 5, 0, 0, 0, 1},
+                {1, 0, 1, 1, 1, 1, 1, 0, 1, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 8, 0, 0, 7, 0, 0, 0, 1},
+                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
         };
 
         int[][] tileMapArray = {
-                {1, 1, 1, 1, 1, 1, 8, 1, 0, 0},
-                {1, 1, 1, 1, 1, 1, 8, 1, 1, 1},
-                {4, 0, 0, 0, 0, 0, 8, 1, 1, 1},
-                {4, 1, 1, 1, 1, 0, 8, 1, 1, 1},
-                {4, 1, 1, 1, 1, 1, 8, 1, 1, 1},
-                {4, 0, 0, 0, 0, 0, 8, 1, 1, 1},
-                {4, 1, 1, 1, 1, 1, 8, 1, 1, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
         };
 
         Instance.getGameManager().initializeMap(mapArray);
         Instance.getGameManager().setTileMapArray(tileMapArray);
 
-        Instance.getGameManager().addStructureButton("Ladder", Game.Structure.StructureType.LADDER, 2, 1, 1, 3);
-        Instance.getGameManager().addStructureButton("Block", Game.Structure.StructureType.BLOCK, 2, 2,1, 1);
+        Instance.getGameManager().addStructureButton("Ladder", Game.Structure.StructureType.LADDER, 5, 1, 1, 3);
+        Instance.getGameManager().addStructureButton("Block", Game.Structure.StructureType.BLOCK, 3, 1,1, 1);
 
         Instance.getGameManager().initStructureButtons(context);
         Instance.getGameManager().setCountdownTime(120);
-        Instance.getGameManager().setMinCountTimeForBonus(60);
+        Instance.getGameManager().setMinCountTimeForBonus(120);
         Instance.getGameManager().setTimerRunning(true);
 
         Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 1080 - 200, Instance.getCameraManager().getY(), 200, 200, new Color4i(255,255,255,255), "PAUSE", Button.ButtonType.OPTIONBUTTON));
@@ -82,7 +94,10 @@ public class Prototype extends Level {
     }
 
     @Override
-    public void draw(Canvas canvas, float dt) {
+    public void draw(Canvas canvas, float dt){
+        Instance.getSpriteManager().renderSprite(canvas, "background", 0, 0, 1080, 1920, 0, null
+                , dt,false, 0.9f);
+        Instance.getGameManager().drawTileMap(canvas);
         Instance.getGameManager().draw(canvas, dt);
     }
 

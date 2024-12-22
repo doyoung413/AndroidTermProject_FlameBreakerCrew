@@ -3,6 +3,8 @@ package Game;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
+import java.util.Random;
+
 import GameEngine.AnimationState;
 import GameEngine.Color4i;
 import GameEngine.Instance;
@@ -21,6 +23,32 @@ public class RescueTarget extends Object {
     public RescueTarget(int x, int y, int width, int height, Color4i color, String name, TargetType targetType) {
         super(x, y, width, height, color, name);
         this.targetType = targetType;
+
+        switch(targetType){
+            case MAN:
+                setSpriteName("target_man_idle");
+                setDrawType(DrawType.ANIMATION);
+                setAnimationState(new AnimationState(120, true));
+                break;
+            case WOMAN:
+                setSpriteName("target_woman_idle");
+                setDrawType(DrawType.ANIMATION);
+                setAnimationState(new AnimationState(120, true));
+                break;
+        }
+    }
+
+    public RescueTarget(int x, int y, int width, int height, Color4i color, String name) {
+        super(x, y, width, height, color, name);
+        this.targetType = targetType;
+
+        Random random = new Random();
+        if(random.nextInt(2) == 0){
+            this.targetType = TargetType.MAN;
+        }
+        else{
+            this.targetType = TargetType.WOMAN;
+        }
 
         switch(targetType){
             case MAN:

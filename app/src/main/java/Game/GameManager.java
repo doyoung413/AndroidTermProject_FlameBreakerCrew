@@ -1,6 +1,5 @@
 package Game;
 
-import GameEngine.AnimationState;
 import GameEngine.Color4i;
 import GameEngine.LevelManager;
 import GameEngine.Object;
@@ -35,7 +34,6 @@ public class GameManager {
             this.gridWidth = gridWidth;
             this.gridHeight = gridHeight;
             this.maxUnusedCount = maxUnusedCount;
-
         }
 
         public boolean isEligibleForBonus() {
@@ -100,7 +98,7 @@ public class GameManager {
     private Button popupButton2;
     private GamePlayState currentState = GamePlayState.NORMAL;
 
-    public static final int GRID_SIZE = 150;
+    public static final int GRID_SIZE = 100;
     private List<int[]> currentPath = new ArrayList<>();
     private PathFindingMode currentPathFindingMode = PathFindingMode.NORMAL;
 
@@ -161,6 +159,7 @@ public class GameManager {
         currentAction = ActionType.DO_NOTHING;
         startTime = System.currentTimeMillis();
         cancelButton = null;
+        rescueTargetCount = 0;
         this.context = context;
     }
 
@@ -446,7 +445,7 @@ public class GameManager {
                                         new Color4i(0, 0, 0, 255), "Block",
                                         Structure.StructureType.BLOCK, true)
                         );
-                        Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.NONE);
+                        //Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.NONE);
                         break;
 
                     case 2:
@@ -468,7 +467,7 @@ public class GameManager {
                     case 4:
                         Instance.getObjectManager().addObject(
                                 new RescueTarget(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE,
-                                        new Color4i(0, 0, 255, 255), "RescueMan", RescueTarget.TargetType.MAN)
+                                        new Color4i(0, 0, 255, 255), "RescueMan")
                         );
                         rescueTargetCount++;
                         break;
@@ -804,6 +803,9 @@ public class GameManager {
                 }
                 bonusState[2] = true;
             }
+            if(structureButtons.isEmpty()){
+                bonusState[2] = true;
+            }
 
             manager.updateStageState(current.getStageName(), current.isUnlocked(), current.getClearAchievements());
             manager.getStates().get(currentStageIndex).setClearAchievements(bonusState);
@@ -898,7 +900,10 @@ public class GameManager {
                     Instance.getLevelManager().setGameState(LevelManager.GameState.UPDATE);
                     setGamePlayState(GamePlayState.NORMAL);
                 } else if (popupButton2 != null && popupButton2.isClicked(touchX, touchY)) {
-                    System.exit(0);
+                    end();
+                    Instance.getLevelManager().levelEnd();
+                    Instance.getLevelManager().changeLevel(LevelManager.GameLevel.LEVELSELECT);
+                    setGamePlayState(GamePlayState.NORMAL);
                     return true;
                 }
             }
@@ -908,7 +913,8 @@ public class GameManager {
 //                    Instance.getLevelManager().changeLevel(LevelManager.GameLevel.);
 //                    setGamePlayState(GamePlayState.NORMAL);
                 } else if (popupButton2 != null && popupButton2.isClicked(touchX, touchY)) {
-                    Instance.getLevelManager().setGameState(LevelManager.GameState.UPDATE);
+                    end();
+                    Instance.getLevelManager().levelEnd();
                     Instance.getLevelManager().changeLevel(LevelManager.GameLevel.LEVELSELECT);
                     setGamePlayState(GamePlayState.NORMAL);
                     return true;

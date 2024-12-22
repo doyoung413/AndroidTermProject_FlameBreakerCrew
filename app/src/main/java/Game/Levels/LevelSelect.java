@@ -98,7 +98,8 @@ public class LevelSelect extends Level {
 
     @Override
     public void draw(Canvas canvas, float dt) {
-        Instance.getGameManager().draw(canvas, dt);
+        Instance.getSpriteManager().renderSprite(canvas, "background", 0, 0, 1080, 1920, 0, null
+                , dt,false, 0.9f);
 
         int i = 0;
         for (Button b : stageButtons){
@@ -139,7 +140,7 @@ public class LevelSelect extends Level {
             int stageIndex = 0;
             for (Button btn: stageButtons) {
                 if(btn.isClicked((int)worldX, (int)worldY) && btn.getIsTouch()){
-                    int firstStage = LevelManager.GameLevel.PROTO.ordinal();
+                    int firstStage = LevelManager.GameLevel.STAGE1.ordinal();
                     LevelManager.GameLevel level = LevelManager.GameLevel.fromInt(firstStage + stageIndex);
                     Instance.getLevelManager().changeLevel(level);
                     Instance.getGameManager().setCurrentStageIndex(stageIndex);

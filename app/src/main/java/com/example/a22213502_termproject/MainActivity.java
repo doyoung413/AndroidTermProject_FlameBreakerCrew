@@ -2,7 +2,11 @@ package com.example.a22213502_termproject;
 
 import Game.Levels.LevelSelect;
 import Game.Levels.Option;
-import Game.Levels.Prototype;
+import Game.Levels.Stage1;
+import Game.Levels.Stage2;
+import Game.Levels.Stage3;
+import Game.Levels.Stage4;
+import Game.Levels.Stage5;
 import Game.StageClearState;
 import GameEngine.Instance;
 import GameEngine.LevelManager;
@@ -43,7 +47,11 @@ public class MainActivity extends AppCompatActivity {
         Instance.getLevelManager().addLevel(new Option(this));
         Instance.getLevelManager().addLevel(new Option(this));
         Instance.getLevelManager().addLevel(new LevelSelect(this));
-        Instance.getLevelManager().addLevel(new Prototype(this));
+        Instance.getLevelManager().addLevel(new Stage1(this));
+        Instance.getLevelManager().addLevel(new Stage2(this));
+        Instance.getLevelManager().addLevel(new Stage3(this));
+        Instance.getLevelManager().addLevel(new Stage4(this));
+        Instance.getLevelManager().addLevel(new Stage5(this));
         Instance.getLevelManager().changeLevel(LevelManager.GameLevel.LEVELSELECT);
 
         loadSprites(this);
@@ -66,7 +74,8 @@ public class MainActivity extends AppCompatActivity {
         Instance.getCameraManager().setZoom(1.f);
         Instance.getCameraManager().setPosition(0, 0);
 
-        //Instance.getSoundManager().init(this);
+        Instance.getSoundManager().init(this);
+        Instance.getSoundManager().setVolume(Instance.getStageClearStateManager().getVolume());
         //Instance.getSoundManager().loadSound("test", R.raw.test);
     }
 
@@ -99,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             //FPS
 
             invalidate();
-            long sleepTime = FRAME_TIME_MS - (System.currentTimeMillis() - currentTime);
+            //long sleepTime = FRAME_TIME_MS - (System.currentTimeMillis() - currentTime);
 //            try {
 //                Thread.sleep(sleepTime);
 //            } catch (InterruptedException e) {
@@ -143,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
         Instance.getSpriteManager().loadAnimatedSprite(context, "pick_point", R.drawable.pickpoint, 24, 24);
         Instance.getSpriteManager().loadSprite(context , "select_arrow", R.drawable.selectarrow);
 
+        Instance.getSpriteManager().loadSprite(context , "background", R.drawable.background);
         Instance.getSpriteManager().loadTileMap(context, "map", R.drawable.tiles, 24, 24);
 
         Instance.getSpriteManager().loadTileMap(context, "button", R.drawable.button, 48, 48);
