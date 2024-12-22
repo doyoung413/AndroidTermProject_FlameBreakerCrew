@@ -24,6 +24,12 @@ public class Object {
     protected int tileIndex = 0;
     protected String spriteName;
     protected AnimationState animationState;
+
+    public void setFlip(boolean flip) {
+        isFlip = flip;
+    }
+
+    protected boolean isFlip = false;
     protected DrawType drawType;
     protected float angle;
     protected String text = null;
@@ -57,13 +63,13 @@ public class Object {
 
                 case SPRITE:
                     if (spriteName != null) {
-                        spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, null, dt);
+                        spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, null, dt, false);
                     }
                     break;
 
                 case ANIMATION:
                     if (spriteName != null && animationState != null) {
-                        spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, animationState, dt);
+                        spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, animationState, dt, false);
                     }
                     break;
 

@@ -3,6 +3,7 @@ package Game;
 import android.graphics.Canvas;
 
 import GameEngine.Color4i;
+import GameEngine.Instance;
 import GameEngine.Object;
 
 public class Obstacle extends Object {
@@ -15,6 +16,7 @@ public class Obstacle extends Object {
     private ObstacleType obstacleType;
     private int gridWidth;
     private int gridHeight;
+    private float delay = 0;
 
     public Obstacle(int x, int y, int gridWidth, int gridHeight, Color4i color, String name, ObstacleType obstacleType) {
         super(x, y, 0, 0, color, name);
@@ -36,6 +38,17 @@ public class Obstacle extends Object {
 
     public int getGridHeight() {
         return gridHeight;
+    }
+
+    @Override
+    protected void Update(float dt){
+        if(obstacleType == ObstacleType.FIRE) {
+            delay += dt;
+            if (delay > 0.5f) {
+                delay = 0;
+                Instance.getParticleManager().addFireParticle(50, 50, x, y + height, -10, 0, 100);
+            }
+        }
     }
 
     @Override

@@ -72,13 +72,13 @@ public class Button extends Object {
 
             case SPRITE:
                 if (spriteName != null) {
-                    spriteManager.renderSprite(canvas, spriteName, x + camX, y + camY, width, height, angle, null, dt);
+                    spriteManager.renderSprite(canvas, spriteName, x + camX, y + camY, width, height, angle, null, dt, false);
                 }
                 break;
 
             case ANIMATION:
                 if (spriteName != null && animationState != null) {
-                    spriteManager.renderSprite(canvas, spriteName, x + camX, y + camY, width, height, angle, animationState, dt);
+                    spriteManager.renderSprite(canvas, spriteName, x + camX, y + camY, width, height, angle, animationState, dt, false);
                 }
                 break;
 

@@ -91,6 +91,9 @@ public class Particle {
                 lifeTime = 0.f;
             }
         }
+        if(particleType == ParticleType.ANIMATION && animationState.isAnimatedEnd){
+            lifeTime = 0.f;
+        }
     }
 
     public void draw(Canvas canvas, float dt) {
@@ -102,13 +105,13 @@ public class Particle {
 
             case SPRITE:
                 if (spriteName != null) {
-                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, null, dt);
+                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, null, dt, false);
                 }
                 break;
 
             case ANIMATION:
                 if (spriteName != null && animationState != null) {
-                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, animationState, dt);
+                    spriteManager.renderSprite(canvas, spriteName, x, y, width, height, angle, animationState, dt, false);
                 }
                 break;
         }

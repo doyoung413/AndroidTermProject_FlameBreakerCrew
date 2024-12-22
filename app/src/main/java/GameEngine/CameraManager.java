@@ -77,8 +77,8 @@ public class CameraManager {
     public Matrix getCombinedMatrix() {
         Matrix combinedMatrix = new Matrix();
 
-        combinedMatrix.set(getProjectionMatrix());
-        combinedMatrix.preConcat(getViewMatrix());
+        combinedMatrix.set(getViewMatrix());
+        combinedMatrix.postConcat(getProjectionMatrix());
 
         return combinedMatrix;
     }

@@ -27,6 +27,12 @@ public class Unit extends Object {
     private UnitType unitType;
     private UnitState unitState = UnitState.WAIT;
 
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    private boolean isSelected = false;
+
     public Unit(int x, int y, int width, int height, Color4i color, String name, int speed, int actLeft) {
         super(x, y, width, height, color, name);
         this.speed = speed;
@@ -70,6 +76,7 @@ public class Unit extends Object {
             if (gm.getTargetObject() instanceof Obstacle) {
                 gm.destroyTargetObject();
             }
+            setSelected(false);
             gm.setCurrentAction(GameManager.ActionType.DO_NOTHING);
         }
     }
@@ -77,8 +84,16 @@ public class Unit extends Object {
     @Override
     public void draw(Canvas canvas, float dt) {
         super.draw(canvas, dt);
-        Instance.getSpriteManager().renderText(canvas, unitState.toString(),
-                x, y - 20, 30, new Color4i(0, 0, 0 ,255), Paint.Align.CENTER);
+        if(isSelected == true){
+            Instance.getSpriteManager().renderSprite(canvas, "select_arrow",
+                    x, y -  getHeight(), getWidth(), getHeight(), angle, animationState, dt, false);
+        }
+
+//        Instance.getSpriteManager().renderText(canvas, unitState.toString(),
+//                x, y - 20, 30, new Color4i(0, 0, 0 ,255), Paint.Align.CENTER);
+
+        Instance.getSpriteManager().renderText(canvas, "" + actLeft,
+                x + getWidth() / 2, y - 10, 30, new Color4i(0, 0, 0 ,255), Paint.Align.CENTER);
     }
 
     public UnitType getType() {
@@ -112,73 +127,148 @@ public class Unit extends Object {
             case RESCUE:
                 if(unitState == UnitState.WAIT)
                 {
-                    setSpriteName("rescue_idle");
-                    setDrawType(DrawType.SPRITE);
-                    //setAnimationState(new AnimationState(60, true));
+                    if(isFlip == false) {
+                        setSpriteName("rescue_idle");
+                        setDrawType(DrawType.SPRITE);
+                        //setAnimationState(new AnimationState(60, true));
+                    }
+                    else{
+                        setSpriteName("rescue_idle");
+                        setDrawType(DrawType.SPRITE);
+                        //setAnimationState(new AnimationState(60, true));
+                    }
                 }
                 else if(unitState == UnitState.MOVE)
                 {
-                    setSpriteName("rescue_walk");
-                    setDrawType(DrawType.ANIMATION);
-                    setAnimationState(new AnimationState(60, false));
+                    if(isFlip == false) {
+                        setSpriteName("rescue_walk");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, false));
+                    }
+                    else{
+
+                    }
                 }
                 else if(unitState == UnitState.LADDER)
                 {
-                    setSpriteName("rescue_ladder");
-                    setDrawType(DrawType.ANIMATION);
-                    setAnimationState(new AnimationState(60, false));
+                    if(isFlip == false) {
+                        setSpriteName("rescue_ladder");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, false));
+                    }
+                    else{
+                        setSpriteName("rescue_ladder");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, false));
+                    }
                 }
                 break;
             case HAMMER:
                 if(unitState == UnitState.WAIT)
                 {
-                    setSpriteName("breaker_idle");
-                    setDrawType(DrawType.SPRITE);
-                    //setAnimationState(new AnimationState(60, true));
+                    if(isFlip == false) {
+                        setSpriteName("breaker_idle");
+                        setDrawType(DrawType.SPRITE);
+                        //setAnimationState(new AnimationState(60, true));
+                    }
+                    else{
+                        setSpriteName("breaker_idle");
+                        setDrawType(DrawType.SPRITE);
+                        //setAnimationState(new AnimationState(60, true));
+                    }
                 }
                 else if(unitState == UnitState.MOVE)
                 {
-                    setSpriteName("breaker_walk");
-                    setDrawType(DrawType.ANIMATION);
-                    setAnimationState(new AnimationState(60, false));
+                    if(isFlip == false) {
+                        setSpriteName("breaker_walk");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, false));
+                    }
+                    else{
+                        setSpriteName("breaker_walk");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, false));
+                    }
                 }
                 else if(unitState == UnitState.LADDER)
                 {
-                    setSpriteName("breaker_ladder");
-                    setDrawType(DrawType.ANIMATION);
-                    setAnimationState(new AnimationState(60, false));
+                    if(isFlip == false) {
+                        setSpriteName("breaker_ladder");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, false));
+                    }
+                    else{
+                        setSpriteName("breaker_ladder");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, false));
+                    }
                 }
                 else if(unitState == UnitState.ACT)
                 {
-                    setSpriteName("breaker_act");
-                    setDrawType(DrawType.ANIMATION);
-                    setAnimationState(new AnimationState(60, true));
+                    if(isFlip == false) {
+                        setSpriteName("breaker_act");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, true));
+                    }
+                    else{
+                        setSpriteName("breaker_act");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, true));
+                    }
                 }
                 break;
             case WATER:
                 if(unitState == UnitState.WAIT)
                 {
-                    setSpriteName("water_idle");
-                    setDrawType(DrawType.SPRITE);
-                    //setAnimationState(new AnimationState(60, true));
+                    if(isFlip == false) {
+                        setSpriteName("water_idle");
+                        setDrawType(DrawType.SPRITE);
+                        //setAnimationState(new AnimationState(60, true));
+                    }
+                    else{
+                        setSpriteName("water_idle");
+                        setDrawType(DrawType.SPRITE);
+                        //setAnimationState(new AnimationState(60, true));
+                    }
                 }
                 else if(unitState == UnitState.MOVE)
                 {
-                    setSpriteName("water_walk");
-                    setDrawType(DrawType.ANIMATION);
-                    setAnimationState(new AnimationState(60, false));
+                    if(isFlip == false) {
+                        setSpriteName("water_walk");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, false));
+                    }
+                    else{
+                        setSpriteName("water_walk");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, false));
+                    }
                 }
                 else if(unitState == UnitState.LADDER)
                 {
-                    setSpriteName("water_ladder");
-                    setDrawType(DrawType.ANIMATION);
-                    setAnimationState(new AnimationState(60, false));
+                    if(isFlip == false) {
+                        setSpriteName("water_ladder");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, false));
+                    }
+                    else{
+                        setSpriteName("water_ladder");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, false));
+                    }
                 }
                 else if(unitState == UnitState.ACT)
                 {
-                    setSpriteName("water_act");
-                    setDrawType(DrawType.ANIMATION);
-                    setAnimationState(new AnimationState(60, true));
+                    if(isFlip == false) {
+                        setSpriteName("water_act");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, true));
+                    }
+                    else{
+                        setSpriteName("water_act");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, true));
+                    }
                 }
                 break;
         }

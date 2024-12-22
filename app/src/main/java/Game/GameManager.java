@@ -100,7 +100,7 @@ public class GameManager {
     private Button popupButton2;
     private GamePlayState currentState = GamePlayState.NORMAL;
 
-    public static final int GRID_SIZE = 100;
+    public static final int GRID_SIZE = 150;
     private List<int[]> currentPath = new ArrayList<>();
     private PathFindingMode currentPathFindingMode = PathFindingMode.NORMAL;
 
@@ -345,6 +345,13 @@ public class GameManager {
         int currentX = startX;
         int currentY = startY;
 
+        if(step == 1) {
+            selectedUnit.setFlip(false);
+        }
+        else{
+            selectedUnit.setFlip(true);
+        }
+
         while (currentX != targetX) {
             int nextX = 0;
             if(currentPathFindingMode == PathFindingMode.NORMAL) {
@@ -499,24 +506,6 @@ public class GameManager {
     private void processInteraction(Unit unit, Object target, int gridX, int gridY) {
         if (unit.getActLeft() > 0) {
             boolean isAct = false;
-//            if(target instanceof Obstacle){
-//                Obstacle obstacle = (Obstacle) target;
-//                if (unit.getType() == Unit.UnitType.WATER && obstacle.getSObstacleType() == Obstacle.ObstacleType.FIRE) {
-//                    isAct = true;
-//                    mapArray[gridY][gridX] = 0;
-//                    Instance.getObjectManager().removeObject(obstacle);
-//                    unit.setActLeft(unit.getActLeft() - 1);
-//                    Instance.getParticleManager().addRandomParticle(25, 25, obstacle.getX(), obstacle.getY(),
-//                            20, 20, 0, 1);
-//                } else if (unit.getType() == Unit.UnitType.HAMMER && obstacle.getSObstacleType() == Obstacle.ObstacleType.BREAKABLE) {
-//                    isAct = true;
-//                    mapArray[gridY][gridX] = 0;
-//                    Instance.getObjectManager().removeObject(obstacle);
-//                    unit.setActLeft(unit.getActLeft() - 1);
-//                    Instance.getParticleManager().addRandomParticle(25, 25, obstacle.getX(), obstacle.getY(),
-//                            20, 20, 0, 1);
-//                }
-//            }
             if (target instanceof Obstacle) {
                 Obstacle obstacle = (Obstacle) target;
                 if (unit.getType() == Unit.UnitType.HAMMER && obstacle.getSObstacleType() == Obstacle.ObstacleType.BREAKABLE ||
@@ -538,6 +527,10 @@ public class GameManager {
                 }
             }
             if(isAct) {
+                Unit temp = (Unit)selectedUnit;
+                temp.setSelected(false);
+                temp = null;
+
                 selectedUnit = null;
                 currentAction = ActionType.DO_NOTHING;
                 if (cancelButton != null) {
@@ -577,6 +570,10 @@ public class GameManager {
     public void setSelectedUnit(Object unit, Context context) {
         this.selectedUnit = unit;
         this.currentAction = ActionType.MOVE_UNIT;
+        Unit temp = (Unit)selectedUnit;
+        temp.setSelected(true);
+        temp = null;
+
         isMoving = false;
         isReadyToMove = false;
 
@@ -587,6 +584,9 @@ public class GameManager {
     }
 
     public void clearSelectedUnit() {
+        Unit temp = (Unit)selectedUnit;
+        temp.setSelected(false);
+        temp = null;
         this.selectedUnit = null;
         this.currentAction = ActionType.DO_NOTHING;
 

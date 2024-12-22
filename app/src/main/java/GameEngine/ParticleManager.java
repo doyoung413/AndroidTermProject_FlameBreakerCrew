@@ -52,6 +52,22 @@ public class ParticleManager {
     }
     //TEST
 
+    public void addFireParticle(int width, int height, int x, int y, int speedY, float angle, float lifeTime) {
+        Random random = new Random();
+        int particleAmount = random.nextInt(60) + 1;
+
+        for (int i = 0; i < particleAmount; i++) {
+            int randomSpeedX = random.nextInt(80) - 40;
+            int randomSpeedY = -(Math.abs(speedY + random.nextInt(100)));
+
+            float animateTime = 200 + random.nextFloat() * 200 - random.nextFloat() * 300;
+
+            addSingleParticle(width, height, x, y, randomSpeedX, randomSpeedY, 0,
+                    new Color4i(random.nextInt(255), random.nextInt(128), 0, 255),
+                    100000, Particle.ParticleType.ANIMATION, "fire_particle", new AnimationState((int)animateTime, true));
+        }
+    }
+
     public void clear(){
         particles.clear();
     }

@@ -26,15 +26,15 @@ public class Sprite {
         this.frameCount = frameCount;
     }
 
-    public void draw(Canvas canvas, int x, int y, int width, int height, float angle, AnimationState animationState, float dt) {
+    public void draw(Canvas canvas, int x, int y, int width, int height, float angle, AnimationState animationState, float dt, boolean flipX) {
         if (isAnimated) {
-            drawAnimated(canvas, x, y, width, height, angle, animationState, dt);
+            drawAnimated(canvas, x, y, width, height, angle, animationState, dt, flipX);
         } else {
-            drawStatic(canvas, x, y, width, height, angle);
+            drawStatic(canvas, x, y, width, height, angle, flipX);
         }
     }
 
-    private void drawStatic(Canvas canvas, int x, int y, int width, int height, float angle) {
+    private void drawStatic(Canvas canvas, int x, int y, int width, int height, float angle, boolean flipX) {
         if (spriteSheet == null) return;
 
         Matrix matrix = new Matrix();
@@ -43,6 +43,13 @@ public class Sprite {
         matrix.set(Instance.getCameraManager().getCombinedMatrix());
 
         matrix.postTranslate(-width / 2f, -height / 2f);
+
+        if (flipX) {
+            matrix.postScale(-1, 1, spriteCenterX, spriteCenterY);
+        } else {
+            matrix.postScale(1, 1, spriteCenterX, spriteCenterY);
+        } //WIP - 미완성
+
         matrix.postRotate(angle, 0, 0);
         matrix.postTranslate(spriteCenterX, spriteCenterY);
 
@@ -50,7 +57,7 @@ public class Sprite {
         canvas.drawBitmap(spriteSheet, null, new Rect(0, 0, width, height), null);
     }
 
-    private void drawAnimated(Canvas canvas, int x, int y, int width, int height, float angle, AnimationState animationState, float dt) {
+    private void drawAnimated(Canvas canvas, int x, int y, int width, int height, float angle, AnimationState animationState, float dt, boolean flipX) {
         if (spriteSheet == null || animationState == null) return;
 
         int frameWidth = spriteSheet.getWidth() / frameCount;
@@ -64,7 +71,14 @@ public class Sprite {
         float spriteCenterX = x + width / 2f;
         float spriteCenterY = y + height / 2f;
 
-        matrix.postTranslate(-frameWidth / 2f, -height / 2f); //애니메이션이 x축만 나누게 되어있음
+        matrix.postTranslate(-width / 2f, -height / 2f);
+        if (flipX) {
+            matrix.postScale(-1, 1, spriteCenterX, height);
+        }
+        else {
+            matrix.postScale(1, 1, spriteCenterX, height);
+        } //WIP - 미완성
+
         matrix.postRotate(angle);
         matrix.postTranslate(spriteCenterX, spriteCenterY);
 

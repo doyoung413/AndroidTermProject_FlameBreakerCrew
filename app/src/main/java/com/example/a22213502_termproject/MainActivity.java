@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         Instance.getSpriteManager().loadAnimatedSprite(context, "target_woman_save", R.drawable.targetwomansave, 24, 24);
 
         Instance.getSpriteManager().loadSprite(context, "breakable_block", R.drawable.breakableblock);
-        Instance.getSpriteManager().loadAnimatedSprite(context, "fire_particle", R.drawable.fireparticle, 24, 24);
+        Instance.getSpriteManager().loadAnimatedSprite(context, "fire_particle", R.drawable.fireparticle, 8, 8);
 
         Instance.getSpriteManager().loadAnimatedSprite(context, "pick_point", R.drawable.pickpoint, 24, 24);
         Instance.getSpriteManager().loadSprite(context , "select_arrow", R.drawable.selectarrow);

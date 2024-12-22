@@ -135,11 +135,11 @@ public class SpriteManager {
         canvas.setMatrix(combinedMatrix);
     }
 
-    public void renderSprite(Canvas canvas, String name, int x, int y, int width, int height, float angle, AnimationState animationState, float dt) {
+    public void renderSprite(Canvas canvas, String name, int x, int y, int width, int height, float angle, AnimationState animationState, float dt, boolean flipX) {
         Sprite sprite = spriteMap.get(name);
         if (sprite != null) {
             canvas.save();
-            sprite.draw(canvas, x, y, width, height, angle, animationState, dt);
+            sprite.draw(canvas, x, y, width, height, angle, animationState, dt, flipX);
             canvas.restore();
         }
     }
