@@ -17,11 +17,30 @@ public class LevelManager {
     }
 
     public enum GameLevel{
-        PROTO,
-        OPTION,
-        LEVELSELECT,
-        TITLE,
-        NONE
+        TITLE(0),
+        OPTION(1),
+        LEVELSELECT(2),
+        PROTO(3),
+        NONE(-1);
+
+        private final int value;
+
+        GameLevel(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public static GameLevel fromInt(int value) {
+            for (GameLevel level : values()) {
+                if (level.value == value) {
+                    return level;
+                }
+            }
+            return NONE; // 기본값 처리
+        }
     }
     private GameState state = GameState.INIT;
     GameLevel currentLevel = GameLevel.NONE;

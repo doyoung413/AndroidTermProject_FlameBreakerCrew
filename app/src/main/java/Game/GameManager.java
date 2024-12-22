@@ -94,6 +94,7 @@ public class GameManager {
         LADDER_DOWN
     }
 
+    private Object popupText;
     private Object popupBackground;
     private Button popupButton1;
     private Button popupButton2;
@@ -391,6 +392,7 @@ public class GameManager {
         selectedUnit  = null;
         targetObject = null;
         currentItem  = null;
+        popupText = null;
         currentChosenStrBtn = null;
         structureButtons.clear(); ;
     }
@@ -675,6 +677,10 @@ public class GameManager {
             return;
         }
 
+        if (popupText != null) {
+            Instance.getObjectManager().removeObject(popupText);
+            popupText = null;
+        }
         if (popupBackground != null) {
             Instance.getObjectManager().removeObject(popupBackground);
             popupBackground = null;
@@ -690,16 +696,44 @@ public class GameManager {
         currentState = newState;
 
         if (newState == GamePlayState.PAUSE) {
-            popupBackground = new Object(300, 500, 600, 400, new Color4i(0, 0, 0, 200), "PopupBackground");
+            int popupWidth = 800 + Instance.getCameraManager().getX();
+            int popupHeight = Instance.getCameraManager().getBaseHeight() / 2 + Instance.getCameraManager().getY();
+
+            int popupX = (Instance.getCameraManager().getBaseWidth() - popupWidth) / 2;
+            int popupY = (Instance.getCameraManager().getBaseHeight() - popupHeight) / 2;
+
+           popupBackground = new Object(popupX, popupY, popupWidth, popupHeight,
+                    new Color4i(0, 0, 0, 200), "PopupBackground");
             Instance.getObjectManager().addObject(popupBackground);
 
-            popupButton1 = new Button(context, 320, 820, 120, 60,
-                    new Color4i(200, 200, 200, 255), "Resume", Button.ButtonType.OPTIONBUTTON);
-            Instance.getObjectManager().addObject(popupButton1);
+            popupText = (new Object(popupX, popupY - popupHeight / 2 + 80, popupWidth, popupHeight,
+                    new Color4i(0, 0, 0, 200), "PAUSETEXT"));
+            popupText.setDrawType(Object.DrawType.NONE);
+            Instance.getObjectManager().addObject(popupText);
+            Instance.getObjectManager().getLastObject().setText("PAUSE");
 
-            popupButton2 = new Button(context, 580, 820, 120, 60,
-                    new Color4i(200, 200, 200, 255), "Quit", Button.ButtonType.OPTIONBUTTON);
+            int buttonWidth = 400 + Instance.getCameraManager().getX();
+            int buttonHeight = 200 + Instance.getCameraManager().getY();
+
+            int button1X = popupX + (popupWidth - buttonWidth) / 2;
+            int button1Y = popupY + popupHeight / 3 - buttonHeight / 2;
+
+            popupButton1 = new Button(context, button1X, button1Y, buttonWidth, buttonHeight,
+                    new Color4i(200, 200, 200, 255), "Resume", Button.ButtonType.OPTIONBUTTON);
+            popupButton1.setText("RESUME");
+            Instance.getObjectManager().addObject(popupButton1);
+            Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
+            Instance.getObjectManager().getLastObject().setSpriteName("button2x1");
+
+            int button2X = popupX + (popupWidth - buttonWidth) / 2;
+            int button2Y = popupY + (2 * popupHeight) / 3 - buttonHeight / 2;
+
+            popupButton2 = new Button(context, button2X, button2Y, buttonWidth, buttonHeight,
+                    new Color4i(200, 200, 200, 255), "LevelSelect", Button.ButtonType.OPTIONBUTTON);
+            popupButton2.setText("EXIT");
             Instance.getObjectManager().addObject(popupButton2);
+            Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
+            Instance.getObjectManager().getLastObject().setSpriteName("button2x1");
         }
         else if (newState == GamePlayState.CLEAR) {
             boolean bonusState[] = new boolean[3];
@@ -735,16 +769,71 @@ public class GameManager {
             current = null;
             next = null;
 
-            popupBackground = new Object(300 + Instance.getCameraManager().getX(), 500 + Instance.getCameraManager().getY(), 600, 400, new Color4i(0, 0, 0, 200), "PopupBackground");
+            int popupWidth = 800;
+            int popupHeight = Instance.getCameraManager().getBaseHeight() / 2;
+
+            int popupX = (Instance.getCameraManager().getBaseWidth() - popupWidth) / 2;
+            int popupY = (Instance.getCameraManager().getBaseHeight() - popupHeight) / 2;
+
+            popupBackground = new Object(popupX, popupY, popupWidth, popupHeight,
+                    new Color4i(0, 0, 0, 200), "PopupBackground");
             Instance.getObjectManager().addObject(popupBackground);
 
-            popupButton1 = new Button(context, 320, 820, 120, 60,
-                    new Color4i(200, 200, 200, 255), "NextLevel", Button.ButtonType.OPTIONBUTTON);
-            Instance.getObjectManager().addObject(popupButton1);
+            popupText = (new Object(popupX, popupY - popupHeight / 2 + 80, popupWidth, popupHeight,
+                    new Color4i(0, 0, 0, 200), "CLEARTEXT"));
+            popupText.setDrawType(Object.DrawType.NONE);
+            Instance.getObjectManager().addObject(popupText);
+            Instance.getObjectManager().getLastObject().setText("CLEAR!");
 
-            popupButton2 = new Button(context, 580, 820, 120, 60,
-                    new Color4i(200, 200, 200, 255), "LevelSelect", Button.ButtonType.OPTIONBUTTON);
+            int starWidth = 200;
+            int starHeight = 200;
+            int starSpacing = 20;
+            int totalStars = 3;
+            int totalStarWidth = (starWidth * totalStars) + (starSpacing * (totalStars - 1));
+            int startX = popupX + (popupWidth - totalStarWidth) / 2;
+            int startY = popupY + 20;
+
+            for (int i = 0; i < totalStars; i++) {
+                int starX = startX + i * (starWidth + starSpacing);
+                int starY = startY + 80;
+
+                Instance.getObjectManager().addObject(new Object(starX, starY,
+                        starWidth, starHeight, new Color4i(255, 255, 255, 255), "star"));
+                Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
+                Instance.getObjectManager().getLastObject().setSpriteName("star");
+
+                if (bonusState[i]) {
+                    Instance.getObjectManager().getLastObject().setTileIndex(1);
+                } else {
+                    Instance.getObjectManager().getLastObject().setTileIndex(0);
+                }
+            }
+
+            int buttonWidth = 400;
+            int buttonHeight = 200;
+            int offsetY = 100;
+
+            int button1X = popupX + (popupWidth - buttonWidth) / 2;
+            int button1Y = popupY + popupHeight / 3 - buttonHeight / 2 + offsetY;
+
+            popupButton1 = new Button(context, button1X, button1Y, buttonWidth, buttonHeight,
+                    new Color4i(200, 200, 200, 255), "NEXT", Button.ButtonType.OPTIONBUTTON);
+            popupButton1.setText("NEXT LEVEL");
+            popupButton1.setFontSize(60);
+            Instance.getObjectManager().addObject(popupButton1);
+            Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
+            Instance.getObjectManager().getLastObject().setSpriteName("button2x1");
+
+            int button2X = popupX + (popupWidth - buttonWidth) / 2;
+            int button2Y = popupY + (2 * popupHeight) / 3 - buttonHeight / 2 + offsetY;
+
+            popupButton2 = new Button(context, button2X, button2Y, buttonWidth, buttonHeight,
+                    new Color4i(200, 200, 200, 255), "Quit", Button.ButtonType.OPTIONBUTTON);
+            popupButton2.setText("EXIT");
             Instance.getObjectManager().addObject(popupButton2);
+            Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
+            Instance.getObjectManager().getLastObject().setSpriteName("button2x1");
+
         }
     }
 

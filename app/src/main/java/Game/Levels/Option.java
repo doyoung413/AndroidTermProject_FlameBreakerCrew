@@ -91,7 +91,7 @@ public class Option extends Level {
         }
         if (event.getAction() == MotionEvent.ACTION_UP) {
             if(exit.isClicked((int)worldX, (int)worldY) && exit.getIsTouch()){
-                Instance.getLevelManager().changeLevel(LevelManager.GameLevel.PROTO);
+                Instance.getLevelManager().changeLevel(LevelManager.GameLevel.LEVELSELECT);
             }
             else{
                 exit.setIsTouch(false);

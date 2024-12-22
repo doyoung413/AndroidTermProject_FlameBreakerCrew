@@ -11,8 +11,7 @@ public class Unit extends Object {
     public enum UnitType {
         RESCUE,
         HAMMER,
-        WATER,
-        TARGET;
+        WATER
     }
 
     public enum UnitState {

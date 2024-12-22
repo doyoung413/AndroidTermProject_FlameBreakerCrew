@@ -51,7 +51,9 @@ public class Prototype extends Level {
         Instance.getGameManager().setMinCountTimeForBonus(60);
         Instance.getGameManager().setTimerRunning(true);
 
-        Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 800, Instance.getCameraManager().getY(), 100, 100, new Color4i(0,0,0,255), "PAUSE", Button.ButtonType.OPTIONBUTTON));
+        Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 1080 - 200, Instance.getCameraManager().getY(), 200, 200, new Color4i(255,255,255,255), "PAUSE", Button.ButtonType.OPTIONBUTTON));
+        Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
+        Instance.getObjectManager().getLastObject().setSpriteName("button_pause");
         pause = (Button) (Instance.getObjectManager().getLastObject());
     }
 

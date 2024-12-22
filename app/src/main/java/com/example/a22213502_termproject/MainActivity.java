@@ -7,6 +7,7 @@ import Game.StageClearState;
 import GameEngine.Instance;
 import GameEngine.LevelManager;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -39,15 +40,13 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(s.toString());
         }
 
-        Instance.getLevelManager().addLevel(new Prototype(this));
+        Instance.getLevelManager().addLevel(new Option(this));
         Instance.getLevelManager().addLevel(new Option(this));
         Instance.getLevelManager().addLevel(new LevelSelect(this));
-        Instance.getLevelManager().changeLevel(LevelManager.GameLevel.PROTO);
+        Instance.getLevelManager().addLevel(new Prototype(this));
+        Instance.getLevelManager().changeLevel(LevelManager.GameLevel.LEVELSELECT);
 
-        Instance.getSpriteManager().loadSprite(this, "idle", R.drawable.a);
-        Instance.getSpriteManager().loadAnimatedSprite(this, "walk", R.drawable.b, 24, 24, 4);
-        Instance.getSpriteManager().loadTileMap(this, "map", R.drawable.tiles, 24, 24);
-        Instance.getSpriteManager().loadFont(this, R.raw.galmuri11b);
+        loadSprites(this);
 
         GameView gameView = new GameView(this);
         setContentView(gameView);
@@ -112,5 +111,47 @@ public class MainActivity extends AppCompatActivity {
         public boolean onTouchEvent(MotionEvent event) {
             return Instance.getLevelManager().handleTouchEvent(event);
         }
+    }
+
+    private void loadSprites(Context context){
+        Instance.getSpriteManager().loadAnimatedSprite(context, "walk", R.drawable.b, 24, 24);
+
+        Instance.getSpriteManager().loadSprite(context, "rescue_idle", R.drawable.rescueidle);
+        Instance.getSpriteManager().loadAnimatedSprite(context, "rescue_walk", R.drawable.rescuewalk, 24, 24 );
+        Instance.getSpriteManager().loadAnimatedSprite(context, "rescue_ladder", R.drawable.rescueladder, 24, 24);
+
+        Instance.getSpriteManager().loadSprite(context, "breaker_idle", R.drawable.breakeridle);
+        Instance.getSpriteManager().loadAnimatedSprite(context, "breaker_walk", R.drawable.breakerwalk, 24, 24 );
+        Instance.getSpriteManager().loadAnimatedSprite(context, "breaker_ladder", R.drawable.breakerladder, 24, 24);
+        Instance.getSpriteManager().loadAnimatedSprite(context, "breaker_act", R.drawable.breakeract, 24, 24);
+
+        Instance.getSpriteManager().loadSprite(context, "water_idle", R.drawable.wateridle);
+        Instance.getSpriteManager().loadAnimatedSprite(context, "water_walk", R.drawable.waterwalk, 24, 24 );
+        Instance.getSpriteManager().loadAnimatedSprite(context, "water_ladder", R.drawable.waterladder, 24, 24);
+        Instance.getSpriteManager().loadAnimatedSprite(context, "water_act", R.drawable.wateract, 24, 24);
+
+        Instance.getSpriteManager().loadAnimatedSprite(context, "target_man_idle", R.drawable.targetmanidle, 24, 24);
+        Instance.getSpriteManager().loadAnimatedSprite(context, "target_man_save", R.drawable.targetmansave, 24, 24);
+        Instance.getSpriteManager().loadAnimatedSprite(context, "target_woman_idle", R.drawable.targetwomanidle, 24, 24);
+        Instance.getSpriteManager().loadAnimatedSprite(context, "target_woman_save", R.drawable.targetwomansave, 24, 24);
+
+        Instance.getSpriteManager().loadSprite(context, "breakable_block", R.drawable.breakableblock);
+        Instance.getSpriteManager().loadAnimatedSprite(context, "fire_particle", R.drawable.fireparticle, 24, 24);
+
+        Instance.getSpriteManager().loadAnimatedSprite(context, "pick_point", R.drawable.pickpoint, 24, 24);
+        Instance.getSpriteManager().loadSprite(context , "select_arrow", R.drawable.selectarrow);
+
+        Instance.getSpriteManager().loadTileMap(context, "map", R.drawable.tiles, 24, 24);
+
+        Instance.getSpriteManager().loadTileMap(context, "button", R.drawable.button, 48, 48);
+        Instance.getSpriteManager().loadSprite(context , "button_lock", R.drawable.buttonlock);
+        Instance.getSpriteManager().loadTileMap(context, "button_block", R.drawable.buttonblock, 48, 48);
+        Instance.getSpriteManager().loadTileMap(context, "button_ladder", R.drawable.buttonladder, 48, 48);
+        Instance.getSpriteManager().loadTileMap(context, "button_pause", R.drawable.buttonpause, 48, 48);
+        Instance.getSpriteManager().loadTileMap(context, "button_option", R.drawable.buttonoption, 48, 48);
+        Instance.getSpriteManager().loadTileMap(context, "button2x1", R.drawable.button2x1, 96, 48);
+        Instance.getSpriteManager().loadTileMap(context, "star", R.drawable.star, 12, 12);
+
+        Instance.getSpriteManager().loadFont(context, R.raw.galmuri11b);
     }
 }

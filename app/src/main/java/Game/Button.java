@@ -8,6 +8,7 @@ import GameEngine.SpriteManager;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 
 public class Button extends Object {
@@ -31,15 +32,30 @@ public class Button extends Object {
         super(x, y, width, height, color, name);
         this.context = context;
         this.buttonType = buttonType;
+
+        switch(buttonType){
+            case LADDER:
+                setDrawType(Object.DrawType.TILE);
+                setSpriteName("button_ladder");
+                break;
+            case BLOCK:
+                setDrawType(Object.DrawType.TILE);
+                setSpriteName("button_block");
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
     public void Update(float dt) {
         if(isTouch == false){
             setColor(color.r, color.g, color.b, 255);
+            setTileIndex(0);
         }
         else{
             setColor(color.r, color.g, color.b, 125);
+            setTileIndex(1);
         }
     }
 
@@ -65,6 +81,27 @@ public class Button extends Object {
                     spriteManager.renderSprite(canvas, spriteName, x + camX, y + camY, width, height, angle, animationState, dt);
                 }
                 break;
+
+            case TILE:
+                if (spriteName != null) {
+                    spriteManager.renderTile(canvas, spriteName, tileIndex, x + camX, y + camY, width, height, angle);
+                }
+                break;
+        }
+
+        if (text != null) {
+            int centerX = x + camX + width / 2;
+            int centerY = y + camY + height / 2;
+
+            spriteManager.renderText(
+                    canvas,
+                    text,
+                    centerX,
+                    centerY,
+                    fontSize,
+                    Color.WHITE,
+                    Paint.Align.CENTER
+            );
         }
     }
     public boolean isClicked(int touchX, int touchY) {
@@ -85,5 +122,4 @@ public class Button extends Object {
     public void setIsTouch(boolean touch) {
         isTouch = touch;
     }
-
 }

@@ -108,6 +108,14 @@ public class SpriteManager {
         spriteMap.put(name, new Sprite(bitmap, frameWidth, frameHeight, frameCount));
     }
 
+    public void loadAnimatedSprite(Context context, String name, int resourceId, int frameWidth, int frameHeight) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
+        spriteMap.put(name, new Sprite(bitmap, frameWidth, frameHeight,  (bitmap.getWidth() / frameWidth) * (bitmap.getHeight() / frameHeight)));
+    }
+
     public void loadTileMap(Context context, String name, int resourceId, int tileWidth, int tileHeight) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;

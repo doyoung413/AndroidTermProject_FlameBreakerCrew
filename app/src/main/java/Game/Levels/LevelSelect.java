@@ -15,13 +15,14 @@ import GameEngine.Color4i;
 import GameEngine.Instance;
 import GameEngine.Level;
 import GameEngine.LevelManager;
+import GameEngine.Object;
 
 public class LevelSelect extends Level {
     private Context context;
     private GestureDetector gestureDetector;
     Vector<Button> stageButtons = new Vector<>();
     List<StageClearState> states = Instance.getStageClearStateManager().getStates();
-    Button exit;
+    Button option;
 
     public LevelSelect(Context context) {
         this.context = context;
@@ -32,12 +33,55 @@ public class LevelSelect extends Level {
     public void Init() {
         for(int i = 0 ; i < states.size(); i++) {
             Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + (i * 200) + 40, Instance.getCameraManager().getY() + 600,
-                    100, 100, new Color4i(125, 125, 125, 255), states.get(i).getStageName(), Button.ButtonType.LEVELSELECT));
-            stageButtons.add( (Button) Instance.getObjectManager().getLastObject());
+                    200, 200, new Color4i(125, 125, 125, 255), states.get(i).getStageName(), Button.ButtonType.LEVELSELECT));
+            if(states.get(i).isUnlocked() == true){
+                Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
+                Instance.getObjectManager().getLastObject().setSpriteName("button");
+                stageButtons.add( (Button) Instance.getObjectManager().getLastObject());
+
+                Instance.getObjectManager().addObject(new Object(stageButtons.lastElement().getX() + 75, stageButtons.lastElement().getY() + 175,
+                        50, 50, new Color4i(255, 255, 255, 255), "star"));
+                Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
+                Instance.getObjectManager().getLastObject().setSpriteName("star");
+                if(states.get(i).getClearAchievements()[1] == true){
+                    Instance.getObjectManager().getLastObject().setTileIndex(1);
+                }
+                else{
+                    Instance.getObjectManager().getLastObject().setTileIndex(0);
+                }
+
+                Instance.getObjectManager().addObject(new Object(stageButtons.lastElement().getX() + 25, stageButtons.lastElement().getY() + 175,
+                        50, 50, new Color4i(255, 255, 255, 255), "star"));
+                Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
+                Instance.getObjectManager().getLastObject().setSpriteName("star");
+                if(states.get(i).getClearAchievements()[0] == true){
+                    Instance.getObjectManager().getLastObject().setTileIndex(1);
+                }
+                else{
+                    Instance.getObjectManager().getLastObject().setTileIndex(0);
+                }
+
+                Instance.getObjectManager().addObject(new Object(stageButtons.lastElement().getX() + 125, stageButtons.lastElement().getY() + 175,
+                        50, 50, new Color4i(255, 255, 255, 255), "star"));
+                Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
+                Instance.getObjectManager().getLastObject().setSpriteName("star");
+                if(states.get(i).getClearAchievements()[2] == true){
+                    Instance.getObjectManager().getLastObject().setTileIndex(1);
+                }
+                else{
+                    Instance.getObjectManager().getLastObject().setTileIndex(0);
+                }
+            }
+            else{
+                Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.SPRITE);
+                Instance.getObjectManager().getLastObject().setSpriteName("button_lock");
+            }
         }
 
-        Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 500 - 175, Instance.getCameraManager().getY() + 1400, 400, 200, new Color4i(0,0,0,255), "Exit", Button.ButtonType.OPTIONBUTTON));
-        exit = (Button) (Instance.getObjectManager().getLastObject());
+        Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 1080 - 200, Instance.getCameraManager().getY(), 200, 200, new Color4i(255,255,255,255), "Option", Button.ButtonType.OPTIONBUTTON));
+        Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
+        Instance.getObjectManager().getLastObject().setSpriteName("button_option");
+        option = (Button) (Instance.getObjectManager().getLastObject());
     }
 
     @Override
@@ -46,7 +90,7 @@ public class LevelSelect extends Level {
 
     @Override
     public void End() {
-        exit = null;
+        option = null;
         Instance.getObjectManager().clearObjects();
         Instance.getParticleManager().clear();
     }
@@ -55,9 +99,6 @@ public class LevelSelect extends Level {
     public void draw(Canvas canvas, float dt) {
         Instance.getGameManager().draw(canvas, dt);
 
-        Instance.getSpriteManager().renderTile(canvas, "map", 0, 0, 0, 100, 100, 0);
-        Instance.getSpriteManager().renderTile(canvas, "map", 1, 100, 0, 100, 100, 0);
-        Instance.getSpriteManager().renderTile(canvas, "map", 4, 200, 0, 100, 100, 0);
         int i = 0;
         for (Button b : stageButtons){
             Instance.getSpriteManager().renderText(canvas, states.get(i).toString(), b.getX(), b.getY() + 150, 20,
@@ -89,15 +130,17 @@ public class LevelSelect extends Level {
                 }
             }
 
-            if(exit.isClicked((int)worldX, (int)worldY)){
-                exit.setIsTouch(true);
+            if(option.isClicked((int)worldX, (int)worldY)){
+                option.setIsTouch(true);
             }
         }
         if (event.getAction() == MotionEvent.ACTION_UP) {
             int stageIndex = 0;
             for (Button btn: stageButtons) {
                 if(btn.isClicked((int)worldX, (int)worldY) && btn.getIsTouch()){
-                    //Instance.getLevelManager().changeLevel(LevelManager.GameLevel.PROTO);
+                    int firstStage = LevelManager.GameLevel.PROTO.ordinal();
+                    LevelManager.GameLevel level = LevelManager.GameLevel.fromInt(firstStage + stageIndex);
+                    Instance.getLevelManager().changeLevel(level);
                     Instance.getGameManager().setCurrentStageIndex(stageIndex);
                     break;
                 }
@@ -105,11 +148,11 @@ public class LevelSelect extends Level {
                 stageIndex++;
             }
 
-            if(exit.isClicked((int)worldX, (int)worldY) && exit.getIsTouch()){
-                Instance.getLevelManager().changeLevel(LevelManager.GameLevel.PROTO);
+            if(option.isClicked((int)worldX, (int)worldY) && option.getIsTouch()){
+                Instance.getLevelManager().changeLevel(LevelManager.GameLevel.OPTION);
                 Instance.getGameManager().setCurrentStageIndex(0);
             }
-            exit.setIsTouch(false);
+            option.setIsTouch(false);
         }
         return true;
     }

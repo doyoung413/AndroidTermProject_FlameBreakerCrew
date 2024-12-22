@@ -26,6 +26,8 @@ public class Object {
     protected AnimationState animationState;
     protected DrawType drawType;
     protected float angle;
+    protected String text = null;
+    protected int fontSize = 80;
 
     public Object(int x, int y, int width, int height, Color4i color, String name) {
         this.x = x;
@@ -65,12 +67,26 @@ public class Object {
                     break;
 
                 case TILE:
-                    if (spriteName != null && animationState != null) {
+                    if (spriteName != null) {
                         spriteManager.renderTile(canvas, spriteName, tileIndex, x, y, width, height, angle);
                     }
                     break;
             }
             //Instance.getSpriteManager().renderText(canvas, x + ", " + y, x, y - 20, 20,  Color.argb(255, 255, 0, 0), Paint.Align.LEFT );
+        }
+        if (text != null) {
+            int centerX = x + width / 2;
+            int centerY = y + height / 2;
+
+            Instance.getSpriteManager().renderText(
+                    canvas,
+                    text,
+                    centerX,
+                    centerY,
+                    fontSize,
+                    Color.WHITE,
+                    Paint.Align.CENTER
+            );
         }
     }
 
@@ -135,6 +151,14 @@ public class Object {
 
     protected void updateAABB() {
         this.aabb = new Rect(x, y, x + width, y + height);
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public void setFontSize(int size) {
+        this.fontSize = size;
     }
 
     public Rect getAABB() { return aabb; }
