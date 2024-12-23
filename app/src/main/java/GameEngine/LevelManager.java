@@ -113,6 +113,12 @@ public class LevelManager {
     }
 
     private void levelUpdate(float dt, Canvas canvas){
+        //Instance.getSpriteManager().drawStart(canvas);
+        if(currentLevel != GameLevel.TITLE && currentLevel != GameLevel.LEVELSELECT &&
+                currentLevel != GameLevel.OPTION) {
+            Instance.getGameManager().drawTileMap(canvas);
+        }
+
         Instance.getObjectManager().updateObjects(dt);
         this.levels.elementAt(currentLevel.ordinal()).Update(dt);
 
@@ -123,6 +129,11 @@ public class LevelManager {
     }
 
     private void levelPause(float dt, Canvas canvas){
+        //Instance.getSpriteManager().drawStart(canvas);
+        if(currentLevel != GameLevel.TITLE && currentLevel != GameLevel.LEVELSELECT &&
+                currentLevel != GameLevel.OPTION) {
+            Instance.getGameManager().drawTileMap(canvas);
+        }
         Instance.getObjectManager().updateObjects(0);
         this.levels.elementAt(currentLevel.ordinal()).Update(0);
 

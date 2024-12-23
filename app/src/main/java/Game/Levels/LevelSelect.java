@@ -33,13 +33,13 @@ public class LevelSelect extends Level {
     public void Init() {
         for(int i = 0 ; i < states.size(); i++) {
             Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + (i * 200) + 40, Instance.getCameraManager().getY() + 600,
-                    200, 200, new Color4i(125, 125, 125, 255), states.get(i).getStageName(), Button.ButtonType.LEVELSELECT));
+                    150, 150, new Color4i(125, 125, 125, 255), states.get(i).getStageName(), Button.ButtonType.LEVELSELECT));
             if(states.get(i).isUnlocked() == true){
                 Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
                 Instance.getObjectManager().getLastObject().setSpriteName("button");
                 stageButtons.add( (Button) Instance.getObjectManager().getLastObject());
 
-                Instance.getObjectManager().addObject(new Object(stageButtons.lastElement().getX() + 75, stageButtons.lastElement().getY() + 175,
+                Instance.getObjectManager().addObject(new Object(stageButtons.lastElement().getX() + 50, stageButtons.lastElement().getY() + 125,
                         50, 50, new Color4i(255, 255, 255, 255), "star"));
                 Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
                 Instance.getObjectManager().getLastObject().setSpriteName("star");
@@ -50,7 +50,7 @@ public class LevelSelect extends Level {
                     Instance.getObjectManager().getLastObject().setTileIndex(0);
                 }
 
-                Instance.getObjectManager().addObject(new Object(stageButtons.lastElement().getX() + 25, stageButtons.lastElement().getY() + 175,
+                Instance.getObjectManager().addObject(new Object(stageButtons.lastElement().getX() + 0, stageButtons.lastElement().getY() + 125,
                         50, 50, new Color4i(255, 255, 255, 255), "star"));
                 Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
                 Instance.getObjectManager().getLastObject().setSpriteName("star");
@@ -61,7 +61,7 @@ public class LevelSelect extends Level {
                     Instance.getObjectManager().getLastObject().setTileIndex(0);
                 }
 
-                Instance.getObjectManager().addObject(new Object(stageButtons.lastElement().getX() + 125, stageButtons.lastElement().getY() + 175,
+                Instance.getObjectManager().addObject(new Object(stageButtons.lastElement().getX() + 100, stageButtons.lastElement().getY() + 125,
                         50, 50, new Color4i(255, 255, 255, 255), "star"));
                 Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
                 Instance.getObjectManager().getLastObject().setSpriteName("star");
@@ -100,13 +100,6 @@ public class LevelSelect extends Level {
     public void draw(Canvas canvas, float dt) {
         Instance.getSpriteManager().renderSprite(canvas, "background", 0, 0, 1080, 1920, 0, null
                 , dt,false, 0.9f);
-
-        int i = 0;
-        for (Button b : stageButtons){
-            Instance.getSpriteManager().renderText(canvas, states.get(i).toString(), b.getX(), b.getY() + 150, 20,
-                    new Color4i(0,0,0,255), Paint.Align.LEFT, 0.9f);
-            i++;
-        }
     }
 
     @Override
@@ -121,8 +114,8 @@ public class LevelSelect extends Level {
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             //Particle Test
-            Instance.getParticleManager().addRandomParticle(50, 50, (int) worldX, (int) worldY,
-                    10, 10, 0, 1);
+//            Instance.getParticleManager().addRandomParticle(50, 50, (int) worldX, (int) worldY,
+//                    10, 10, 0, 1);
             //Particle Test
 
             for (Button btn: stageButtons) {

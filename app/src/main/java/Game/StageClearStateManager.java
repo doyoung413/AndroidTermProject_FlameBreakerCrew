@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,7 +17,7 @@ import java.util.List;
 
 public class StageClearStateManager {
     private static final String DATABASE_NAME = "stage_clear.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String TABLE_NAME = "stage_clear_state";
     private static final String COLUMN_STAGE_NAME = "stage_name";
     private static final String COLUMN_IS_UNLOCKED = "is_unlocked";
@@ -69,7 +71,7 @@ public class StageClearStateManager {
     }
 
     public void loadStatesFromRaw(Context context, int rawResourceId) {
-        if (getRowCount() == 0) {
+        if (getRowCount() == 0 ||getRowCount() == 1) {
             try (InputStream inputStream = context.getResources().openRawResource(rawResourceId);
                  BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
                 String line;
@@ -121,6 +123,7 @@ public class StageClearStateManager {
 
     public void resetDatabase(Context context, int rawResourceId) {
         database.execSQL("DELETE FROM " + TABLE_NAME);
+        states.clear();
         loadStatesFromRaw(context, rawResourceId);
     }
 
@@ -180,6 +183,33 @@ public class StageClearStateManager {
 
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
             onCreate(db);
+        }
+    }
+
+    public void saveStatesToTxt(Context context, String fileName) {
+        File file = new File(context.getFilesDir(), fileName); // 앱 내부 저장소에 파일 생성
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            Cursor cursor = database.query(TABLE_NAME, null, null, null, null, null, null);
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    // 데이터베이스에서 컬럼 값 읽기
+                    String stageName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STAGE_NAME));
+                    int isUnlocked = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_UNLOCKED));
+                    int achievement1 = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ACHIEVEMENT_1));
+                    int achievement2 = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ACHIEVEMENT_2));
+                    int achievement3 = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ACHIEVEMENT_3));
+
+                    // 텍스트 형식으로 변환
+                    String line = String.format("%s %d %d %d %d\n", stageName, isUnlocked, achievement1, achievement2, achievement3);
+
+                    // 파일에 쓰기
+                    fos.write(line.getBytes());
+                }
+                cursor.close();
+            }
+            System.out.println("States successfully saved to " + file.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

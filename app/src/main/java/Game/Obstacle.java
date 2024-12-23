@@ -46,7 +46,7 @@ public class Obstacle extends Object {
             delay += dt;
             if (delay > 0.5f) {
                 delay = 0;
-                Instance.getParticleManager().addFireParticle(50, 50, x, y + height, -10, 0, 100);
+                Instance.getParticleManager().addFireParticle(20, 20, x, y + height, -10, 0, 100);
             }
         }
     }

@@ -22,6 +22,7 @@ public class Unit extends Object {
         ACT;
     }
 
+    private float delay = 0;
     private int speed;
     private int actLeft = 1;
     private UnitType unitType;
@@ -79,6 +80,16 @@ public class Unit extends Object {
             setSelected(false);
             gm.setCurrentAction(GameManager.ActionType.DO_NOTHING);
         }
+        else if(unitState == UnitState.ACT && unitType == UnitType.WATER){
+            delay += dt;
+            if(delay > 0.1f){
+                delay = 0;
+                if(isFlip == false)
+                    Instance.getParticleManager().addWaterParticle(20, 20, x + width / 2, y + height / 2 , 30, 5, 0, 1);
+                else
+                    Instance.getParticleManager().addWaterParticle(20, 20, x - width / 2, y + height / 2 , -30, 5, 0, 1);
+            }
+        }
     }
 
     @Override
@@ -92,8 +103,8 @@ public class Unit extends Object {
 //        Instance.getSpriteManager().renderText(canvas, unitState.toString(),
 //                x, y - 20, 30, new Color4i(0, 0, 0 ,255), Paint.Align.CENTER);
 
-        Instance.getSpriteManager().renderText(canvas, "" + actLeft,
-                x + getWidth() / 2, y - 10, 30, new Color4i(0, 0, 0 ,255), Paint.Align.CENTER, 0.6f);
+//        Instance.getSpriteManager().renderText(canvas, "" + actLeft,
+//                x + getWidth() / 2, y - 10, 30, new Color4i(0, 0, 0 ,255), Paint.Align.CENTER, 0.6f);
     }
 
     public UnitType getType() {
@@ -133,7 +144,7 @@ public class Unit extends Object {
                         //setAnimationState(new AnimationState(60, true));
                     }
                     else{
-                        setSpriteName("rescue_idle");
+                        setSpriteName("rescue_idlef");
                         setDrawType(DrawType.SPRITE);
                         //setAnimationState(new AnimationState(60, true));
                     }
@@ -146,7 +157,9 @@ public class Unit extends Object {
                         setAnimationState(new AnimationState(60, false));
                     }
                     else{
-
+                        setSpriteName("rescue_walkf");
+                        setDrawType(DrawType.ANIMATION);
+                        setAnimationState(new AnimationState(60, false));
                     }
                 }
                 else if(unitState == UnitState.LADDER)
@@ -172,7 +185,7 @@ public class Unit extends Object {
                         //setAnimationState(new AnimationState(60, true));
                     }
                     else{
-                        setSpriteName("breaker_idle");
+                        setSpriteName("breaker_idlef");
                         setDrawType(DrawType.SPRITE);
                         //setAnimationState(new AnimationState(60, true));
                     }
@@ -185,7 +198,7 @@ public class Unit extends Object {
                         setAnimationState(new AnimationState(60, false));
                     }
                     else{
-                        setSpriteName("breaker_walk");
+                        setSpriteName("breaker_walkf");
                         setDrawType(DrawType.ANIMATION);
                         setAnimationState(new AnimationState(60, false));
                     }
@@ -211,7 +224,7 @@ public class Unit extends Object {
                         setAnimationState(new AnimationState(60, true));
                     }
                     else{
-                        setSpriteName("breaker_act");
+                        setSpriteName("breaker_actf");
                         setDrawType(DrawType.ANIMATION);
                         setAnimationState(new AnimationState(60, true));
                     }
@@ -226,7 +239,7 @@ public class Unit extends Object {
                         //setAnimationState(new AnimationState(60, true));
                     }
                     else{
-                        setSpriteName("water_idle");
+                        setSpriteName("water_idlef");
                         setDrawType(DrawType.SPRITE);
                         //setAnimationState(new AnimationState(60, true));
                     }
@@ -239,7 +252,7 @@ public class Unit extends Object {
                         setAnimationState(new AnimationState(60, false));
                     }
                     else{
-                        setSpriteName("water_walk");
+                        setSpriteName("water_walkf");
                         setDrawType(DrawType.ANIMATION);
                         setAnimationState(new AnimationState(60, false));
                     }
@@ -265,7 +278,7 @@ public class Unit extends Object {
                         setAnimationState(new AnimationState(120, true));
                     }
                     else{
-                        setSpriteName("water_act");
+                        setSpriteName("water_actf");
                         setDrawType(DrawType.ANIMATION);
                         setAnimationState(new AnimationState(120, true));
                     }

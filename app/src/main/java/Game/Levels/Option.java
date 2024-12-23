@@ -7,6 +7,8 @@ import android.graphics.Paint;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
+import com.example.a22213502_termproject.R;
+
 import Game.Button;
 import Game.GameManager;
 import Game.Unit;
@@ -20,7 +22,7 @@ public class Option extends Level {
     private Context context;
     private GestureDetector gestureDetector;
     private float sliderX, sliderStartX, sliderEndX;
-    Button volumeUp, volumeDown, sliderButton, exit;
+    Button volumeUp, volumeDown, sliderButton, initialData, exit;
 
     public Option(Context context) {
         this.context = context;
@@ -46,6 +48,14 @@ public class Option extends Level {
         Instance.getObjectManager().addObject(new Button(context, (int) sliderX, Instance.getCameraManager().getY() + 600, 150, 100, new Color4i(128, 128, 128, 255), "Slider", Button.ButtonType.OPTIONBUTTON));
         sliderButton = (Button) (Instance.getObjectManager().getLastObject());
         sliderButton.setDrawType(Object.DrawType.RECTANGLE);
+
+        Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 500 - 175, Instance.getCameraManager().getY() + 800, 400, 200, new Color4i(0,0,0,255), "Exit", Button.ButtonType.OPTIONBUTTON));
+        initialData = (Button) (Instance.getObjectManager().getLastObject());
+        initialData.setDrawType(Object.DrawType.TILE);
+        initialData.setText("Initialize Data");
+        initialData.setFontSize(40);
+        initialData.setDrawType(Object.DrawType.TILE);
+        initialData.setSpriteName("button2x1");
 
         Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 500 - 175, Instance.getCameraManager().getY() + 1400, 400, 200, new Color4i(0,0,0,255), "Exit", Button.ButtonType.OPTIONBUTTON));
         exit = (Button) (Instance.getObjectManager().getLastObject());
@@ -93,12 +103,15 @@ public class Option extends Level {
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             //Particle Test
-            Instance.getParticleManager().addRandomParticle(50, 50, (int) worldX, (int) worldY,
-                    10, 10, 0, 1);
+//            Instance.getParticleManager().addRandomParticle(50, 50, (int) worldX, (int) worldY,
+//                    10, 10, 0, 1);
             //Particle Test
 
             if(exit.isClicked((int)worldX, (int)worldY)){
                 exit.setIsTouch(true);
+            }
+            if(initialData.isClicked((int)worldX, (int)worldY)){
+                initialData.setIsTouch(true);
             }
         }
         if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -108,6 +121,13 @@ public class Option extends Level {
             }
             else{
                 exit.setIsTouch(false);
+            }
+
+            if(initialData.isClicked((int)worldX, (int)worldY) && initialData.getIsTouch()){
+                Instance.getStageClearStateManager().resetDatabase(context, R.raw.clearstate);
+            }
+            else{
+                initialData.setIsTouch(false);
             }
         }
         if (event.getAction() == MotionEvent.ACTION_MOVE) {

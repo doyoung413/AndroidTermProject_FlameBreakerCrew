@@ -68,6 +68,54 @@ public class ParticleManager {
         }
     }
 
+    public void addWaterParticle(int width, int height, int x, int y, int speedX, int speedY, float angle, float lifeTime) {
+        Random random = new Random();
+        int particleAmount = random.nextInt(5) + 10;
+
+        for (int i = 0; i < particleAmount; i++) {
+            int randomSpeedX =  speedX + random.nextInt(30);
+            int randomSpeedY = speedY + random.nextInt(20) - random.nextInt(20);
+            if (random.nextBoolean()) {
+                randomSpeedY *= -1;
+            }
+
+            float randomSizeAdjustment = random.nextFloat() * 5 - random.nextFloat() * 5;
+            int randomWidth = (int) (width + randomSizeAdjustment);
+            int randomHeight = (int) (height + randomSizeAdjustment);
+
+            float randomAngle = angle + random.nextFloat() * 10 - random.nextFloat() * 10;
+            float newLifeTime = lifeTime + random.nextFloat() * 1 - random.nextFloat() * 1;
+
+            Color4i waterColor = new Color4i(0, random.nextInt(50) + 200, random.nextInt(50) + 200, 255);
+
+            addSingleRectParticle(randomWidth, randomHeight, x, y, randomSpeedX, randomSpeedY, randomAngle, waterColor, newLifeTime);
+            getLastParticle().setFade(true, 0.5f + random.nextFloat() * 0.5f);
+        }
+    }
+
+    public void addWallFragmentParticle(int width, int height, int x, int y, int speedX, int speedY, float angle, float lifeTime) {
+        Random random = new Random();
+        int particleAmount = random.nextInt(30) + 20;
+
+        for (int i = 0; i < particleAmount; i++) {
+            int randomSpeedX = random.nextInt(50) - 25; // -50 ~ +50
+            int randomSpeedY = random.nextInt(50) - 25; // -50 ~ +50
+
+            float randomSizeAdjustment = random.nextFloat() * 5 - random.nextFloat() * 5;
+            int randomWidth = (int) (width + randomSizeAdjustment);
+            int randomHeight = (int) (height + randomSizeAdjustment);
+
+            float randomAngle = angle + random.nextFloat() * 20 - random.nextFloat() * 20;
+            float newLifeTime = lifeTime + random.nextFloat() * 2 - random.nextFloat() * 2;
+
+            int grayScale = random.nextInt(100) + 100;
+            Color4i fragmentColor = new Color4i(grayScale, grayScale, grayScale, 255);
+
+            // 파편 추가
+            addSingleRectParticle(randomWidth, randomHeight, x, y, randomSpeedX, randomSpeedY, randomAngle, fragmentColor, newLifeTime);
+        }
+    }
+
     public void clear(){
         particles.clear();
     }

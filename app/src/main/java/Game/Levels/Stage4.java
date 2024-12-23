@@ -35,33 +35,36 @@ public class Stage4 extends Level {
                 {1, 0, 0, 5, 7, 0, 0, 0, 4, 1},
                 {1, 1, 0, 1, 1, 1, 1, 1, 1, 1},
                 {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                 {1, 8, 0, 6, 0, 0, 0, 0, 0, 1},
                 {1, 1, 0, 1, 1, 1, 1, 0, 1, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                 {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                 {1, 0, 0, 3, 0, 0, 0, 0, 0, 1},
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
                 {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                 {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
         };
 
         int[][] tileMapArray = {
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {7, 8, 8, 12, 8, 8, 8, 8, 8, 9},
+                {6, 3, 3, 11, 3, 3, 3, 3, 3, 10},
+                {6, 3, 3, 11, 3, 3, 3, 3, 3, 10},
+                {6, 3, 3, 3, 3, 3, 3, 3, 3, 10},
+                {6, 1, 0, 1, 1, 1, 1, 1, 1, 10},
+                {6, 3, 3, 3, 3, 3, 3, 3, 3, 10},
+                {6, 3, 3, 3, 3, 3, 3, 3, 3, 10},
+                {6, 1, 3, 1, 1, 1, 1, 3, 1, 10},
+                {6, 3, 3, 3, 3, 3, 3, 3, 3, 10},
+                {6, 3, 3, 3, 3, 3, 3, 3, 3, 10},
+                {6, 1, 1, 1, 1, 1, 1, 1, 1, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
         };
 
         Instance.getGameManager().initializeMap(mapArray);
@@ -71,8 +74,8 @@ public class Stage4 extends Level {
         Instance.getGameManager().addStructureButton("Block", Game.Structure.StructureType.BLOCK, 1, 0,1, 1);
 
         Instance.getGameManager().initStructureButtons(context);
-        Instance.getGameManager().setCountdownTime(120);
-        Instance.getGameManager().setMinCountTimeForBonus(120);
+        Instance.getGameManager().setCountdownTime(150);
+        Instance.getGameManager().setMinCountTimeForBonus(60);
         Instance.getGameManager().setTimerRunning(true);
 
         Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 1080 - 200, Instance.getCameraManager().getY(), 200, 200, new Color4i(255,255,255,255), "PAUSE", Button.ButtonType.OPTIONBUTTON));

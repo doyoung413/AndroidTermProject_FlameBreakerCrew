@@ -47,21 +47,25 @@ public class Stage3 extends Level {
         };
 
         int[][] tileMapArray = {
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {7, 8, 8, 12, 8, 8, 8, 8, 8, 9},
+                {6, 3, 3, 11, 3, 3, 3, 3, 3, 10},
+                {6, 3, 3, 11, 3, 3, 3, 3, 3, 10},
+                {6, 3, 3, 3, 3, 3, 3, 3, 3, 10},
+                {6, 1, 3, 1, 1, 1, 1, 1, 3, 10},
+                {6, 3, 3, 3, 3, 3, 3, 3, 3, 10},
+                {6, 3, 3, 3, 3, 3, 3, 3, 3, 10},
+                {6, 1, 1, 1, 1, 1, 1, 1, 1, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
+                {6, 2, 2, 2, 2, 2, 2, 2, 2, 10},
         };
 
         Instance.getGameManager().initializeMap(mapArray);
@@ -72,7 +76,7 @@ public class Stage3 extends Level {
 
         Instance.getGameManager().initStructureButtons(context);
         Instance.getGameManager().setCountdownTime(120);
-        Instance.getGameManager().setMinCountTimeForBonus(120);
+        Instance.getGameManager().setMinCountTimeForBonus(30);
         Instance.getGameManager().setTimerRunning(true);
 
         Instance.getObjectManager().addObject(new Button(context, Instance.getCameraManager().getX() + 1080 - 200, Instance.getCameraManager().getY(), 200, 200, new Color4i(255,255,255,255), "PAUSE", Button.ButtonType.OPTIONBUTTON));
@@ -95,9 +99,6 @@ public class Stage3 extends Level {
 
     @Override
     public void draw(Canvas canvas, float dt) {
-        Instance.getSpriteManager().renderSprite(canvas, "background", 0, 0, 1080, 1920, 0, null
-                , dt,false, 0.9f);
-        Instance.getGameManager().drawTileMap(canvas);
         Instance.getGameManager().draw(canvas, dt);
     }
 

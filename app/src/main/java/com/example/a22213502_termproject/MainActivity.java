@@ -12,6 +12,7 @@ import GameEngine.Instance;
 import GameEngine.LevelManager;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -39,7 +40,9 @@ public class MainActivity extends AppCompatActivity {
         //Instance.getStageClearStateManager().resetDatabase(this, R.raw.clearstate);
         Instance.getStageClearStateManager().loadStatesFromRaw(this, R.raw.clearstate);
 
-        // 상태 출력 (디버그용)
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        setContentView(R.layout.activity_main);
+
         for (StageClearState s : Instance.getStageClearStateManager().getStates()) {
             System.out.println(s.toString());
         }
@@ -102,18 +105,21 @@ public class MainActivity extends AppCompatActivity {
             Instance.getLevelManager().run((float) deltaTime, canvas);
 
             //FPS
-            Instance.getSpriteManager().renderText(canvas,"DeltaTime: " + deltaTime, 60, 60, 50, Color.BLACK, Paint.Align.LEFT, 0.9f);
-            Instance.getSpriteManager().renderText(canvas,"FPS: " + fps, 60, 120,50, Color.BLACK, Paint.Align.LEFT , 0.9f);
-            Instance.getSpriteManager().renderText(canvas, "Objs: " + Instance.getObjectManager().getObjects().size(), 60, 180,50, Color.BLACK, Paint.Align.LEFT , 0.9f);
+            //Instance.getSpriteManager().renderText(canvas,"DeltaTime: " + deltaTime, 60, 60, 50, Color.BLACK, Paint.Align.LEFT, 0.9f);
+            //Instance.getSpriteManager().renderText(canvas,"FPS: " + fps, 60, 120,50, Color.BLACK, Paint.Align.LEFT , 0.9f);
+            //Instance.getSpriteManager().renderText(canvas, "Objs: " + Instance.getObjectManager().getObjects().size(), 60, 180,50, Color.BLACK, Paint.Align.LEFT , 0.9f);
             //FPS
 
             invalidate();
-            //long sleepTime = FRAME_TIME_MS - (System.currentTimeMillis() - currentTime);
-//            try {
-//                Thread.sleep(sleepTime);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+            long elapsedTime = System.currentTimeMillis() - currentTime;
+            long sleepTime = FRAME_TIME_MS - elapsedTime;
+            if (sleepTime > 0) {
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         } //Update
 
         @Override
@@ -129,10 +135,21 @@ public class MainActivity extends AppCompatActivity {
         Instance.getSpriteManager().loadAnimatedSprite(context, "rescue_walk", R.drawable.rescuewalk, 24, 24 );
         Instance.getSpriteManager().loadAnimatedSprite(context, "rescue_ladder", R.drawable.rescueladder, 24, 24);
 
+        Instance.getSpriteManager().loadSprite(context, "rescue_idlef", R.drawable.rescueidlef);
+        Instance.getSpriteManager().loadAnimatedSprite(context, "rescue_walkf", R.drawable.rescuewalkf, 24, 24 );
+
         Instance.getSpriteManager().loadSprite(context, "breaker_idle", R.drawable.breakeridle);
         Instance.getSpriteManager().loadAnimatedSprite(context, "breaker_walk", R.drawable.breakerwalk, 24, 24 );
         Instance.getSpriteManager().loadAnimatedSprite(context, "breaker_ladder", R.drawable.breakerladder, 24, 24);
         Instance.getSpriteManager().loadAnimatedSprite(context, "breaker_act", R.drawable.breakeract, 24, 24);
+
+        Instance.getSpriteManager().loadSprite(context, "breaker_idlef", R.drawable.breakeridlef);
+        Instance.getSpriteManager().loadAnimatedSprite(context, "breaker_walkf", R.drawable.breakerwalkf, 24, 24 );
+        Instance.getSpriteManager().loadAnimatedSprite(context, "breaker_actf", R.drawable.breakeractf, 24, 24);
+
+        Instance.getSpriteManager().loadSprite(context, "water_idlef", R.drawable.wateridlef);
+        Instance.getSpriteManager().loadAnimatedSprite(context, "water_walkf", R.drawable.waterwalkf, 24, 24 );
+        Instance.getSpriteManager().loadAnimatedSprite(context, "water_actf", R.drawable.wateractf, 24, 24);
 
         Instance.getSpriteManager().loadSprite(context, "water_idle", R.drawable.wateridle);
         Instance.getSpriteManager().loadAnimatedSprite(context, "water_walk", R.drawable.waterwalk, 24, 24 );
@@ -153,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
         Instance.getSpriteManager().loadSprite(context , "select_arrow", R.drawable.selectarrow);
 
         Instance.getSpriteManager().loadSprite(context , "background", R.drawable.background);
+        Instance.getSpriteManager().loadSprite(context , "background1", R.drawable.back1);
         Instance.getSpriteManager().loadTileMap(context, "map", R.drawable.tiles, 24, 24);
 
         Instance.getSpriteManager().loadTileMap(context, "button", R.drawable.button, 48, 48);

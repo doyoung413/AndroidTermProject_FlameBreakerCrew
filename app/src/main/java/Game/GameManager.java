@@ -76,7 +76,8 @@ public class GameManager {
     public enum GamePlayState {
         NORMAL,
         PAUSE,
-        CLEAR
+        CLEAR,
+        TIMEOVER
     }
 
     public enum ActionType {
@@ -121,8 +122,14 @@ public class GameManager {
         int gridY = targetObject.getY() / GameManager.GRID_SIZE;
         mapArray[gridY][gridX] = 0;
 
+        Obstacle temp = (Obstacle) targetObject;
+        if(temp.getSObstacleType() == Obstacle.ObstacleType.BREAKABLE){
+            Instance.getParticleManager().addWallFragmentParticle(10, 10, targetObject.getX() + targetObject.getWidth() / 2, targetObject.getY()+ targetObject.getHeight() / 2 , 10, 5, 0, 1);
+        }
+        temp = null;
         Instance.getObjectManager().removeObject(targetObject);
         Instance.getObjectManager().removeObject(cancelButton);
+
         targetObject = null;
         cancelButton = null;
     }
@@ -173,6 +180,7 @@ public class GameManager {
             if (countdownTime <= 0) {
                 isTimerRunning = false;
                 System.out.println("시간 종료");
+                setGamePlayState(GamePlayState.TIMEOVER);
             }
         }
 
@@ -206,18 +214,20 @@ public class GameManager {
         spriteManager.renderText(canvas, String.format("%02d:%02d", countdownTime / 60, countdownTime % 60), Instance.getCameraManager().getBaseWidth() / 2 + camX, 60 + camY,
                 60, Color.RED, Paint.Align.CENTER, 0.9f);
 
-        renderMapArray(canvas);
+        //renderMapArray(canvas);
         if(!currentPath.isEmpty())
         {
-            for (int[] step : currentPath) {
-                int x = step[0];
-                int y = step[1];
+            int x = currentPath.get(currentPath.size() - 1)[0];
+            int y = currentPath.get(currentPath.size() - 1)[1];
+            float centerX = x * GRID_SIZE;
+            float centerY = y * GRID_SIZE;
+            Instance.getSpriteManager().renderSprite(canvas, "select_arrow",
+                    (int) centerX, (int) centerY, 100, 100, 0, null, dt, false, 0.6f);
+        }
 
-                float centerX = x * GRID_SIZE;
-                float centerY = y * GRID_SIZE;
-
-                Instance.getSpriteManager().renderText(canvas, x + "," + y, (int) centerX, (int) centerY, 50, Color.BLUE, Paint.Align.LEFT, 0.6f);
-            }
+        for(StructureButton sb : structureButtons){
+            Instance.getSpriteManager().renderText(canvas, sb.count +"", sb.strBtn.getX(), sb.strBtn.getY(), 40, Color.WHITE,
+                    Paint.Align.LEFT, 0.6f);
         }
     }
 
@@ -349,6 +359,8 @@ public class GameManager {
         else{
             selectedUnit.setFlip(true);
         }
+        Unit temp = (Unit) selectedUnit;
+        temp.setUnitState(Unit.UnitState.MOVE);
 
         while (currentX != targetX) {
             int nextX = 0;
@@ -402,7 +414,7 @@ public class GameManager {
             }
 
             if(currentPathFindingMode == PathFindingMode.NORMAL) {
-                if (mapArray[currentY][nextX] != 0 || (currentY + 1 < mapArray.length && mapArray[currentY + 1][nextX] == 0)) {
+                if ((mapArray[currentY][nextX] != 0 && mapArray[currentY][nextX] != 2) || (currentY + 1 < mapArray.length && mapArray[currentY + 1][nextX] == 0) ||  mapArray[targetY][targetX] == 2) {
                     break;
                 }
                 currentX = nextX;
@@ -425,6 +437,8 @@ public class GameManager {
     }
 
     public void drawTileMap(Canvas canvas) {
+        Instance.getSpriteManager().renderSprite(canvas, "background1", 0, 0, 1080, 1920, 0, null
+                , 0,false, 0.9f);
         for (int y = 0; y < tileMapArray.length; y++) {
             for (int x = 0; x < tileMapArray[y].length; x++) {
                 Instance.getSpriteManager().renderTile(canvas, "map", tileMapArray[y][x],
@@ -445,7 +459,7 @@ public class GameManager {
                                         new Color4i(0, 0, 0, 255), "Block",
                                         Structure.StructureType.BLOCK, true)
                         );
-                        //Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.NONE);
+                        Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.NONE);
                         break;
 
                     case 2:
@@ -476,8 +490,9 @@ public class GameManager {
                         Instance.getObjectManager().addObject(
                                 new Obstacle(x * GRID_SIZE, y * GRID_SIZE, 1, 1,
                                         new Color4i(255, 255, 0, 255), "Breakable",
-                                        Obstacle.ObstacleType.BREAKABLE)
-                        );
+                                        Obstacle.ObstacleType.BREAKABLE));
+                        Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.SPRITE);
+                        Instance.getObjectManager().getLastObject().setSpriteName("breakable_block");
                         break;
 
                     case 6:
@@ -591,7 +606,7 @@ public class GameManager {
             Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
             Instance.getObjectManager().getLastObject().setSpriteName("button2x1");
             Instance.getObjectManager().getLastObject().setText("CANCEL");
-            Instance.getObjectManager().getLastObject().setFontSize(60);
+            Instance.getObjectManager().getLastObject().setFontSize(40);
         }
     }
 
@@ -631,7 +646,7 @@ public class GameManager {
             Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
             Instance.getObjectManager().getLastObject().setSpriteName("button2x1");
             Instance.getObjectManager().getLastObject().setText("CANCEL");
-            Instance.getObjectManager().getLastObject().setFontSize(60);
+            Instance.getObjectManager().getLastObject().setFontSize(40);
         }
     }
 
@@ -742,7 +757,38 @@ public class GameManager {
         }
         currentState = newState;
 
-        if (newState == GamePlayState.PAUSE) {
+        if (newState == GamePlayState.TIMEOVER) {
+            int popupWidth = 800 + Instance.getCameraManager().getX();
+            int popupHeight = Instance.getCameraManager().getBaseHeight() / 2 + Instance.getCameraManager().getY();
+
+            int popupX = (Instance.getCameraManager().getBaseWidth() - popupWidth) / 2;
+            int popupY = (Instance.getCameraManager().getBaseHeight() - popupHeight) / 2;
+
+            popupBackground = new Object(popupX, popupY, popupWidth, popupHeight,
+                    new Color4i(0, 0, 0, 200), "PopupBackground");
+            popupBackground.setDrawType(Object.DrawType.RECTANGLE);
+            Instance.getObjectManager().addObject(popupBackground);
+
+            popupText = (new Object(popupX, popupY - popupHeight / 2 + 80, popupWidth, popupHeight,
+                    new Color4i(0, 0, 0, 200), "TEXT"));
+            popupText.setDrawType(Object.DrawType.NONE);
+            Instance.getObjectManager().addObject(popupText);
+            Instance.getObjectManager().getLastObject().setText("TIME OVER");
+
+            int buttonWidth = 400 + Instance.getCameraManager().getX();
+            int buttonHeight = 200 + Instance.getCameraManager().getY();
+
+            int button2X = popupX + (popupWidth - buttonWidth) / 2;
+            int button2Y = popupY + (2 * popupHeight) / 3 - buttonHeight / 2;
+
+            popupButton2 = new Button(context, button2X, button2Y, buttonWidth, buttonHeight,
+                    new Color4i(200, 200, 200, 255), "LevelSelect", Button.ButtonType.OPTIONBUTTON);
+            popupButton2.setText("EXIT");
+            Instance.getObjectManager().addObject(popupButton2);
+            Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
+            Instance.getObjectManager().getLastObject().setSpriteName("button2x1");
+        }
+        else if (newState == GamePlayState.PAUSE) {
             int popupWidth = 800 + Instance.getCameraManager().getX();
             int popupHeight = Instance.getCameraManager().getBaseHeight() / 2 + Instance.getCameraManager().getY();
 
@@ -790,7 +836,7 @@ public class GameManager {
             StageClearState next = manager.getStates().get(currentStageIndex + 1);
 
             bonusState[0] = true;
-            if(countdownTime > minCountTimeForBonus){
+            if(countdownTime >= minCountTimeForBonus){
                 bonusState[1] = true;
             }
             else{
@@ -801,13 +847,15 @@ public class GameManager {
                     bonusState[2] = false;
                     break;
                 }
+                else{
                 bonusState[2] = true;
+            }
             }
             if(structureButtons.isEmpty()){
                 bonusState[2] = true;
             }
 
-            manager.updateStageState(current.getStageName(), current.isUnlocked(), current.getClearAchievements());
+            manager.updateStageState(current.getStageName(), current.isUnlocked(), bonusState);
             manager.getStates().get(currentStageIndex).setClearAchievements(bonusState);
             if(next != null){
                 if(next.isUnlocked() == false){
@@ -865,17 +913,6 @@ public class GameManager {
             int buttonHeight = 200;
             int offsetY = 100;
 
-            int button1X = popupX + (popupWidth - buttonWidth) / 2;
-            int button1Y = popupY + popupHeight / 3 - buttonHeight / 2 + offsetY;
-
-            popupButton1 = new Button(context, button1X, button1Y, buttonWidth, buttonHeight,
-                    new Color4i(200, 200, 200, 255), "NEXT", Button.ButtonType.OPTIONBUTTON);
-            popupButton1.setText("NEXT LEVEL");
-            popupButton1.setFontSize(60);
-            Instance.getObjectManager().addObject(popupButton1);
-            Instance.getObjectManager().getLastObject().setDrawType(Object.DrawType.TILE);
-            Instance.getObjectManager().getLastObject().setSpriteName("button2x1");
-
             int button2X = popupX + (popupWidth - buttonWidth) / 2;
             int button2Y = popupY + (2 * popupHeight) / 3 - buttonHeight / 2 + offsetY;
 
@@ -900,6 +937,15 @@ public class GameManager {
                     Instance.getLevelManager().setGameState(LevelManager.GameState.UPDATE);
                     setGamePlayState(GamePlayState.NORMAL);
                 } else if (popupButton2 != null && popupButton2.isClicked(touchX, touchY)) {
+                    end();
+                    Instance.getLevelManager().levelEnd();
+                    Instance.getLevelManager().changeLevel(LevelManager.GameLevel.LEVELSELECT);
+                    setGamePlayState(GamePlayState.NORMAL);
+                    return true;
+                }
+            }
+            else if (currentState == GamePlayState.TIMEOVER) {
+                if (popupButton2 != null && popupButton2.isClicked(touchX, touchY)) {
                     end();
                     Instance.getLevelManager().levelEnd();
                     Instance.getLevelManager().changeLevel(LevelManager.GameLevel.LEVELSELECT);
@@ -1053,7 +1099,10 @@ public class GameManager {
 
             for (int y = gridY; y < gridY + currentItem.getGridHeight(); y++) {
                 for (int x = gridX; x < gridX + currentItem.getGridWidth(); x++) {
-                    mapArray[y][x] = 2; // 2 = Ladder
+                    if(currentItemMode == Structure.StructureType.LADDER)
+                    mapArray[y][x] = 2;
+                    else if(currentItemMode == Structure.StructureType.BLOCK)
+                        mapArray[y][x] = 1;
                 }
             }
 
@@ -1065,7 +1114,7 @@ public class GameManager {
             if(currentChosenStrBtn.count > 0) {
                 currentChosenStrBtn.count -= 1;
             }
-            Toast.makeText(context, "Ladder placed successfully! Count remain : " + currentChosenStrBtn.count, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "placed successfully! Count remain : " + currentChosenStrBtn.count, Toast.LENGTH_SHORT).show();
             return true;
         }
         return false;
